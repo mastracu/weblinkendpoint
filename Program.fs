@@ -206,3 +206,19 @@ let main _ =
 //
 // More information on the WebSocket protocol can be found at: https://tools.ietf.org/html/rfc6455#page-34
 //
+
+//E:\Documents\weblinkendpoint>heroku certs:add ZebraCAChain.cer weblinkendpoint.herokuapp.com.cer weblinkendpoint.herokuapp.com.key
+//Resolving trust chain... done
+//Adding SSL certificate to ? weblinkendpoint... done
+//Certificate details:
+//Common Name(s): weblinkendpoint.herokuapp.com
+//Expires At:     2037-12-07 16:23 UTC
+//Issuer:         /CN=zebradevice1
+//Starts At:      2012-12-13 12:28 UTC
+//Subject:        /C=IT/ST=ZEBRAIT/L=MILAN/O=ZEBRA/OU=ZIT25/CN=weblinkendpoint.herokuapp.com/emailAddress=ugo.mastracchio@zebra.com
+//SSL certificate is not trusted.
+//
+//=== The following common names are for hosts that are managed by Heroku
+//weblinkendpoint.herokuapp.com
+//
+//=== Your certificate has been added successfully.  Add a custom domain to your app by running ? heroku domains:add <yourdomain.com>
