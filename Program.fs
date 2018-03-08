@@ -124,7 +124,7 @@ let wsWithErrorHandling (mAgent:PrinterMsgAgent) (webSocket : WebSocket) (contex
     // Error case
     | Choice2Of2(error) ->
         // Example error handling logic here
-        printfn "Error: [%A]" error
+        do mAgent.UpdateWith (sprintf "Error: [%A]" error)
         exampleDisposableResource.Dispose()
         
     return successOrError
