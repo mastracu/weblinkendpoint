@@ -2,7 +2,7 @@
 <doc>
 <assembly><name>WebSocket</name></assembly>
 <members>
-<member name="M:Program.wsWithErrorHandling(Suave.WebSocket.WebSocket,Suave.Http.HttpContext)">
+<member name="M:Program.wsWithErrorHandling(Program.PrinterMsgAgent,Suave.WebSocket.WebSocket,Suave.Http.HttpContext)">
 <summary>
  An example of explictly fetching websocket errors and handling them in your codebase.
 </summary>
