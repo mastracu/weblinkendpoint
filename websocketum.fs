@@ -30,6 +30,7 @@ module WebSocketUM =
   let handShakeResponse (handShakeToken : string) =
     Writers.setHeader "Upgrade" "websocket"
     >=> Writers.setHeader "Connection" "Upgrade"
+    >=> Writers.setHeader "Content-Length" "0"
     >=> Writers.setHeader "Sec-WebSocket-Accept" handShakeToken
     >=> Response.response HTTP_101 [||] // HTTP 1xx responses  MUST NOT contain a body
 

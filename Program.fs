@@ -132,7 +132,7 @@ let wsWithErrorHandling (mAgent:PrinterMsgAgent) (webSocket : WebSocket) (contex
 let app (mAgent:PrinterMsgAgent) : WebPart = 
   choose [
     path "/websocket" >=> handShake (ws mAgent)
-    // path "/websocketWithSubprotocol" >=> handShakeWithSubprotocol (chooseSubprotocol "test") ws
+    path "/websocketWithSubprotocol" >=> handShakeWithSubprotocol (chooseSubprotocol "v1.weblink.zebra.com") (ws mAgent)
     path "/websocketWithError" >=> handShake (wsWithErrorHandling mAgent)
     GET >=> choose 
         [ path "/hello" >=> OK "Hello GET"
