@@ -2,7 +2,7 @@
 <doc>
 <assembly><name>WebSocket</name></assembly>
 <members>
-<member name="M:Program.wsWithErrorHandling(Program.PrinterMsgAgent,Suave.WebSocket.WebSocket,Suave.Http.HttpContext)">
+<member name="M:Program.wsWithErrorHandling(Program.PrinterMsgAgent,Suave.WebSocketUM.WebSocket,Suave.Http.HttpContext)">
 <summary>
  An example of explictly fetching websocket errors and handling them in your codebase.
 </summary>
@@ -177,6 +177,27 @@
 <member name="M:Suave.Utils.YoLo.String.equals(System.String,System.String)">
 <summary>
  Also, invariant culture
+</summary>
+</member>
+<member name="M:Suave.WebSocketUM.WebSocket.readIntoByteSegment(Microsoft.FSharp.Core.FSharpFunc{System.Int32,System.ArraySegment{System.Byte}})">
+<summary>
+ Reads from the websocket and puts the data into a ByteSegment selected by the byteSegmentForLengthFunc parameter
+ &lt;param name=&quot;byteSegmentForLengthFunc&quot;&gt;A function that takes in the message length in bytes required to hold the next websocket message and returns an appropriately sized ArraySegment of bytes&lt;/param&gt;
+</summary>
+</member>
+<member name="T:Suave.WebSocketUM.WebSocket">
+<summary>
+ This class represents a WebSocket connection, it provides an interface to read and write to a WebSocket.
+</summary>
+</member>
+<member name="M:Suave.WebSocketUM.handShake(Microsoft.FSharp.Core.FSharpFunc{Suave.WebSocketUM.WebSocket,Microsoft.FSharp.Core.FSharpFunc{Suave.Http.HttpContext,Microsoft.FSharp.Control.FSharpAsync{Microsoft.FSharp.Core.FSharpChoice{Microsoft.FSharp.Core.Unit,Suave.Sockets.Error}}}},Suave.Http.HttpContext)">
+<summary>
+ The handShake combinator captures a WebSocket and pass it to the provided `continuation`
+</summary>
+</member>
+<member name="M:Suave.WebSocketUM.handShakeWithSubprotocol(Microsoft.FSharp.Core.FSharpFunc{System.String[],Microsoft.FSharp.Core.FSharpFunc{Suave.Http.HttpContext,Microsoft.FSharp.Control.FSharpAsync{Microsoft.FSharp.Core.FSharpOption{System.String}}}},Microsoft.FSharp.Core.FSharpFunc{Suave.WebSocketUM.WebSocket,Microsoft.FSharp.Core.FSharpFunc{Suave.Http.HttpContext,Microsoft.FSharp.Control.FSharpAsync{Microsoft.FSharp.Core.FSharpChoice{Microsoft.FSharp.Core.Unit,Suave.Sockets.Error}}}},Suave.Http.HttpContext)">
+<summary>
+ The handShakeWithSubprotocol combinator captures a WebSocket and pass it to the provided `continuation`
 </summary>
 </member>
 </members>

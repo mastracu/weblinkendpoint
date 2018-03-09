@@ -16,10 +16,9 @@ open System.Runtime.Serialization
 
 open Suave.Sockets
 open Suave.Sockets.Control
-open Suave.WebSocket
+open Suave.WebSocketUM
 
 //TODO: https://github.com/SuaveIO/suave/issues/307
-
    
 type DumpAgentMsg = 
     | Exit
