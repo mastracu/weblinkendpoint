@@ -64,8 +64,8 @@ let config =
 
 let ws (logAgent:PrinterMsgAgent) (inboxForPrinter:MailboxProcessor<Opcode * byte [] * bool>) (webSocket : WebSocket) (context: HttpContext) =
 
-
   socket {
+
     let writeLoop = async {
       while true do
          let! msg = inboxForPrinter.Receive()
@@ -77,13 +77,13 @@ let ws (logAgent:PrinterMsgAgent) (inboxForPrinter:MailboxProcessor<Opcode * byt
     Async.Start writeLoop
 
     // H15 error Heroku - https://devcenter.heroku.com/articles/error-codes#h15-idle-connection
-    // A Pong frame MAY be sent unsolicited.  This serves as a unidirectional heartbeat.  A response to an unsolicited Pong frame is not expected.
+    // A Pong frame MAY be sent unsolicited.  This serves as a unidirectional heartbeat.  
+    // A response to an unsolicited Pong frame is not expected.
     let pongTimer = new System.Timers.Timer(float 20000)
-    pongTimer.AutoReset <- true
+    do pongTimer.AutoReset <- true
     let pongTimeoutEvent = pongTimer.Elapsed
-    pongTimer.Start()
-    do pongTimeoutEvent |> Observable.subscribe (fun _ -> do logAgent.UpdateWith "20 secs timeout expired. Sending Pong"
-                                                          do inboxForPrinter.Post (Pong, [||], true)) |> ignore
+    do pongTimer.Start()
+    do pongTimeoutEvent |> Observable.subscribe (fun _ -> do inboxForPrinter.Post (Pong, [||], true)) |> ignore
 
     // if `loop` is set to false, the server will stop receiving messages
     let mutable loop = true
@@ -166,11 +166,11 @@ let wsWithErrorHandling (mAgent:PrinterMsgAgent) inbox (webSocket : WebSocket) (
     return successOrError
    }
 
-let app (mLogAgent:PrinterMsgAgent) inbox : WebPart = 
+let app (mLogAgent:PrinterMsgAgent) toSendtoPrinter : WebPart = 
   choose [
-    path "/websocket" >=> handShake (ws mLogAgent inbox)
-    path "/websocketWithSubprotocol" >=> handShakeWithSubprotocol (chooseSubprotocol "v1.weblink.zebra.com") (ws mLogAgent inbox)
-    path "/websocketWithError" >=> handShake (wsWithErrorHandling mLogAgent inbox)
+    path "/websocket" >=> handShake (ws mLogAgent toSendtoPrinter)
+    path "/websocketWithSubprotocol" >=> handShakeWithSubprotocol (chooseSubprotocol "v1.weblink.zebra.com") (ws mLogAgent toSendtoPrinter)
+    path "/websocketWithError" >=> handShake (wsWithErrorHandling mLogAgent toSendtoPrinter)
     GET >=> choose 
         [ path "/hello" >=> OK "Hello GET"
           path "/logdump" >=> warbler (fun ctx -> OK ( mLogAgent.DumpDevicesState() ))
