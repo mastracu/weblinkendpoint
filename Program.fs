@@ -27,10 +27,10 @@ type DumpAgentMsg =
     | DumpDevicesState  of AsyncReplyChannel<String>
 
 type MessageDump = 
-   { LastMessage : String } 
-   static member Empty = {LastMessage = "" }
-   member x.UpdateWith (re:String) = 
-      { LastMessage = re }
+   { DebugLog : String list } 
+   static member Empty = {DebugLog = [] }
+   member x.UpdateWith (msg:String) = 
+      { DebugLog = (string DateTime.Now + " " + msg) :: x.DebugLog }
 
 type PrinterMsgAgent() =
     let printerMsgMailboxProcessor =
@@ -68,7 +68,7 @@ let ws (mAgent:PrinterMsgAgent) (webSocket : WebSocket) (context: HttpContext) =
     // if `loop` is set to false, the server will stop receiving messages
     let mutable loop = true
 
-    do mAgent.UpdateWith "in ws pre loop"
+    do mAgent.UpdateWith "Inside ws"
 
     while loop do
       // the server will wait for a message to be received without blocking the thread
@@ -83,10 +83,24 @@ let ws (mAgent:PrinterMsgAgent) (webSocket : WebSocket) (context: HttpContext) =
       // byte [] contains the actual message
       //
       // the last element is the FIN byte, explained later
+      //
+      // The FIN byte:
+      //
+      // A single message can be sent separated by fragments. The FIN byte indicates the final fragment. Fragments
+      //
+      // As an example, this is valid code, and will send only one message to the client:
+      //
+      // do! webSocket.send Text firstPart false
+      // do! webSocket.send Continuation secondPart false
+      // do! webSocket.send Continuation thirdPart true
+      //
+      // More information on the WebSocket protocol can be found at: https://tools.ietf.org/html/rfc6455#page-34
+      //
+
       | (Text, data, true) ->
         // the message can be converted to a string
         let str = UTF8.toString data
-        let response = sprintf "Ugo su Heroku received: %s" str
+        let response = sprintf "Text message from printer: %s" str
 
         // the `send` function sends a message back to the client
         do mAgent.UpdateWith response
@@ -94,12 +108,23 @@ let ws (mAgent:PrinterMsgAgent) (webSocket : WebSocket) (context: HttpContext) =
       | (Binary, data, true) ->
         // the message can be converted to a string
         let str = UTF8.toString data
-        let response = sprintf "Ugo su Heroku received: %s" str
+        let response = sprintf "Binary message from printer: %s" str
 
         // the `send` function sends a message back to the client
         do mAgent.UpdateWith response
 
+      | (Ping, data, true) ->
+        // Ping message received. Responding with Pong
+        // The printer sends a PING message roughly ever 60 seconds. The server needs to respond with a PONG, per RFC6455
+        // After three failed PING attempts, the printer disconnects and attempts to reconnect
+
+        // the `send` function sends a message back to the client
+        do mAgent.UpdateWith "Ping message from printer. Responding with Pong message"
+        let emptyResponse = [||] |> ByteSegment
+        do! webSocket.send Pong emptyResponse true
+
       | (Close, _, _) ->
+        do mAgent.UpdateWith "Close message from printer!"
         let emptyResponse = [||] |> ByteSegment
         do! webSocket.send Close emptyResponse true
 
@@ -107,6 +132,7 @@ let ws (mAgent:PrinterMsgAgent) (webSocket : WebSocket) (context: HttpContext) =
         loop <- false
 
       | _ -> ()
+
     }
 
 /// An example of explictly fetching websocket errors and handling them in your codebase.
@@ -136,7 +162,8 @@ let app (mAgent:PrinterMsgAgent) : WebPart =
     path "/websocketWithError" >=> handShake (wsWithErrorHandling mAgent)
     GET >=> choose 
         [ path "/hello" >=> OK "Hello GET"
-          path "/dump" >=> warbler (fun ctx -> OK ( mAgent.DumpDevicesState() ))
+          path "/logdump" >=> warbler (fun ctx -> OK ( mAgent.DumpDevicesState() ))
+          path "/clearlog" >=> warbler (fun ctx -> OK ( mAgent.Empty(); "Log cleared" ))
           browseHome ]
     NOT_FOUND "Found no handlers." ]
 
@@ -147,18 +174,4 @@ let main _ =
   let msgAgent = new PrinterMsgAgent()
   startWebServer config (app msgAgent)
   0
-
-//
-// The FIN byte:
-//
-// A single message can be sent separated by fragments. The FIN byte indicates the final fragment. Fragments
-//
-// As an example, this is valid code, and will send only one message to the client:
-//
-// do! webSocket.send Text firstPart false
-// do! webSocket.send Continuation secondPart false
-// do! webSocket.send Continuation thirdPart true
-//
-// More information on the WebSocket protocol can be found at: https://tools.ietf.org/html/rfc6455#page-34
-//
 
