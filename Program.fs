@@ -114,7 +114,13 @@ let ws (logAgent:PrinterMsgAgent) (inboxForPrinter:MailboxProcessor<Opcode * byt
       // More information on the WebSocket protocol can be found at: https://tools.ietf.org/html/rfc6455#page-34
       //
 
-      | (Binary, data, true) ->
+      | (Text, data, _) ->
+        // the message can be converted to a string
+        let str = UTF8.toString data
+        let response = sprintf "Binary message from printer: %s" str
+        do logAgent.UpdateWith response
+
+      | (Binary, data, _) ->
         // the message can be converted to a string
         let str = UTF8.toString data
         let response = sprintf "Binary message from printer: %s" str
@@ -136,14 +142,15 @@ let ws (logAgent:PrinterMsgAgent) (inboxForPrinter:MailboxProcessor<Opcode * byt
 
         // after sending a Close message, stop the loop
         loop <- false
+        do pongTimer.Stop()
 
       | _ -> ()
 
       //   A Pong frame MAY be sent unsolicited.  This serves as a
       //   unidirectional heartbeat.  A response to an unsolicited Pong frame is
       //   not expected.
-
-    }
+    
+ }
 
 
 /// An example of explictly fetching websocket errors and handling them in your codebase.
