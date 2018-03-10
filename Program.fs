@@ -63,8 +63,9 @@ let config =
 
 
 let ws (logAgent:PrinterMsgAgent) (inboxForPrinter:MailboxProcessor<Opcode * byte [] * bool>) (webSocket : WebSocket) (context: HttpContext) =
-  socket {
 
+
+  socket {
     let writeLoop = async {
       while true do
          let! msg = inboxForPrinter.Receive()
@@ -73,6 +74,7 @@ let ws (logAgent:PrinterMsgAgent) (inboxForPrinter:MailboxProcessor<Opcode * byt
          let! x = (webSocket.send opcode ( bytes |> ByteSegment) finbyte )
          ()
     }
+    Async.Start writeLoop
 
     // H15 error Heroku - https://devcenter.heroku.com/articles/error-codes#h15-idle-connection
     // A Pong frame MAY be sent unsolicited.  This serves as a unidirectional heartbeat.  A response to an unsolicited Pong frame is not expected.
@@ -142,6 +144,7 @@ let ws (logAgent:PrinterMsgAgent) (inboxForPrinter:MailboxProcessor<Opcode * byt
       //   not expected.
 
     }
+
 
 /// An example of explictly fetching websocket errors and handling them in your codebase.
 let wsWithErrorHandling (mAgent:PrinterMsgAgent) inbox (webSocket : WebSocket) (context: HttpContext) = 
