@@ -35,15 +35,15 @@ type MessageDump =
 type PrinterMsgAgent() =
     let printerMsgMailboxProcessor =
         MailboxProcessor.Start(fun inbox ->
-            let rec locationAgentLoop dsi =
+            let rec locationAgentLoop msgDump =
                 async { let! msg = inbox.Receive()
                         match msg with
                         | Exit -> return ()
                         | Reset -> return! locationAgentLoop MessageDump.Empty
-                        | UpdateWith re -> return! locationAgentLoop (dsi.UpdateWith re)
+                        | UpdateWith newMsg -> return! locationAgentLoop (msgDump.UpdateWith newMsg)
                         | DumpDevicesState replyChannel -> 
-                            replyChannel.Reply (sprintf "%A" dsi)
-                            return! locationAgentLoop dsi
+                            replyChannel.Reply (sprintf "%A" msgDump)
+                            return! locationAgentLoop msgDump
                       }
             locationAgentLoop MessageDump.Empty
         )
@@ -62,14 +62,29 @@ let config =
                     else HttpBinding.create HTTP ipZero (uint16 port)) ] }
 
 
-let ws (mAgent:PrinterMsgAgent) (webSocket : WebSocket) (context: HttpContext) =
+let ws (logAgent:PrinterMsgAgent) (inboxForPrinter:MailboxProcessor<Opcode * byte [] * bool>) (webSocket : WebSocket) (context: HttpContext) =
   socket {
+
+    let writeLoop = async {
+      while true do
+         let! msg = inboxForPrinter.Receive()
+         let (opcode,bytes,finbyte) = msg
+         do logAgent.UpdateWith (sprintf "Sending message to printer of type %A" opcode)
+         let! x = (webSocket.send opcode ( bytes |> ByteSegment) finbyte )
+         ()
+    }
+
+    // H15 error Heroku - https://devcenter.heroku.com/articles/error-codes#h15-idle-connection
+    // A Pong frame MAY be sent unsolicited.  This serves as a unidirectional heartbeat.  A response to an unsolicited Pong frame is not expected.
+    let pongTimer = new System.Timers.Timer(float 20000)
+    pongTimer.AutoReset <- true
+    let pongTimeoutEvent = pongTimer.Elapsed
+    pongTimer.Start()
+    do pongTimeoutEvent |> Observable.subscribe (fun _ -> do logAgent.UpdateWith "20 secs timeout expired. Sending Pong"
+                                                          do inboxForPrinter.Post (Pong, [||], true)) |> ignore
 
     // if `loop` is set to false, the server will stop receiving messages
     let mutable loop = true
-
-    do mAgent.UpdateWith "Inside ws"
-
     while loop do
       // the server will wait for a message to be received without blocking the thread
       let! msg = webSocket.read()
@@ -97,49 +112,42 @@ let ws (mAgent:PrinterMsgAgent) (webSocket : WebSocket) (context: HttpContext) =
       // More information on the WebSocket protocol can be found at: https://tools.ietf.org/html/rfc6455#page-34
       //
 
-      | (Text, data, true) ->
-        // the message can be converted to a string
-        let str = UTF8.toString data
-        let response = sprintf "Text message from printer: %s" str
-
-        // the `send` function sends a message back to the client
-        do mAgent.UpdateWith response
-
       | (Binary, data, true) ->
         // the message can be converted to a string
         let str = UTF8.toString data
         let response = sprintf "Binary message from printer: %s" str
-
-        // the `send` function sends a message back to the client
-        do mAgent.UpdateWith response
+        do logAgent.UpdateWith response
 
       | (Ping, data, true) ->
         // Ping message received. Responding with Pong
         // The printer sends a PING message roughly ever 60 seconds. The server needs to respond with a PONG, per RFC6455
         // After three failed PING attempts, the printer disconnects and attempts to reconnect
 
+        do logAgent.UpdateWith "Ping message from printer. Responding with Pong message"
+        // A Pong frame sent in response to a Ping frame must have identical "Application data" as found in the message body of the Ping frame being replied to.
         // the `send` function sends a message back to the client
-        do mAgent.UpdateWith "Ping message from printer. Responding with Pong message"
-        let emptyResponse = [||] |> ByteSegment
-        do! webSocket.send Pong emptyResponse true
+        do inboxForPrinter.Post (Pong, data, true)
 
       | (Close, _, _) ->
-        do mAgent.UpdateWith "Close message from printer!"
-        let emptyResponse = [||] |> ByteSegment
-        do! webSocket.send Close emptyResponse true
+        do logAgent.UpdateWith "Close message from printer!"
+        do inboxForPrinter.Post (Close, [||], true)
 
         // after sending a Close message, stop the loop
         loop <- false
 
       | _ -> ()
 
+      //   A Pong frame MAY be sent unsolicited.  This serves as a
+      //   unidirectional heartbeat.  A response to an unsolicited Pong frame is
+      //   not expected.
+
     }
 
 /// An example of explictly fetching websocket errors and handling them in your codebase.
-let wsWithErrorHandling (mAgent:PrinterMsgAgent) (webSocket : WebSocket) (context: HttpContext) = 
+let wsWithErrorHandling (mAgent:PrinterMsgAgent) inbox (webSocket : WebSocket) (context: HttpContext) = 
    
    let exampleDisposableResource = { new IDisposable with member __.Dispose() = printfn "Resource needed by websocket connection disposed" }
-   let websocketWorkflow = ws mAgent webSocket context
+   let websocketWorkflow = ws mAgent inbox webSocket context
    
    async {
     let! successOrError = websocketWorkflow
@@ -155,15 +163,15 @@ let wsWithErrorHandling (mAgent:PrinterMsgAgent) (webSocket : WebSocket) (contex
     return successOrError
    }
 
-let app (mAgent:PrinterMsgAgent) : WebPart = 
+let app (mLogAgent:PrinterMsgAgent) inbox : WebPart = 
   choose [
-    path "/websocket" >=> handShake (ws mAgent)
-    path "/websocketWithSubprotocol" >=> handShakeWithSubprotocol (chooseSubprotocol "v1.weblink.zebra.com") (ws mAgent)
-    path "/websocketWithError" >=> handShake (wsWithErrorHandling mAgent)
+    path "/websocket" >=> handShake (ws mLogAgent inbox)
+    path "/websocketWithSubprotocol" >=> handShakeWithSubprotocol (chooseSubprotocol "v1.weblink.zebra.com") (ws mLogAgent inbox)
+    path "/websocketWithError" >=> handShake (wsWithErrorHandling mLogAgent inbox)
     GET >=> choose 
         [ path "/hello" >=> OK "Hello GET"
-          path "/logdump" >=> warbler (fun ctx -> OK ( mAgent.DumpDevicesState() ))
-          path "/clearlog" >=> warbler (fun ctx -> OK ( mAgent.Empty(); "Log cleared" ))
+          path "/logdump" >=> warbler (fun ctx -> OK ( mLogAgent.DumpDevicesState() ))
+          path "/clearlog" >=> warbler (fun ctx -> OK ( mLogAgent.Empty(); "Log cleared" ))
           browseHome ]
     NOT_FOUND "Found no handlers." ]
 
@@ -171,7 +179,9 @@ let app (mAgent:PrinterMsgAgent) : WebPart =
 
 [<EntryPoint>]
 let main _ =
-  let msgAgent = new PrinterMsgAgent()
-  startWebServer config (app msgAgent)
+  let logAgent = new PrinterMsgAgent()
+  let toSendtoPrinter:MailboxProcessor<Opcode * byte [] * bool> = MailboxProcessor.Start (fun x -> async {()})
+
+  startWebServer config (app logAgent toSendtoPrinter)
   0
 
