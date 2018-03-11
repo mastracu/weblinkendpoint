@@ -101,6 +101,10 @@
       <HintPath>packages\FSharp.Core.4.0.0.1\lib\net40\FSharp.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="FSharp.Data">
+      <HintPath>packages\FSharp.Data.2.4.5\lib\net45\FSharp.Data.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="mscorlib" />
     <Reference Include="Suave">
       <HintPath>packages\Suave.2.2.1\lib\net40\Suave.dll</HintPath>
@@ -110,5 +114,6 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Numerics" />
     <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
 </Project>

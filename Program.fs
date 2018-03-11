@@ -1,4 +1,6 @@
 ﻿
+open FSharp.Data
+
 open Suave
 open Suave.Http
 open Suave.Operators
@@ -17,6 +19,8 @@ open System.Runtime.Serialization
 open Suave.Sockets
 open Suave.Sockets.Control
 open Suave.WebSocketUM
+
+
 
 //TODO: https://github.com/SuaveIO/suave/issues/307
    
@@ -62,19 +66,18 @@ let config =
                     else HttpBinding.create HTTP ipZero (uint16 port)) ] }
 
 
-let ws (logAgent:PrinterMsgAgent) (inboxForPrinter:MailboxProcessor<Opcode * byte [] * bool>) (webSocket : WebSocket) (context: HttpContext) =
+let ws (logAgent:PrinterMsgAgent) (evt2Printer:Event<Opcode * byte [] * bool>) (webSocket : WebSocket) (context: HttpContext) =
+
+  let inbox = MailboxProcessor.Start (fun inbox -> async {
+            let close = ref false
+            while not !close do
+                let! op, data, fi = inbox.Receive()
+                do logAgent.UpdateWith (sprintf "Sending message to printer of type %A" op)
+                let! _ = webSocket.send op (data|> ByteSegment) fi
+                close := op = Close                    
+        })
 
   socket {
-
-    let writeLoop = async {
-      while true do
-         let! msg = inboxForPrinter.Receive()
-         let (opcode,bytes,finbyte) = msg
-         do logAgent.UpdateWith (sprintf "Sending message to printer of type %A" opcode)
-         let! x = (webSocket.send opcode ( bytes |> ByteSegment) finbyte )
-         ()
-    }
-    Async.Start writeLoop
 
     // H15 error Heroku - https://devcenter.heroku.com/articles/error-codes#h15-idle-connection
     // A Pong frame MAY be sent unsolicited.  This serves as a unidirectional heartbeat.  
@@ -83,7 +86,7 @@ let ws (logAgent:PrinterMsgAgent) (inboxForPrinter:MailboxProcessor<Opcode * byt
     do pongTimer.AutoReset <- true
     let pongTimeoutEvent = pongTimer.Elapsed
     do pongTimer.Start()
-    do pongTimeoutEvent |> Observable.subscribe (fun _ -> do inboxForPrinter.Post (Pong, [||], true)) |> ignore
+    do pongTimeoutEvent |> Observable.subscribe (fun _ -> do inbox.Post (Pong, [||] , true)) |> ignore
 
     // if `loop` is set to false, the server will stop receiving messages
     let mutable loop = true
@@ -114,17 +117,15 @@ let ws (logAgent:PrinterMsgAgent) (inboxForPrinter:MailboxProcessor<Opcode * byt
       // More information on the WebSocket protocol can be found at: https://tools.ietf.org/html/rfc6455#page-34
       //
 
-      | (Text, data, _) ->
+      | (Binary, data, true) ->
         // the message can be converted to a string
         let str = UTF8.toString data
         let response = sprintf "Binary message from printer: %s" str
         do logAgent.UpdateWith response
-
-      | (Binary, data, _) ->
-        // the message can be converted to a string
-        let str = UTF8.toString data
-        let response = sprintf "Binary message from printer: %s" str
-        do logAgent.UpdateWith response
+        let jval = JsonValue.Parse str
+        match jval.TryGetProperty "discovery_b64" with
+        | Some str -> do logAgent.UpdateWith "discovery_b64 property received. I am on main channel"
+        | None -> ()
 
       | (Ping, data, true) ->
         // Ping message received. Responding with Pong
@@ -134,21 +135,18 @@ let ws (logAgent:PrinterMsgAgent) (inboxForPrinter:MailboxProcessor<Opcode * byt
         do logAgent.UpdateWith "Ping message from printer. Responding with Pong message"
         // A Pong frame sent in response to a Ping frame must have identical "Application data" as found in the message body of the Ping frame being replied to.
         // the `send` function sends a message back to the client
-        do inboxForPrinter.Post (Pong, data, true)
+        do inbox.Post (Pong, data, true)
 
       | (Close, _, _) ->
         do logAgent.UpdateWith "Close message from printer!"
-        do inboxForPrinter.Post (Close, [||], true)
+        do inbox.Post (Close, [||], true)
 
         // after sending a Close message, stop the loop
         loop <- false
         do pongTimer.Stop()
 
-      | _ -> ()
-
-      //   A Pong frame MAY be sent unsolicited.  This serves as a
-      //   unidirectional heartbeat.  A response to an unsolicited Pong frame is
-      //   not expected.
+      | (_,_,fi) -> 
+        do logAgent.UpdateWith (sprintf "Unexpected messagefrom printer of type %A" fi)
     
  }
 
@@ -190,7 +188,7 @@ let app (mLogAgent:PrinterMsgAgent) toSendtoPrinter : WebPart =
 [<EntryPoint>]
 let main _ =
   let logAgent = new PrinterMsgAgent()
-  let toSendtoPrinter:MailboxProcessor<Opcode * byte [] * bool> = MailboxProcessor.Start (fun x -> async {()})
+  let toSendtoPrinter = new Event<Opcode * byte [] * bool>()
 
   startWebServer config (app logAgent toSendtoPrinter)
   0
