@@ -21,6 +21,17 @@ open Suave.Sockets.Control
 open Suave.WebSocketUM
 
 
+let hellolabel = @"
+CT~~CD,~CC^~CT~
+^XA~TA000~JSN^LT0^MNW^MTT^PON^PMN^LH0,0^JMA^PR3,3~SD17^JUS^LRN^CI0^XZ
+^XA
+^MMC
+^PW609
+^LL0811
+^LS0
+^FT373,536^A0I,28,28^FH\^FDCiao da Heroku^FS
+^PQ1,1,1,Y^XZ"
+
 
 //TODO: https://github.com/SuaveIO/suave/issues/307
    
@@ -131,6 +142,7 @@ let ws (logAgent:PrinterMsgAgent) (evt2Printer:Event<Opcode * byte [] * bool>) (
         | None -> ()
         match jval.TryGetProperty "channel_name" with
         | Some str ->   do logAgent.UpdateWith (sprintf "Channel name: %s" (JsonExtensions.AsString (jval.GetProperty "channel_name")))
+                        inbox.Post(Binary, UTF8.bytes hellolabel , true)
         | None -> ()
 
       | (Ping, data, true) ->
