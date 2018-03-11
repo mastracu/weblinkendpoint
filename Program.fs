@@ -139,7 +139,7 @@ let ws (logAgent:PrinterMsgAgent) (evt2Printer:IEvent<string>) (webSocket : WebS
         match jval.TryGetProperty "discovery_b64" with
         | Some str ->   do logAgent.UpdateWith "discovery_b64 property received. I am on main channel"
                         inbox.Post(Binary, UTF8.bytes """ { "configure_alert" : "SGD SET,SDK,Y,Y,,,N,capture.channel1.data.raw" } """, true)
-                        inbox.Post(Binary, UTF8.bytes """ { "configure_alert" : "ALL MESSAGES,SDK,Y,Y,,,N" } """, true)
+                        //inbox.Post(Binary, UTF8.bytes """ { "configure_alert" : "ALL MESSAGES,SDK,Y,Y,,,N" } """, true)
                         inbox.Post(Binary, UTF8.bytes """ { "open" : "v1.raw.zebra.com" } """, true)
         | None -> ()
 
