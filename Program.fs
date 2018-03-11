@@ -143,7 +143,8 @@ let ws (logAgent:PrinterMsgAgent) (evt2Printer:IEvent<Unit>) (webSocket : WebSoc
 
         match jval.TryGetProperty "channel_name" with
         | Some str ->   do logAgent.UpdateWith (sprintf "Channel name: %s" (JsonExtensions.AsString (jval.GetProperty "channel_name")))
-                        do evt2Printer |> Observable.subscribe (fun _ -> inbox.Post(Binary, UTF8.bytes hellolabel , true)) |> ignore
+                        do evt2Printer |> Observable.subscribe (fun _ -> do logAgent.UpdateWith (sprintf "Printing request")
+                                                                         inbox.Post(Binary, UTF8.bytes hellolabel , true)) |> ignore
                         
         | None -> ()
 
@@ -212,7 +213,6 @@ let app  : WebPart =
 
 [<EntryPoint>]
 let main _ =
-
   startWebServer config app
   0
 
