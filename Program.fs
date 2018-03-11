@@ -77,7 +77,7 @@ let config =
                     else HttpBinding.create HTTP ipZero (uint16 port)) ] }
 
 
-let ws (logAgent:PrinterMsgAgent) (evt2Printer:IEvent<Unit>) (webSocket : WebSocket) (context: HttpContext) =
+let ws (logAgent:PrinterMsgAgent) (evt2Printer:IEvent<string>) (webSocket : WebSocket) (context: HttpContext) =
 
   let inbox = MailboxProcessor.Start (fun inbox -> async {
             let close = ref false
@@ -97,6 +97,7 @@ let ws (logAgent:PrinterMsgAgent) (evt2Printer:IEvent<Unit>) (webSocket : WebSoc
     do pongTimer.AutoReset <- true
     let pongTimeoutEvent = pongTimer.Elapsed
     do pongTimeoutEvent |> Observable.subscribe (fun _ -> do inbox.Post (Pong, [||] , true)) |> ignore
+    do pongTimer.Start()
 
     do logAgent.UpdateWith "About to enter websocket read loop"
 
@@ -137,16 +138,18 @@ let ws (logAgent:PrinterMsgAgent) (evt2Printer:IEvent<Unit>) (webSocket : WebSoc
         let jval = JsonValue.Parse str
         match jval.TryGetProperty "discovery_b64" with
         | Some str ->   do logAgent.UpdateWith "discovery_b64 property received. I am on main channel"
-                        do pongTimer.Start()
+                        inbox.Post(Binary, UTF8.bytes """ { "configure_alert" : "ALL MESSAGES,SDK,Y,Y,,,N" } """, true)
                         inbox.Post(Binary, UTF8.bytes """ { "open" : "v1.raw.zebra.com" } """, true)
         | None -> ()
 
         match jval.TryGetProperty "channel_name" with
-        | Some str ->   do logAgent.UpdateWith (sprintf "Channel name: %s" (JsonExtensions.AsString (jval.GetProperty "channel_name")))
-                        do pongTimer.Start()
-                        do evt2Printer |> Observable.subscribe (fun _ -> do logAgent.UpdateWith (sprintf "Printing request")
-                                                                         inbox.Post(Binary, UTF8.bytes hellolabel , true)) |> ignore
-                        
+        | Some str ->   let chanid = JsonExtensions.AsString (jval.GetProperty "channel_name")
+                        do logAgent.UpdateWith (sprintf "Channel name: %s" chanid)
+                        if chanid = "v1.raw.zebra.com" then
+                           do evt2Printer |> Observable.subscribe (fun lbl -> do logAgent.UpdateWith (sprintf "Printing request")
+                                                                              inbox.Post(Binary, UTF8.bytes lbl , true)) |> ignore
+                        else
+                           ()
         | None -> ()
 
       | (Ping, data, true) ->
@@ -195,7 +198,7 @@ let wsWithErrorHandling (mAgent:PrinterMsgAgent) inbox (webSocket : WebSocket) (
 
 let app  : WebPart = 
   let mLogAgent = new PrinterMsgAgent()
-  let evtPrint = new Event<Unit>()
+  let evtPrint = new Event<string>()
   let toSendtoPrinter = evtPrint.Publish
 
   choose [
@@ -204,10 +207,13 @@ let app  : WebPart =
     path "/websocketWithError" >=> handShake (wsWithErrorHandling mLogAgent toSendtoPrinter)
     GET >=> choose 
         [ path "/hello" >=> OK "Hello GET"
-          path "/hellolabel" >=>  warbler (fun ctx -> evtPrint.Trigger(); OK ("Triggered"))
+          path "/hellolabel" >=>  warbler (fun ctx -> evtPrint.Trigger(hellolabel); OK ("Triggered"))
           path "/logdump" >=> warbler (fun ctx -> OK ( mLogAgent.DumpDevicesState() ))
           path "/clearlog" >=> warbler (fun ctx -> OK ( mLogAgent.Empty(); "Log cleared" ))
           browseHome ]
+    POST >=> choose
+        [ path "/hello" >=> OK "Hello POST" ]
+        // aggiungi POST "/printlabel" evtPrint.Trigger(body of POST)
     NOT_FOUND "Found no handlers." ]
 
 //https://help.heroku.com/tickets/560930
