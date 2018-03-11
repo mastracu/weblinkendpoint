@@ -29,7 +29,7 @@ let hellolabel = "
 ^PW609
 ^LL0811
 ^LS0
-^FT373,536^A0I,28,28^FH\^FDCiao da Heroku^FS
+^FT373,536^A0I,28,28^FH\^FDHeroku-hosted SUAVE-F# APP^FS
 ^PQ1,1,1,Y^XZ"
 
 
@@ -144,7 +144,6 @@ let ws (logAgent:PrinterMsgAgent) (evt2Printer:IEvent<Unit>) (webSocket : WebSoc
         match jval.TryGetProperty "channel_name" with
         | Some str ->   do logAgent.UpdateWith (sprintf "Channel name: %s" (JsonExtensions.AsString (jval.GetProperty "channel_name")))
                         do pongTimer.Start()
-                        do inbox.Post(Binary, UTF8.bytes hellolabel , true)
                         do evt2Printer |> Observable.subscribe (fun _ -> do logAgent.UpdateWith (sprintf "Printing request")
                                                                          inbox.Post(Binary, UTF8.bytes hellolabel , true)) |> ignore
                         
