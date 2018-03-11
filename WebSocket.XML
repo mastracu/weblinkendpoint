@@ -2,7 +2,7 @@
 <doc>
 <assembly><name>WebSocket</name></assembly>
 <members>
-<member name="M:Program.wsWithErrorHandling(Program.PrinterMsgAgent,Microsoft.FSharp.Control.FSharpEvent{System.Tuple{Suave.WebSocketUM.Opcode,System.Byte[],System.Boolean}},Suave.WebSocketUM.WebSocket,Suave.Http.HttpContext)">
+<member name="M:Program.wsWithErrorHandling(Program.PrinterMsgAgent,Microsoft.FSharp.Control.IEvent{Microsoft.FSharp.Control.FSharpHandler{Microsoft.FSharp.Core.Unit},Microsoft.FSharp.Core.Unit},Suave.WebSocketUM.WebSocket,Suave.Http.HttpContext)">
 <summary>
  An example of explictly fetching websocket errors and handling them in your codebase.
 </summary>

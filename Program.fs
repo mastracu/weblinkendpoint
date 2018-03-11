@@ -21,7 +21,7 @@ open Suave.Sockets.Control
 open Suave.WebSocketUM
 
 
-let hellolabel = @"
+let hellolabel = "
 CT~~CD,~CC^~CT~
 ^XA~TA000~JSN^LT0^MNW^MTT^PON^PMN^LH0,0^JMA^PR3,3~SD17^JUS^LRN^CI0^XZ
 ^XA
@@ -77,7 +77,7 @@ let config =
                     else HttpBinding.create HTTP ipZero (uint16 port)) ] }
 
 
-let ws (logAgent:PrinterMsgAgent) (evt2Printer:Event<Opcode * byte [] * bool>) (webSocket : WebSocket) (context: HttpContext) =
+let ws (logAgent:PrinterMsgAgent) (evt2Printer:IEvent<Unit>) (webSocket : WebSocket) (context: HttpContext) =
 
   let inbox = MailboxProcessor.Start (fun inbox -> async {
             let close = ref false
@@ -96,7 +96,6 @@ let ws (logAgent:PrinterMsgAgent) (evt2Printer:Event<Opcode * byte [] * bool>) (
     let pongTimer = new System.Timers.Timer(float 20000)
     do pongTimer.AutoReset <- true
     let pongTimeoutEvent = pongTimer.Elapsed
-    do pongTimer.Start()
     do pongTimeoutEvent |> Observable.subscribe (fun _ -> do inbox.Post (Pong, [||] , true)) |> ignore
 
     do logAgent.UpdateWith "About to enter websocket read loop"
@@ -138,11 +137,14 @@ let ws (logAgent:PrinterMsgAgent) (evt2Printer:Event<Opcode * byte [] * bool>) (
         let jval = JsonValue.Parse str
         match jval.TryGetProperty "discovery_b64" with
         | Some str ->   do logAgent.UpdateWith "discovery_b64 property received. I am on main channel"
+                        do pongTimer.Start()
                         inbox.Post(Binary, UTF8.bytes """ { "open" : "v1.raw.zebra.com" } """, true)
         | None -> ()
+
         match jval.TryGetProperty "channel_name" with
         | Some str ->   do logAgent.UpdateWith (sprintf "Channel name: %s" (JsonExtensions.AsString (jval.GetProperty "channel_name")))
-                        inbox.Post(Binary, UTF8.bytes hellolabel , true)
+                        do evt2Printer |> Observable.subscribe (fun _ -> inbox.Post(Binary, UTF8.bytes hellolabel , true)) |> ignore
+                        
         | None -> ()
 
       | (Ping, data, true) ->
@@ -189,13 +191,18 @@ let wsWithErrorHandling (mAgent:PrinterMsgAgent) inbox (webSocket : WebSocket) (
     return successOrError
    }
 
-let app (mLogAgent:PrinterMsgAgent) toSendtoPrinter : WebPart = 
+let app  : WebPart = 
+  let mLogAgent = new PrinterMsgAgent()
+  let evtPrint = new Event<Unit>()
+  let toSendtoPrinter = evtPrint.Publish
+
   choose [
     path "/websocket" >=> handShake (ws mLogAgent toSendtoPrinter)
     path "/websocketWithSubprotocol" >=> handShakeWithSubprotocol (chooseSubprotocol "v1.weblink.zebra.com") (ws mLogAgent toSendtoPrinter)
     path "/websocketWithError" >=> handShake (wsWithErrorHandling mLogAgent toSendtoPrinter)
     GET >=> choose 
         [ path "/hello" >=> OK "Hello GET"
+          path "/hellolabel" >=>  warbler (fun ctx -> evtPrint.Trigger(); OK ("Triggered"))
           path "/logdump" >=> warbler (fun ctx -> OK ( mLogAgent.DumpDevicesState() ))
           path "/clearlog" >=> warbler (fun ctx -> OK ( mLogAgent.Empty(); "Log cleared" ))
           browseHome ]
@@ -205,9 +212,7 @@ let app (mLogAgent:PrinterMsgAgent) toSendtoPrinter : WebPart =
 
 [<EntryPoint>]
 let main _ =
-  let logAgent = new PrinterMsgAgent()
-  let toSendtoPrinter = new Event<Opcode * byte [] * bool>()
 
-  startWebServer config (app logAgent toSendtoPrinter)
+  startWebServer config app
   0
 
