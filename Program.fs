@@ -88,6 +88,8 @@ let ws (logAgent:PrinterMsgAgent) (evt2Printer:Event<Opcode * byte [] * bool>) (
     do pongTimer.Start()
     do pongTimeoutEvent |> Observable.subscribe (fun _ -> do inbox.Post (Pong, [||] , true)) |> ignore
 
+    do logAgent.UpdateWith "About to enter websocket read loop"
+
     // if `loop` is set to false, the server will stop receiving messages
     let mutable loop = true
     while loop do
@@ -124,7 +126,11 @@ let ws (logAgent:PrinterMsgAgent) (evt2Printer:Event<Opcode * byte [] * bool>) (
         do logAgent.UpdateWith response
         let jval = JsonValue.Parse str
         match jval.TryGetProperty "discovery_b64" with
-        | Some str -> do logAgent.UpdateWith "discovery_b64 property received. I am on main channel"
+        | Some str ->   do logAgent.UpdateWith "discovery_b64 property received. I am on main channel"
+                        inbox.Post(Binary, UTF8.bytes """ { "open" : "v1.raw.zebra.com" } """, true)
+        | None -> ()
+        match jval.TryGetProperty "channel_name" with
+        | Some str ->   do logAgent.UpdateWith (sprintf "Channel name: %s" (JsonExtensions.AsString (jval.GetProperty "channel_name")))
         | None -> ()
 
       | (Ping, data, true) ->
