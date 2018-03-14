@@ -210,10 +210,11 @@ let app  : WebPart =
           path "/hellolabel" >=>  warbler (fun ctx -> evtPrint.Trigger(hellolabel); OK ("Triggered"))
           path "/logdump" >=> warbler (fun ctx -> OK ( mLogAgent.DumpDevicesState() ))
           path "/clearlog" >=> warbler (fun ctx -> OK ( mLogAgent.Empty(); "Log cleared" ))
+          path "/pricequery" >=> warbler (fun ctx -> OK ( "321" ))
           browseHome ]
     POST >=> choose
         [ path "/hello" >=> OK "Hello POST"
-          path "/submitprice" >=> OK "Submitprice received" ]
+          path "/submitprice" >=> OK "New price succesfully submitted" ]
         // aggiungi POST "/printlabel" evtPrint.Trigger(body of POST)
     NOT_FOUND "Found no handlers." ]
 
