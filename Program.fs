@@ -213,7 +213,7 @@ let app  : WebPart =
           browseHome ]
     POST >=> choose
         [ path "/hello" >=> OK "Hello POST"
-          path "submitprice" >=> OK "Submitprice received" ]
+          path "/submitprice" >=> OK "Submitprice received" ]
         // aggiungi POST "/printlabel" evtPrint.Trigger(body of POST)
     NOT_FOUND "Found no handlers." ]
 
