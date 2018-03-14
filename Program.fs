@@ -67,6 +67,32 @@ type PrinterMsgAgent() =
     member this.UpdateWith re = printerMsgMailboxProcessor.Post(UpdateWith re)
     member this.DumpDevicesState() = printerMsgMailboxProcessor.PostAndReply((fun reply -> DumpDevicesState reply), timeout = 2000)
 
+type PriceAgentMsg = 
+    | Exit
+    | UpdatePrice of String
+    | GetPrice  of AsyncReplyChannel<String>
+
+type PriceAgent() =
+    let priceMailboxProcessor =
+        MailboxProcessor.Start(fun inbox ->
+            let rec priceAgentLoop itemprice =
+                async { let! msg = inbox.Receive()
+                        match msg with
+                        | Exit -> return ()
+                        | UpdatePrice itemprice -> return! priceAgentLoop (itemprice)
+                        | GetPrice replyChannel -> 
+                            replyChannel.Reply itemprice
+                            return! priceAgentLoop itemprice
+                      }
+            priceAgentLoop "1"
+        )
+    member this.UpdatePrice re = match re with 
+                                 | None -> ()
+                                 | Some s -> priceMailboxProcessor.Post(UpdatePrice s)
+
+    member this.Exit() = priceMailboxProcessor.Post(Exit)
+    member this.GetPrice() = priceMailboxProcessor.PostAndReply((fun reply -> GetPrice reply), timeout = 2000)
+
 let config = 
     let port = System.Environment.GetEnvironmentVariable("PORT")
     let ip127  = IPAddress.Parse("127.0.0.1")
@@ -198,8 +224,12 @@ let wsWithErrorHandling (mAgent:PrinterMsgAgent) inbox (webSocket : WebSocket) (
 
 let app  : WebPart = 
   let mLogAgent = new PrinterMsgAgent()
+  let priceAgent = new PriceAgent()
   let evtPrint = new Event<string>()
   let toSendtoPrinter = evtPrint.Publish
+
+  let pricejson(priceAgent:PriceAgent) = 
+     """{ "ciccio": " """ + priceAgent.GetPrice() + """ " }"""
 
   choose [
     path "/websocket" >=> handShake (ws mLogAgent toSendtoPrinter)
@@ -210,12 +240,12 @@ let app  : WebPart =
           path "/hellolabel" >=>  warbler (fun ctx -> evtPrint.Trigger(hellolabel); OK ("Triggered"))
           path "/logdump" >=> warbler (fun ctx -> OK ( mLogAgent.DumpDevicesState() ))
           path "/clearlog" >=> warbler (fun ctx -> OK ( mLogAgent.Empty(); "Log cleared" ))
-          path "/pricequery" >=> warbler (fun ctx -> OK ( """{ "ciccio": "321" }""" ))
+          path "/pricequery" >=> warbler (fun ctx -> OK ( pricejson (priceAgent) ))
           browseHome ]
     POST >=> choose
         [ path "/hello" >=> OK "Hello POST"
           // path "/submitprice" >=>  warbler (priceProcessor)
-          path "/submitprice" >=>  request (fun r -> OK (sprintf "Succesfully submitted %A" r.form.Head)) ]
+          path "/submitprice" >=>  request (fun r -> priceAgent.UpdatePrice(snd r.form.Head); OK (sprintf "Price Succesfully submitted")) ]
         // aggiungi POST "/printlabel" evtPrint.Trigger(body of POST)
     NOT_FOUND "Found no handlers." ]
 
