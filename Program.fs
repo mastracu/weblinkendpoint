@@ -229,7 +229,8 @@ let app  : WebPart =
   let toSendtoPrinter = evtPrint.Publish
 
   let pricejson(priceAgent:PriceAgent) = 
-     """{ "unitprice": \u0022""" + priceAgent.GetPrice() + """" }"""
+     let prefix = @"{ ""unitprice"": """
+     prefix + priceAgent.GetPrice() + """" }"""
 
   choose [
     path "/websocket" >=> handShake (ws mLogAgent toSendtoPrinter)
