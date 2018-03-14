@@ -229,7 +229,7 @@ let app  : WebPart =
   let toSendtoPrinter = evtPrint.Publish
 
   let pricejson(priceAgent:PriceAgent) = 
-     """{ "ciccio": " """ + priceAgent.GetPrice() + """ " }"""
+     """{ "unitprice": \u0022""" + priceAgent.GetPrice() + """" }"""
 
   choose [
     path "/websocket" >=> handShake (ws mLogAgent toSendtoPrinter)
@@ -245,7 +245,7 @@ let app  : WebPart =
     POST >=> choose
         [ path "/hello" >=> OK "Hello POST"
           // path "/submitprice" >=>  warbler (priceProcessor)
-          path "/submitprice" >=>  request (fun r -> priceAgent.UpdatePrice(snd r.form.Head); OK (sprintf "Price Succesfully submitted")) ]
+          path "/submitprice" >=>  request (fun r -> priceAgent.UpdatePrice(snd r.form.Head); OK (sprintf "Price change succesfully submitted")) ]
         // aggiungi POST "/printlabel" evtPrint.Trigger(body of POST)
     NOT_FOUND "Found no handlers." ]
 

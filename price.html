@@ -14,7 +14,7 @@
     function processRequest(e) {
         if (xhr.readyState == 4 && xhr.status == 200) {
             var response = JSON.parse(xhr.responseText);
-            document.forms['modulo']['prezzo'].value = response.ciccio;
+            document.forms['modulo']['prezzo'].value = response.unitprice;
         }
     }
 </script>
