@@ -32,6 +32,19 @@ let hellolabel = "
 ^FT373,536^A0I,28,28^FH\^FDHeroku-hosted SUAVE-F# APP^FS
 ^PQ1,1,1,Y^XZ"
 
+[<DataContract>]
+type ItemPrice =
+   { 
+      [<field: DataMember(Name = "prezzo")>]
+      priceTAg : string;
+   }
+
+let priceProcessor func:WebPart = 
+   mapJson (fun (itemPrice:ItemPrice) -> 
+                        // registra il nuovo prezzo
+                        // 
+                        itemPrice)
+
 
 //TODO: https://github.com/SuaveIO/suave/issues/307
    
@@ -214,7 +227,7 @@ let app  : WebPart =
           browseHome ]
     POST >=> choose
         [ path "/hello" >=> OK "Hello POST"
-          path "/submitprice" >=> OK "New price succesfully submitted" ]
+          path "/submitprice" >=>  warbler (priceProcessor) ]
         // aggiungi POST "/printlabel" evtPrint.Trigger(body of POST)
     NOT_FOUND "Found no handlers." ]
 
