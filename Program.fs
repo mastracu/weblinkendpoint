@@ -228,7 +228,7 @@ let app  : WebPart =
     POST >=> choose
         [ path "/hello" >=> OK "Hello POST"
           // path "/submitprice" >=>  warbler (priceProcessor)
-          path "/submitprice" >=>  request (fun r -> OK (sprintf "%A" r.form)) ]
+          path "/submitprice" >=>  request (fun r -> OK (sprintf "Succesfully submitted %A" r.form.Head)) ]
         // aggiungi POST "/printlabel" evtPrint.Trigger(body of POST)
     NOT_FOUND "Found no handlers." ]
 
