@@ -212,7 +212,8 @@ let app  : WebPart =
           path "/clearlog" >=> warbler (fun ctx -> OK ( mLogAgent.Empty(); "Log cleared" ))
           browseHome ]
     POST >=> choose
-        [ path "/hello" >=> OK "Hello POST" ]
+        [ path "/hello" >=> OK "Hello POST"
+          path "submitprice" >=> OK "Submitprice received" ]
         // aggiungi POST "/printlabel" evtPrint.Trigger(body of POST)
     NOT_FOUND "Found no handlers." ]
 
