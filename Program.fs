@@ -188,7 +188,9 @@ let ws (logAgent:PrinterMsgAgent) (evt2Printer:PrintEventClass) (webSocket : Web
 
         match jval.TryGetProperty "alert" with
         | Some jsonalertval ->   match (jsonalertval.GetProperty "condition_id").AsString() with
-                                 | "SGD SET" -> evt2Printer.TriggerEvent helloLabel
+                                 | "SGD SET" -> let barcode = (jsonalertval.GetProperty "setting_value").AsString()
+                                                do logAgent.UpdateWith (sprintf "Barcode: %s" barcode)       
+                                                evt2Printer.TriggerEvent helloLabel
                                  | _ -> ()
         | None -> ()
 
