@@ -2,11 +2,6 @@
 <doc>
 <assembly><name>WebSocket</name></assembly>
 <members>
-<member name="M:Program.wsWithErrorHandling(Program.PrinterMsgAgent,Program.PrintEventClass,Suave.WebSocketUM.WebSocket,Suave.Http.HttpContext)">
-<summary>
- An example of explictly fetching websocket errors and handling them in your codebase.
-</summary>
-</member>
 <member name="M:Suave.Utils.YoLo.AsyncBuilder.Bind``1(Microsoft.FSharp.Control.FSharpAsyncBuilder,System.Threading.Tasks.Task,Microsoft.FSharp.Core.FSharpFunc{Microsoft.FSharp.Core.Unit,Microsoft.FSharp.Control.FSharpAsync{``0}})">
 <summary>
  An extension method that overloads the standard &apos;Bind&apos; of the &apos;async&apos; builder. The new overload awaits on

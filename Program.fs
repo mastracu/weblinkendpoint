@@ -111,7 +111,7 @@ let config =
                     else HttpBinding.create HTTP ipZero (uint16 port)) ] }
 
 
-let ws (logAgent:PrinterMsgAgent) (evt2Printer:PrintEventClass) (webSocket : WebSocket) (context: HttpContext) =
+let ws (logAgent:PrinterMsgAgent) (evt2Printer:PrintEventClass) (priceAgent:PriceAgent) (webSocket : WebSocket) (context: HttpContext) =
 
   let inbox = MailboxProcessor.Start (fun inbox -> async {
             let close = ref false
@@ -189,7 +189,8 @@ let ws (logAgent:PrinterMsgAgent) (evt2Printer:PrintEventClass) (webSocket : Web
         match jval.TryGetProperty "alert" with
         | Some jsonalertval ->   match (jsonalertval.GetProperty "condition_id").AsString() with
                                  | "SGD SET" -> let barcode = (jsonalertval.GetProperty "setting_value").AsString()
-                                                do logAgent.UpdateWith (sprintf "Barcode: %s" barcode)       
+                                                let price = priceAgent.GetPrice()
+                                                do logAgent.UpdateWith (sprintf "Barcode: %s Price: %s" barcode price)       
                                                 evt2Printer.TriggerEvent helloLabel
                                  | _ -> ()
         | None -> ()
@@ -218,25 +219,6 @@ let ws (logAgent:PrinterMsgAgent) (evt2Printer:PrintEventClass) (webSocket : Web
  }
 
 
-/// An example of explictly fetching websocket errors and handling them in your codebase.
-let wsWithErrorHandling (mAgent:PrinterMsgAgent) inbox (webSocket : WebSocket) (context: HttpContext) = 
-   
-   let exampleDisposableResource = { new IDisposable with member __.Dispose() = printfn "Resource needed by websocket connection disposed" }
-   let websocketWorkflow = ws mAgent inbox webSocket context
-   
-   async {
-    let! successOrError = websocketWorkflow
-    match successOrError with
-    // Success case
-    | Choice1Of2() -> ()
-    // Error case
-    | Choice2Of2(error) ->
-        // Example error handling logic here
-        do mAgent.UpdateWith (sprintf "Error: [%A]" error)
-        exampleDisposableResource.Dispose()
-        
-    return successOrError
-   }
 
 let app  : WebPart = 
   let mLogAgent = new PrinterMsgAgent()
@@ -249,9 +231,7 @@ let app  : WebPart =
      prefix + priceAgent.GetPrice() + """" }"""
 
   choose [
-    path "/websocket" >=> handShake (ws mLogAgent evtPrint)
-    path "/websocketWithSubprotocol" >=> handShakeWithSubprotocol (chooseSubprotocol "v1.weblink.zebra.com") (ws mLogAgent evtPrint)
-    path "/websocketWithError" >=> handShake (wsWithErrorHandling mLogAgent evtPrint)
+    path "/websocketWithSubprotocol" >=> handShakeWithSubprotocol (chooseSubprotocol "v1.weblink.zebra.com") (ws mLogAgent evtPrint priceAgent)
     GET >=> choose 
         [ path "/hello" >=> OK "Hello GET"
           path "/hellolabel" >=>  warbler (fun ctx -> evtPrint.TriggerEvent(helloLabel); OK ("Triggered"))
