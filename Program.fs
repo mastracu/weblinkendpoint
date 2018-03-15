@@ -21,7 +21,7 @@ open Suave.Sockets.Control
 open Suave.WebSocketUM
 
 
-let hellolabel = "
+let helloLabel = "
 CT~~CD,~CC^~CT~
 ^XA~TA000~JSN^LT0^MNW^MTT^PON^PMN^LH0,0^JMA^PR3,3~SD17^JUS^LRN^CI0^XZ
 ^XA
@@ -34,7 +34,15 @@ let hellolabel = "
 
 
 //TODO: https://github.com/SuaveIO/suave/issues/307
+
+type PrintEventClass() =
+   let event1 = new Event<String>()
    
+   member this.Event1 = event1.Publish
+   member this.TriggerEvent (str) =
+      event1.Trigger str
+
+         
 type DumpAgentMsg = 
     | Exit
     | Reset
@@ -103,7 +111,7 @@ let config =
                     else HttpBinding.create HTTP ipZero (uint16 port)) ] }
 
 
-let ws (logAgent:PrinterMsgAgent) (evt2Printer:IEvent<string>) (webSocket : WebSocket) (context: HttpContext) =
+let ws (logAgent:PrinterMsgAgent) (evt2Printer:PrintEventClass) (webSocket : WebSocket) (context: HttpContext) =
 
   let inbox = MailboxProcessor.Start (fun inbox -> async {
             let close = ref false
@@ -163,19 +171,25 @@ let ws (logAgent:PrinterMsgAgent) (evt2Printer:IEvent<string>) (webSocket : WebS
         do logAgent.UpdateWith response
         let jval = JsonValue.Parse str
         match jval.TryGetProperty "discovery_b64" with
-        | Some str ->   do logAgent.UpdateWith "discovery_b64 property received. I am on main channel"
+        | Some str ->   do logAgent.UpdateWith "discovery_b64 property received. On main channel"
                         inbox.Post(Binary, UTF8.bytes """ { "configure_alert" : "ALL MESSAGES,SDK,Y,Y,,,N,|SGD SET,SDK,Y,Y,,,N,capture.channel1.data.raw" } """, true)
                         inbox.Post(Binary, UTF8.bytes """ { "open" : "v1.raw.zebra.com" } """, true)
         | None -> ()
 
         match jval.TryGetProperty "channel_name" with
-        | Some str ->   let chanid = JsonExtensions.AsString (jval.GetProperty "channel_name")
-                        do logAgent.UpdateWith (sprintf "Channel name: %s" chanid)
-                        if chanid = "v1.raw.zebra.com" then
-                           do evt2Printer |> Observable.subscribe (fun lbl -> do logAgent.UpdateWith (sprintf "Printing request")
-                                                                              inbox.Post(Binary, UTF8.bytes lbl , true)) |> ignore
-                        else
-                           ()
+        | Some jsonval ->   let chanid = JsonExtensions.AsString (jsonval)
+                            do logAgent.UpdateWith (sprintf "Channel name: %s" chanid)
+                            if chanid = "v1.raw.zebra.com" then
+                               do evt2Printer.Event1 |> Observable.subscribe (fun lbl -> do logAgent.UpdateWith (sprintf "Printing request")
+                                                                                         inbox.Post(Binary, UTF8.bytes lbl , true)) |> ignore
+                            else 
+                               ()
+        | None -> ()
+
+        match jval.TryGetProperty "alert" with
+        | Some jsonalertval ->   match (jsonalertval.GetProperty "condition_id").AsString() with
+                                 | "SGD SET" -> evt2Printer.TriggerEvent helloLabel
+                                 | _ -> ()
         | None -> ()
 
       | (Ping, data, true) ->
@@ -189,7 +203,7 @@ let ws (logAgent:PrinterMsgAgent) (evt2Printer:IEvent<string>) (webSocket : WebS
         do inbox.Post (Pong, data, true)
 
       | (Close, _, _) ->
-        do logAgent.UpdateWith "Close message from printer!"
+        do logAgent.UpdateWith "Got Close message from printer!"
         do inbox.Post (Close, [||], true)
 
         // after sending a Close message, stop the loop
@@ -197,7 +211,7 @@ let ws (logAgent:PrinterMsgAgent) (evt2Printer:IEvent<string>) (webSocket : WebS
         do pongTimer.Stop()
 
       | (_,_,fi) -> 
-        do logAgent.UpdateWith (sprintf "Unexpected messagefrom printer of type %A" fi)
+        do logAgent.UpdateWith (sprintf "Unexpected message from printer of type %A" fi)
     
  }
 
@@ -225,27 +239,26 @@ let wsWithErrorHandling (mAgent:PrinterMsgAgent) inbox (webSocket : WebSocket) (
 let app  : WebPart = 
   let mLogAgent = new PrinterMsgAgent()
   let priceAgent = new PriceAgent()
-  let evtPrint = new Event<string>()
-  let toSendtoPrinter = evtPrint.Publish
-
+  let evtPrint = new PrintEventClass()
+  let toSendtoPrinter = evtPrint.Event1
+  
   let pricejson(priceAgent:PriceAgent) = 
      let prefix = @"{ ""unitprice"": """
      prefix + priceAgent.GetPrice() + """" }"""
 
   choose [
-    path "/websocket" >=> handShake (ws mLogAgent toSendtoPrinter)
-    path "/websocketWithSubprotocol" >=> handShakeWithSubprotocol (chooseSubprotocol "v1.weblink.zebra.com") (ws mLogAgent toSendtoPrinter)
-    path "/websocketWithError" >=> handShake (wsWithErrorHandling mLogAgent toSendtoPrinter)
+    path "/websocket" >=> handShake (ws mLogAgent evtPrint)
+    path "/websocketWithSubprotocol" >=> handShakeWithSubprotocol (chooseSubprotocol "v1.weblink.zebra.com") (ws mLogAgent evtPrint)
+    path "/websocketWithError" >=> handShake (wsWithErrorHandling mLogAgent evtPrint)
     GET >=> choose 
         [ path "/hello" >=> OK "Hello GET"
-          path "/hellolabel" >=>  warbler (fun ctx -> evtPrint.Trigger(hellolabel); OK ("Triggered"))
+          path "/hellolabel" >=>  warbler (fun ctx -> evtPrint.TriggerEvent(helloLabel); OK ("Triggered"))
           path "/logdump" >=> warbler (fun ctx -> OK ( mLogAgent.DumpDevicesState() ))
           path "/clearlog" >=> warbler (fun ctx -> OK ( mLogAgent.Empty(); "Log cleared" ))
           path "/pricequery" >=> warbler (fun ctx -> OK ( pricejson (priceAgent) ))
           browseHome ]
     POST >=> choose
         [ path "/hello" >=> OK "Hello POST"
-          // path "/submitprice" >=>  warbler (priceProcessor)
           path "/submitprice" >=>  request (fun r -> priceAgent.UpdatePrice(snd r.form.Head); OK (sprintf "Price change succesfully submitted")) ]
         // aggiungi POST "/printlabel" evtPrint.Trigger(body of POST)
     NOT_FOUND "Found no handlers." ]
