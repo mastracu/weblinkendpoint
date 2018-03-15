@@ -39,17 +39,13 @@ let buildpricetag barcode price =
         ^PW609
         ^LL0240
         ^LS0
-        ^FO416,0^GFA,01152,01152,00012,:Z64:
-        eJzN0rFqwzAQAFC5hl4HU3X0IKJ8QbNqKE7/oL/Q/oHAq6GCDllKvyOfEU9ZXPIDLXYwNFuirR5MqCG+0w1dS3pgeD6kk+5sIc4Yl8ywIl4xF8wZNGQdfCEXZIA1rYeXXXD5TVvj5kiO/HOo38098qYITu8MLVHK3KPnyjzSdZSxdNaHyZtfLHpjl8ysvnfooQ5eaJIYi3s1s3TGt+MLrIzdeuzL2LbDvoZ8j31lQqOLSXA2cxKtQUCHBywcGUrqXcRbR458yIuOuWDOmDWzDHUEsHzM8hHLCyfOEdPp8JwoD/VD2ZysN/UBZx5VqnrC+b+l+xwt6yofvzDIetOOvxAk6n09juv2Ot3veqz5WX0pqv96TP6op/8WP1NmZUE=:9719
-        ^FO96,0^GFA,00768,00768,00008,:Z64:
-        eJy10LFKxEAQBuA5Iq7F4bYnxMsrHKQwRcjim5z4AgtXaLHcRgRt9BV8BksrCUYI2NwLCC7uC2yZLs7ObGOtN83H7JA/swvw51okc2bdELNQsCMLhj1q2Lxgl/KJLMQnKW9HUtxMZOamNnoepo7iwzeda/1GjtrT3Oie5kvtXylP91+UE/xHS/bvsb8I/o7U/RC91n7Hct+Av5cxB/ohKlu/k5gsWj9EMxdgcvF+GqyLC9TUg6nBxg1MDir+sDjge8sHVnRslpyF9G5j0iTr3+8J82TK++9qGTWZWqBWWSXx7HC1KQV6XF2Wj+jc2vIUXeD8pENXm6ZAXyqvlMPv7NVZhW7Vtnxe72fVPdQPPV1dAw==:C77A
         ^FT176,49^A0N,28,50^FB236,1,0,C^FH\^FDZebra Store^FS
         ^BY3,3,41^FT156,210^BCN,,Y,N
         ^FD>;KKKKKKKKKK^FS
         ^FT280,148^A0N,28,28^FH\^FDZZZZ\15 al pezzo^FS
         ^FT189,148^A0N,28,28^FH\^FDPrezzo:^FS
-        ^FT280,111^A0N,28,28^FH\^FDScatola di Scanner^FS
-        ^FT167,111^A0N,28,28^FH\^FDprodotto:^FS
+        ^FT270,111^A0N,28,28^FH\^FDScatola di Scanner^FS
+        ^FT157,111^A0N,28,28^FH\^FDprodotto:^FS
         ^PQ1,0,1,Y^XZ
         "
     let labelwithprice = String.replace "ZZZZ" price baselabel
