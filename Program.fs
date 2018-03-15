@@ -135,7 +135,7 @@ let ws (logAgent:PrinterMsgAgent) (evt2Printer:PrintEventClass) (priceAgent:Pric
             let close = ref false
             while not !close do
                 let! op, data, fi = inbox.Receive()
-                do logAgent.UpdateWith (sprintf "Sending message to printer of type %A" op)
+                // do logAgent.UpdateWith (sprintf "Sending message to printer of type %A" op)
                 let! _ = webSocket.send op (data|> ByteSegment) fi
                 close := op = Close                    
         })
