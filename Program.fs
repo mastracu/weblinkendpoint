@@ -260,7 +260,7 @@ let app  : WebPart =
     POST >=> choose
         [ path "/hello" >=> OK "Hello POST"
           path "/submitprice" >=>  request (fun r -> priceAgent.UpdatePrice(snd r.form.Head); OK (sprintf "Price change succesfully submitted")) 
-          path "/pricetablechange" >=>  request (fun r -> mLogAgent.UpdateWith ((r.rawForm).ToString()); OK (sprintf "Price change succesfully submitted")) ]
+          path "/pricetablechange" >=>  request (fun r -> mLogAgent.UpdateWith (r.form.ToString()); OK (sprintf "Price change succesfully submitted")) ]
         // aggiungi POST "/printlabel" evtPrint.Trigger(body of POST)
     NOT_FOUND "Found no handlers." ]
 
