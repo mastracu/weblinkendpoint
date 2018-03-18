@@ -259,7 +259,7 @@ let app  : WebPart =
           browseHome ]
     POST >=> choose
         [ path "/hello" >=> OK "Hello POST"
-          path "/submitprice" >=>  request (fun r -> priceAgent.UpdatePrice(snd r.form.Head); OK (sprintf "Price change succesfully submitted")) ]
+          path "/submitprice" >=>  request (fun r -> priceAgent.UpdatePrice(snd r.form.Head); OK (sprintf "Price change succesfully submitted")) 
           path "/pricetablechange" >=>  request (fun r -> OK (sprintf "Price change succesfully submitted")) ]
         // aggiungi POST "/printlabel" evtPrint.Trigger(body of POST)
     NOT_FOUND "Found no handlers." ]
