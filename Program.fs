@@ -94,8 +94,9 @@ type StoreAgentMsg =
     | IsKnownSKU of String * AsyncReplyChannel<Boolean>
     | StoreInventory  of AsyncReplyChannel<String>
 
+[<DataContract>]
 type Store = 
-   { ProductList : Product list } 
+   { [<field: DataMember(Name = "productInStore")>] ProductList : Product list } 
    static member Empty = {ProductList = [] }
    member x.IsKnownSKU address = 
       List.exists (fun prod -> prod.sku = address) x.ProductList
