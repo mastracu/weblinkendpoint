@@ -120,7 +120,7 @@ type StoreAgent() =
                             replyChannel.Reply (store.IsKnownSKU addr)
                             return! storeAgentLoop store
                         | StoreInventory replyChannel -> 
-                            replyChannel.Reply (json<Store> store)
+                            replyChannel.Reply (json<Product array> (List.toArray store.ProductList))
                             return! storeAgentLoop store
                       }
             // storeAgentLoop Store.Empty
