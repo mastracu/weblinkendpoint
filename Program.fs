@@ -20,6 +20,15 @@ open Suave.Sockets
 open Suave.Sockets.Control
 open Suave.WebSocketUM
 
+open System.IO
+open System.Xml
+open System.Text
+
+/// Object to Json 
+let internal json<'t> (myObj:'t) =   
+        use ms = new MemoryStream() 
+        (new Json.DataContractJsonSerializer(typeof<'t>)).WriteObject(ms, myObj) 
+        Encoding.Default.GetString(ms.ToArray()) 
 
 let helloLabel = "
 CT~~CD,~CC^~CT~
@@ -59,6 +68,70 @@ type PrintEventClass() =
    member this.Event1 = event1.Publish
    member this.TriggerEvent (str) =
       event1.Trigger str
+
+[<DataContract>]
+type Product =
+   { 
+      [<field: DataMember(Name = "sku")>]
+      sku : string;
+      [<field: DataMember(Name = "description")>]
+      description : string;
+      [<field: DataMember(Name = "unitPrice")>]
+      unitPrice : int64;
+      [<field: DataMember(Name = "eanCode")>]
+      eanCode : string;
+   }
+
+let rec productUpdate prod list =
+      match list with
+      | [] -> []
+      | prodHead :: xs -> if prodHead.sku = prod.sku then prod :: xs else (prodHead :: productUpdate prod xs)
+
+type StoreAgentMsg = 
+    | Exit
+    | Clear
+    | ProductUpdate of Product
+    | IsKnownSKU of String * AsyncReplyChannel<Boolean>
+    | StoreInventory  of AsyncReplyChannel<String>
+
+type Store = 
+   { ProductList : Product list } 
+   static member Empty = {ProductList = [] }
+   member x.IsKnownSKU address = 
+      List.exists (fun prod -> prod.sku = address) x.ProductList
+   member x.ProductUpdate prod =  
+      { ProductList = 
+          if x.IsKnownSKU prod.sku then
+              productUpdate prod x.ProductList
+          else
+              prod :: x.ProductList}
+
+type StoreAgent() =
+    let locationAgentMailboxProcessor =
+        MailboxProcessor.Start(fun inbox ->
+            let rec storeAgentLoop store =
+                async { let! msg = inbox.Receive()
+                        match msg with
+                        | Exit -> return ()
+                        | Clear -> return! storeAgentLoop Store.Empty
+                        | ProductUpdate prod -> return! storeAgentLoop (store.ProductUpdate prod)
+                        | IsKnownSKU (addr, replyChannel) -> 
+                            replyChannel.Reply (store.IsKnownSKU addr)
+                            return! storeAgentLoop store
+                        | StoreInventory replyChannel -> 
+                            replyChannel.Reply (json<Store> store)
+                            return! storeAgentLoop store
+                      }
+            // storeAgentLoop Store.Empty
+            let newStore = { ProductList = [ {sku = "9342342"; description = "ciao"; unitPrice = 1213L; eanCode = "454" } ] }
+            storeAgentLoop newStore
+
+        )
+    member this.Exit() = locationAgentMailboxProcessor.Post(Exit)
+    member this.Empty() = locationAgentMailboxProcessor.Post(Clear)
+    member this.UpdateWith prod = locationAgentMailboxProcessor.Post(ProductUpdate prod)
+    member this.IsKnownSKU addr = locationAgentMailboxProcessor.PostAndReply((fun reply -> IsKnownSKU(addr,reply)), timeout = 2000)
+    member this.StoreInventory() = locationAgentMailboxProcessor.PostAndReply((fun reply -> StoreInventory reply), timeout = 2000)
 
          
 type DumpAgentMsg = 
@@ -242,6 +315,7 @@ let app  : WebPart =
   let mLogAgent = new PrinterMsgAgent()
   let priceAgent = new PriceAgent()
   let evtPrint = new PrintEventClass()
+  let storeAgent = new StoreAgent()
   let toSendtoPrinter = evtPrint.Event1
   
   let pricejson(priceAgent:PriceAgent) = 
@@ -256,6 +330,7 @@ let app  : WebPart =
           path "/logdump" >=> warbler (fun ctx -> OK ( mLogAgent.DumpDevicesState() ))
           path "/clearlog" >=> warbler (fun ctx -> OK ( mLogAgent.Empty(); "Log cleared" ))
           path "/pricequery" >=> warbler (fun ctx -> OK ( pricejson (priceAgent) ))
+          path "/storeinventory" >=> warbler (fun ctx -> OK ( storeAgent.StoreInventory() ))
           browseHome ]
     POST >=> choose
         [ path "/hello" >=> OK "Hello POST"

@@ -7,3 +7,4 @@
 #r "System.Runtime.Serialization.dll"
 #r "../packages/FSharp.Data.2.4.5/lib/net45/FSharp.Data.dll"
 #r "System.Xml.Linq.dll"
+#r "System.Xml.dll"
