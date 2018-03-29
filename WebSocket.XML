@@ -2,7 +2,7 @@
 <doc>
 <assembly><name>WebSocket</name></assembly>
 <members>
-<member name="M:Program.json``1(``0)">
+<member name="M:StoreAgent.json``1(``0)">
 <summary>
  Object to Json 
 </summary>

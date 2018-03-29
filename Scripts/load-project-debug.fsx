@@ -2,5 +2,6 @@
 #I __SOURCE_DIRECTORY__
 #load "load-references-debug.fsx"
 #load "../YoLo.fs"
+      "../storeagent.fs"
       "../websocketum.fs"
       "../Program.fs"
