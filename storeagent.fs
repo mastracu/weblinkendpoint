@@ -1,7 +1,6 @@
 ﻿module StoreAgent
 
 open System
-open System.Net
 open System.Runtime.Serialization
 
 open System.IO
@@ -69,7 +68,8 @@ type StoreAgent() =
                             return! storeAgentLoop store
                       }
             // storeAgentLoop Store.Empty
-            let newStore = { ProductList = [ {sku = "9342342"; description = "ciao"; unitPrice = 1213L; eanCode = "454" } ] }
+            let newStore = { ProductList = [ {sku = "9342342"; description = "pasta"; unitPrice = 1213L; eanCode = "8901293874" };
+                                             {sku = "9342343"; description = "dough"; unitPrice = 712L; eanCode = "800223231" }  ] }
             storeAgentLoop newStore
 
         )

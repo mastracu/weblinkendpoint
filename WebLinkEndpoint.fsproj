@@ -88,6 +88,8 @@
   <ItemGroup>
     <Compile Include="YoLo.fs" />
     <Compile Include="storeagent.fs" />
+    <Compile Include="priceagent.fs" />
+    <Compile Include="messagelogagent.fs" />
     <Compile Include="websocketum.fs" />
     <Compile Include="Program.fs" />
     <None Include="App.config" />

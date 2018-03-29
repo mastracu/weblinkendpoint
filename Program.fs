@@ -25,6 +25,8 @@ open System.Xml
 open System.Text
 
 open StoreAgent
+open PriceAgent
+open MessageLogAgent
 
 let helloLabel = "
 CT~~CD,~CC^~CT~
@@ -66,64 +68,6 @@ type PrintEventClass() =
       event1.Trigger str
 
          
-type DumpAgentMsg = 
-    | Exit
-    | Reset
-    | UpdateWith of String
-    | DumpDevicesState  of AsyncReplyChannel<String>
-
-type MessageDump = 
-   { DebugLog : String list } 
-   static member Empty = {DebugLog = [] }
-   member x.UpdateWith (msg:String) = 
-      { DebugLog = (string DateTime.Now + " " + msg) :: x.DebugLog }
-
-type PrinterMsgAgent() =
-    let printerMsgMailboxProcessor =
-        MailboxProcessor.Start(fun inbox ->
-            let rec locationAgentLoop msgDump =
-                async { let! msg = inbox.Receive()
-                        match msg with
-                        | Exit -> return ()
-                        | Reset -> return! locationAgentLoop MessageDump.Empty
-                        | UpdateWith newMsg -> return! locationAgentLoop (msgDump.UpdateWith newMsg)
-                        | DumpDevicesState replyChannel -> 
-                            replyChannel.Reply (sprintf "%A" msgDump)
-                            return! locationAgentLoop msgDump
-                      }
-            locationAgentLoop MessageDump.Empty
-        )
-    member this.Exit() = printerMsgMailboxProcessor.Post(Exit)
-    member this.Empty() = printerMsgMailboxProcessor.Post(Reset)
-    member this.UpdateWith re = printerMsgMailboxProcessor.Post(UpdateWith re)
-    member this.DumpDevicesState() = printerMsgMailboxProcessor.PostAndReply((fun reply -> DumpDevicesState reply), timeout = 2000)
-
-type PriceAgentMsg = 
-    | Exit
-    | UpdatePrice of String
-    | GetPrice  of AsyncReplyChannel<String>
-
-type PriceAgent() =
-    let priceMailboxProcessor =
-        MailboxProcessor.Start(fun inbox ->
-            let rec priceAgentLoop itemprice =
-                async { let! msg = inbox.Receive()
-                        match msg with
-                        | Exit -> return ()
-                        | UpdatePrice itemprice -> return! priceAgentLoop (itemprice)
-                        | GetPrice replyChannel -> 
-                            replyChannel.Reply itemprice
-                            return! priceAgentLoop itemprice
-                      }
-            priceAgentLoop "1"
-        )
-    member this.UpdatePrice re = match re with 
-                                 | None -> ()
-                                 | Some s -> priceMailboxProcessor.Post(UpdatePrice s)
-
-    member this.Exit() = priceMailboxProcessor.Post(Exit)
-    member this.GetPrice() = priceMailboxProcessor.PostAndReply((fun reply -> GetPrice reply), timeout = 2000)
-
 let config = 
     let port = System.Environment.GetEnvironmentVariable("PORT")
     let ip127  = IPAddress.Parse("127.0.0.1")
@@ -240,7 +184,6 @@ let ws (logAgent:PrinterMsgAgent) (evt2Printer:PrintEventClass) (priceAgent:Pric
         do logAgent.UpdateWith (sprintf "Unexpected message from printer of type %A" fi)
     
  }
-
 
 
 let app  : WebPart = 
