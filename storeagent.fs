@@ -69,7 +69,8 @@ type StoreAgent() =
                       }
             // storeAgentLoop Store.Empty
             let newStore = { ProductList = [ {sku = "9342342"; description = "pasta"; unitPrice = 1213L; eanCode = "8901293874" };
-                                             {sku = "9342343"; description = "dough"; unitPrice = 712L; eanCode = "800223231" }  ] }
+                                             {sku = "9342343"; description = "dough"; unitPrice = 712L; eanCode = "800223231" };
+                                             {sku = "9342344"; description = "beer"; unitPrice = 493L; eanCode = "72432423" }  ] }
             storeAgentLoop newStore
 
         )
