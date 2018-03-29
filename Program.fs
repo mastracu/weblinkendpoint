@@ -108,7 +108,7 @@ type Store =
               prod :: x.ProductList}
 
 type StoreAgent() =
-    let locationAgentMailboxProcessor =
+    let storeAgentMailboxProcessor =
         MailboxProcessor.Start(fun inbox ->
             let rec storeAgentLoop store =
                 async { let! msg = inbox.Receive()
@@ -128,11 +128,11 @@ type StoreAgent() =
             storeAgentLoop newStore
 
         )
-    member this.Exit() = locationAgentMailboxProcessor.Post(Exit)
-    member this.Empty() = locationAgentMailboxProcessor.Post(Clear)
-    member this.UpdateWith prod = locationAgentMailboxProcessor.Post(ProductUpdate prod)
-    member this.IsKnownSKU addr = locationAgentMailboxProcessor.PostAndReply((fun reply -> IsKnownSKU(addr,reply)), timeout = 2000)
-    member this.StoreInventory() = locationAgentMailboxProcessor.PostAndReply((fun reply -> StoreInventory reply), timeout = 2000)
+    member this.Exit() = storeAgentMailboxProcessor.Post(Exit)
+    member this.Empty() = storeAgentMailboxProcessor.Post(Clear)
+    member this.UpdateWith prod = storeAgentMailboxProcessor.Post(ProductUpdate prod)
+    member this.IsKnownSKU addr = storeAgentMailboxProcessor.PostAndReply((fun reply -> IsKnownSKU(addr,reply)), timeout = 2000)
+    member this.StoreInventory() = storeAgentMailboxProcessor.PostAndReply((fun reply -> StoreInventory reply), timeout = 2000)
 
          
 type DumpAgentMsg = 
