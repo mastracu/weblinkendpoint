@@ -1,6 +1,9 @@
 ﻿module StoreAgent
 
+open FSharp.Data
+
 open System
+open System.Runtime.Serialization.Json
 open System.Runtime.Serialization
 
 open System.IO
@@ -10,8 +13,14 @@ open System.Text
 /// Object to Json 
 let internal json<'t> (myObj:'t) =   
         use ms = new MemoryStream() 
-        (new Json.DataContractJsonSerializer(typeof<'t>)).WriteObject(ms, myObj) 
+        (new DataContractJsonSerializer(typeof<'t>)).WriteObject(ms, myObj) 
         Encoding.Default.GetString(ms.ToArray()) 
+
+/// Object from Json 
+let internal unjson<'t> (jsonString:string)  : 't =  
+        use ms = new MemoryStream(ASCIIEncoding.Default.GetBytes(jsonString)) 
+        let obj = (new DataContractJsonSerializer(typeof<'t>)).ReadObject(ms) 
+        obj :?> 't
 
 [<DataContract>]
 type Product =
@@ -64,10 +73,12 @@ type StoreAgent() =
                             replyChannel.Reply (store.IsKnownSKU addr)
                             return! storeAgentLoop store
                         | StoreInventory replyChannel -> 
-                            replyChannel.Reply (json<Product array> (List.toArray store.ProductList))
+                            replyChannel.Reply (json<Store> store)
                             return! storeAgentLoop store
                       }
             // storeAgentLoop Store.Empty
+            // http://fsharp.github.io/FSharp.Data/library/Http.html
+            let defaultjson = Http.RequestString("http://weblinkendpoint.mastracu.it/defaultinventory.json")
             let newStore = { ProductList = [ {sku = "9342342"; description = "pasta"; unitPrice = 1213L; eanCode = "8901293874" };
                                              {sku = "9342343"; description = "dough"; unitPrice = 712L; eanCode = "800223231" };
                                              {sku = "9342344"; description = "beer"; unitPrice = 493L; eanCode = "72432423" }  ] }
