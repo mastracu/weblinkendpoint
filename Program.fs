@@ -25,7 +25,6 @@ open System.Xml
 open System.Text
 
 open StoreAgent
-open PriceAgent
 open MessageLogAgent
 
 let helloLabel = "
@@ -195,7 +194,6 @@ let ws (logAgent:PrinterMsgAgent) (evt2Printer:PrintEventClass) (storeAgent:Stor
 
 let app  : WebPart = 
   let mLogAgent = new PrinterMsgAgent()
-  let priceAgent = new PriceAgent()
   let evtPrint = new PrintEventClass()
   let storeAgent = new StoreAgent()
   let toSendtoPrinter = evtPrint.Event1

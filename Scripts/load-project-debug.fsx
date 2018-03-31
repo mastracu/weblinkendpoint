@@ -3,7 +3,6 @@
 #load "load-references-debug.fsx"
 #load "../YoLo.fs"
       "../storeagent.fs"
-      "../priceagent.fs"
       "../messagelogagent.fs"
       "../websocketum.fs"
       "../Program.fs"
