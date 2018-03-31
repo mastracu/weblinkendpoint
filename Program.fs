@@ -160,7 +160,7 @@ let ws (logAgent:PrinterMsgAgent) (evt2Printer:PrintEventClass) (storeAgent:Stor
                                                 match maybeProd with
                                                 | Some prod -> 
                                                    let priceString = prod.unitPrice.ToString()
-                                                   do logAgent.UpdateWith (sprintf "Barcode: %s Price: %s" barcode priceString)       
+                                                   do logAgent.UpdateWith (sprintf "Barcode: %s Price: %s Description: %s" barcode priceString prod.description)       
                                                    evt2Printer.TriggerEvent (buildpricetag barcode prod.description priceString)
                                                 | None ->
                                                    do logAgent.UpdateWith (sprintf "Barcode: %s not found in store" barcode)
