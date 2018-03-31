@@ -186,6 +186,7 @@ let ws (logAgent:PrinterMsgAgent) (evt2Printer:PrintEventClass) (priceAgent:Pric
  }
 
 
+
 let app  : WebPart = 
   let mLogAgent = new PrinterMsgAgent()
   let priceAgent = new PriceAgent()
@@ -196,6 +197,11 @@ let app  : WebPart =
   let pricejson(priceAgent:PriceAgent) = 
      let prefix = @"{ ""unitprice"": """
      prefix + priceAgent.GetPrice() + """" }"""
+
+  let productUpdateProcessor func:WebPart = 
+     mapJson (fun (prod:Product) -> 
+                       func prod
+                       prod)
 
   choose [
     path "/websocketWithSubprotocol" >=> handShakeWithSubprotocol (chooseSubprotocol "v1.weblink.zebra.com") (ws mLogAgent evtPrint priceAgent)
@@ -210,7 +216,8 @@ let app  : WebPart =
     POST >=> choose
         [ path "/hello" >=> OK "Hello POST"
           path "/submitprice" >=>  request (fun r -> priceAgent.UpdatePrice(snd r.form.Head); OK (sprintf "Price change succesfully submitted")) 
-          path "/pricetablechange" >=>  request (fun r -> mLogAgent.UpdateWith (r.form.ToString()); OK ("ACK")) ]
+          path "/pricetablechange" >=>  request (fun r -> mLogAgent.UpdateWith (r.form.ToString()); OK ("ACK")) 
+          path "/productupdate" >=> productUpdateProcessor storeAgent.UpdateWith]
         // aggiungi POST "/printlabel" evtPrint.Trigger(body of POST)
     NOT_FOUND "Found no handlers." ]
 

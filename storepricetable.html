@@ -22,9 +22,13 @@
 			        {title:"EAN/UPC code", field:"eanCode", sorter:"number", align:"right"},
 			    ],
 			    cellEdited:function(cell){
-                                var data = cell.getRow().getData();
+				var data = cell.getRow().getData();
 				var myJSON = JSON.stringify(data);
-        			alert ("JSON: " + myJSON );
+				var xhr = new XMLHttpRequest();
+				var url = "productupdate";
+				xhr.open("POST", url, true);
+				xhr.setRequestHeader("Content-type", "application/json");
+				xhr.send(myJSON);
     			    },
 			});
 
