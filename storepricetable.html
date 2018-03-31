@@ -20,8 +20,8 @@
 	</style>
 	</head>
 	<body>
-		<h1 style="color:red; text-align: center;">Zebra Store Product List</h1>
-        <button class="button">Print price label</button>
+		<h1 style="text-align: center;">Zebra Store Product List</h1>
+        <button id="printlabel-button" class="button">Print price label</button>
 		<div id="example-table"></div>
 		
 		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
@@ -54,7 +54,7 @@
 
 			$("#example-table").tabulator("setData", "storepricelist.json");
 			
-			$("#add-row").click(function(){
+			$("#printlabel-button").click(function(){
     				$("#example-table").tabulator("addRow", {});
 			});
 
