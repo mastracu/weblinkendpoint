@@ -59,8 +59,10 @@
 			    if (selectedData.length == 0) {
 			        alert("No rows selected !")
 			    }
-			    var myJSON = JSON.stringify(selectedData[0]);
-                alert ("Selected row: " + myJSON)
+			    else {
+			        var myJSON = JSON.stringify(selectedData[0]);
+			        alert("Selected row: " + myJSON)
+			    }
 			});
 
 		</script>
