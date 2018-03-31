@@ -39,7 +39,7 @@ let helloLabel = "
 ^FT373,536^A0I,28,28^FH\^FDHeroku-hosted SUAVE-F# APP^FS
 ^PQ1,1,1,Y^XZ"
 
-let buildpricetag barcode price =
+let buildpricetag barcode description price =
     let baselabel = "
         ^XA
         ^MMT
@@ -48,15 +48,16 @@ let buildpricetag barcode price =
         ^LS0
         ^FT176,49^A0N,28,50^FB236,1,0,C^FH\^FDZebra Store^FS
         ^BY3,3,41^FT156,210^BCN,,Y,N
-        ^FD>;KKKKKKKKKK^FS
-        ^FT280,148^A0N,28,28^FH\^FDZZZZ\15 al pezzo^FS
+        ^FD>;BBBBBBBBBBBBB^FS
+        ^FT280,148^A0N,28,28^FH\^FDPPPPPP\15 al pezzo^FS
         ^FT189,148^A0N,28,28^FH\^FDPrezzo:^FS
         ^FT270,111^A0N,28,28^FH\^FDScatola di Scanner^FS
         ^FT157,111^A0N,28,28^FH\^FDprodotto:^FS
         ^PQ1,0,1,Y^XZ
         "
-    let labelwithprice = String.replace "ZZZZ" price baselabel
-    String.replace "KKKKKKKKKK" barcode labelwithprice
+    let labelwithprice = String.replace "PPPPPP" price baselabel
+    let labelwithbarcode = String.replace "BBBBBBBBBBBBB" barcode labelwithprice
+    String.replace "BBBBBBBBBBBBB" description labelwithbarcode
 
 //TODO: https://github.com/SuaveIO/suave/issues/307
 
@@ -161,7 +162,7 @@ let ws (logAgent:PrinterMsgAgent) (evt2Printer:PrintEventClass) (storeAgent:Stor
                                                 | Some prod -> 
                                                    let priceString = prod.unitPrice.ToString()
                                                    do logAgent.UpdateWith (sprintf "Barcode: %s Price: %s" barcode priceString)       
-                                                   evt2Printer.TriggerEvent (buildpricetag barcode priceString)
+                                                   evt2Printer.TriggerEvent (buildpricetag barcode prod.description priceString)
                                                 | None ->
                                                    do logAgent.UpdateWith (sprintf "Barcode: %s not found in store" barcode)
                                  | _ -> ()
@@ -199,10 +200,6 @@ let app  : WebPart =
   let storeAgent = new StoreAgent()
   let toSendtoPrinter = evtPrint.Event1
   
-  let pricejson(priceAgent:PriceAgent) = 
-     let prefix = @"{ ""unitprice"": """
-     prefix + priceAgent.GetPrice() + """" }"""
-
   let productUpdateProcessor func:WebPart = 
      mapJson (fun (prod:Product) -> 
                        func prod
@@ -215,13 +212,10 @@ let app  : WebPart =
           path "/hellolabel" >=>  warbler (fun ctx -> evtPrint.TriggerEvent(helloLabel); OK ("Triggered"))
           path "/logdump" >=> warbler (fun ctx -> OK ( mLogAgent.DumpDevicesState() ))
           path "/clearlog" >=> warbler (fun ctx -> OK ( mLogAgent.Empty(); "Log cleared" ))
-          path "/pricequery" >=> warbler (fun ctx -> OK ( pricejson (priceAgent) ))
           path "/storepricelist.json" >=> warbler (fun ctx -> OK ( storeAgent.StoreInventory() ))
           browseHome ]
     POST >=> choose
         [ path "/hello" >=> OK "Hello POST"
-          path "/submitprice" >=>  request (fun r -> priceAgent.UpdatePrice(snd r.form.Head); OK (sprintf "Price change succesfully submitted")) 
-          path "/pricetablechange" >=>  request (fun r -> mLogAgent.UpdateWith (r.form.ToString()); OK ("ACK")) 
           path "/productupdate" >=> productUpdateProcessor storeAgent.UpdateWith]
         // aggiungi POST "/printlabel" evtPrint.Trigger(body of POST)
     NOT_FOUND "Found no handlers." ]
