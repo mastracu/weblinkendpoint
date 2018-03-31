@@ -51,7 +51,7 @@ let buildpricetag barcode description price =
         ^FT280,148^A0N,28,28^FH\^FDPPPPPP\15 al pezzo^FS
         ^FT189,148^A0N,28,28^FH\^FDPrezzo:^FS
         ^FT270,111^A0N,28,28^FH\^FDXXXXXXXXXXXX^FS
-        ^FT157,111^A0N,28,28^FH\^FDprodotto:^FS
+        ^FT157,111^A0N,28,28^FH\^FDProdotto:^FS
         ^PQ1,0,1,Y^XZ
         "
     let label1 = String.replace "PPPPPP" price label0
