@@ -205,7 +205,7 @@ let app  : WebPart =
           path "/logdump" >=> warbler (fun ctx -> OK ( mLogAgent.DumpDevicesState() ))
           path "/clearlog" >=> warbler (fun ctx -> OK ( mLogAgent.Empty(); "Log cleared" ))
           path "/pricequery" >=> warbler (fun ctx -> OK ( pricejson (priceAgent) ))
-          path "/storeinventory" >=> warbler (fun ctx -> OK ( storeAgent.StoreInventory() ))
+          path "/storepricelist.json" >=> warbler (fun ctx -> OK ( storeAgent.StoreInventory() ))
           browseHome ]
     POST >=> choose
         [ path "/hello" >=> OK "Hello POST"
