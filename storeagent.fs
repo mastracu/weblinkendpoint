@@ -41,11 +41,17 @@ let rec productUpdate prod list =
       | [] -> []
       | prodHead :: xs -> if prodHead.sku = prod.sku then prod :: xs else (prodHead :: productUpdate prod xs)
 
+let rec eanLookup barcode list =
+      match list with
+      | [] -> None
+      | prodHead :: xs -> if prodHead.eanCode = barcode then Some prodHead else (eanLookup barcode xs)
+
 type StoreAgentMsg = 
     | Exit
     | Clear
     | ProductUpdate of Product
-    | IsKnownSKU of String * AsyncReplyChannel<Boolean>
+    | EanLookup of string * AsyncReplyChannel<Product option>
+    | IsKnownSKU of string * AsyncReplyChannel<Boolean>
     | StoreInventory  of AsyncReplyChannel<String>
 
 [<DataContract>]
@@ -60,6 +66,7 @@ type Store =
               productUpdate prod x.ProductList
           else
               prod :: x.ProductList}
+   member x.EanLookup barcode = eanLookup barcode x.ProductList
 
 type StoreAgent() =
     let storeAgentMailboxProcessor =
@@ -70,14 +77,16 @@ type StoreAgent() =
                         | Exit -> return ()
                         | Clear -> return! storeAgentLoop Store.Empty
                         | ProductUpdate prod -> return! storeAgentLoop (store.ProductUpdate prod)
-                        | IsKnownSKU (addr, replyChannel) -> 
-                            replyChannel.Reply (store.IsKnownSKU addr)
+                        | EanLookup (barcode, replyChannel) -> 
+                            replyChannel.Reply (store.EanLookup barcode)
+                            return! storeAgentLoop store
+                        | IsKnownSKU (sku, replyChannel) -> 
+                            replyChannel.Reply (store.IsKnownSKU sku)
                             return! storeAgentLoop store
                         | StoreInventory replyChannel -> 
                             replyChannel.Reply (json<Product array> (List.toArray store.ProductList))
                             return! storeAgentLoop store
                       }
-            // storeAgentLoop Store.Empty
             // http://fsharp.github.io/FSharp.Data/library/Http.html
             let defaultjson = Http.RequestString("http://weblinkendpoint.mastracu.it/defaultinventory.json")
             let newStore = { ProductList = Array.toList (unjson<Product array> defaultjson) } 
@@ -87,6 +96,7 @@ type StoreAgent() =
     member this.Exit() = storeAgentMailboxProcessor.Post(Exit)
     member this.Empty() = storeAgentMailboxProcessor.Post(Clear)
     member this.UpdateWith prod = storeAgentMailboxProcessor.Post(ProductUpdate prod)
-    member this.IsKnownSKU addr = storeAgentMailboxProcessor.PostAndReply((fun reply -> IsKnownSKU(addr,reply)), timeout = 2000)
+    member this.EanLookup barcode = storeAgentMailboxProcessor.PostAndReply((fun reply -> EanLookup(barcode,reply)), timeout = 2000)
+    member this.IsKnownSKU sku = storeAgentMailboxProcessor.PostAndReply((fun reply -> IsKnownSKU(sku,reply)), timeout = 2000)
     member this.StoreInventory() = storeAgentMailboxProcessor.PostAndReply((fun reply -> StoreInventory reply), timeout = 2000)
 

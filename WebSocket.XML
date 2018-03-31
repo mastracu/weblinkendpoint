@@ -2,6 +2,11 @@
 <doc>
 <assembly><name>WebSocket</name></assembly>
 <members>
+<member name="M:StoreAgent.unjson``1(System.String)">
+<summary>
+ Object from Json 
+</summary>
+</member>
 <member name="M:StoreAgent.json``1(``0)">
 <summary>
  Object to Json 

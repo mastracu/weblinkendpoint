@@ -78,7 +78,7 @@ let config =
                     else HttpBinding.create HTTP ipZero (uint16 port)) ] }
 
 
-let ws (logAgent:PrinterMsgAgent) (evt2Printer:PrintEventClass) (priceAgent:PriceAgent) (webSocket : WebSocket) (context: HttpContext) =
+let ws (logAgent:PrinterMsgAgent) (evt2Printer:PrintEventClass) (storeAgent:StoreAgent) (webSocket : WebSocket) (context: HttpContext) =
 
   let inbox = MailboxProcessor.Start (fun inbox -> async {
             let close = ref false
@@ -156,9 +156,14 @@ let ws (logAgent:PrinterMsgAgent) (evt2Printer:PrintEventClass) (priceAgent:Pric
         match jval.TryGetProperty "alert" with
         | Some jsonalertval ->   match (jsonalertval.GetProperty "condition_id").AsString() with
                                  | "SGD SET" -> let barcode = (jsonalertval.GetProperty "setting_value").AsString()
-                                                let price = priceAgent.GetPrice()
-                                                do logAgent.UpdateWith (sprintf "Barcode: %s Price: %s" barcode price)       
-                                                evt2Printer.TriggerEvent (buildpricetag barcode price)
+                                                let maybeProd = storeAgent.EanLookup barcode
+                                                match maybeProd with
+                                                | Some prod -> 
+                                                   let priceString = prod.unitPrice.ToString()
+                                                   do logAgent.UpdateWith (sprintf "Barcode: %s Price: %s" barcode priceString)       
+                                                   evt2Printer.TriggerEvent (buildpricetag barcode priceString)
+                                                | None ->
+                                                   do logAgent.UpdateWith (sprintf "Barcode: %s not found in store" barcode)
                                  | _ -> ()
         | None -> ()
 
@@ -204,7 +209,7 @@ let app  : WebPart =
                        prod)
 
   choose [
-    path "/websocketWithSubprotocol" >=> handShakeWithSubprotocol (chooseSubprotocol "v1.weblink.zebra.com") (ws mLogAgent evtPrint priceAgent)
+    path "/websocketWithSubprotocol" >=> handShakeWithSubprotocol (chooseSubprotocol "v1.weblink.zebra.com") (ws mLogAgent evtPrint storeAgent)
     GET >=> choose 
         [ path "/hello" >=> OK "Hello GET"
           path "/hellolabel" >=>  warbler (fun ctx -> evtPrint.TriggerEvent(helloLabel); OK ("Triggered"))
