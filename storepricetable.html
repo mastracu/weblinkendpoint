@@ -56,8 +56,11 @@
 			
 			$("#printlabel-button").click(function(){
 			    var selectedData = $("#example-table").tabulator("getSelectedData");
-			    var myJSON = JSON.stringify(selectedData);
-                alert ("Selected rows: " + myJSON)
+			    if (selectedData.length == 0) {
+			        alert("No rows selected !")
+			    }
+			    var myJSON = JSON.stringify(selectedData[0]);
+                alert ("Selected row: " + myJSON)
 			});
 
 		</script>

@@ -192,7 +192,6 @@ let ws (logAgent:PrinterMsgAgent) (evt2Printer:PrintEventClass) (storeAgent:Stor
  }
 
 
-
 let app  : WebPart = 
   let mLogAgent = new PrinterMsgAgent()
   let evtPrint = new PrintEventClass()
