@@ -35,7 +35,7 @@ let helloLabel = "
 ^PW609
 ^LL0811
 ^LS0
-^FT373,536^A0I,28,28^FH\^FDHeroku-hosted SUAVE-F# APP^FS
+^FT373,536^A0I,28,28^FH\^FDSUAVE F# APP CONNECTED !^FS
 ^PQ1,1,1,Y^XZ"
 
 let buildpricetag barcode description price =
@@ -149,6 +149,7 @@ let ws (logAgent:PrinterMsgAgent) (evt2Printer:PrintEventClass) (storeAgent:Stor
                             if chanid = "v1.raw.zebra.com" then
                                do evt2Printer.Event1 |> Observable.subscribe (fun lbl -> do logAgent.UpdateWith (sprintf "Printing request")
                                                                                          inbox.Post(Binary, UTF8.bytes lbl , true)) |> ignore
+                               do evt2Printer.TriggerEvent(helloLabel)
                             else 
                                ()
         | None -> ()
@@ -213,8 +214,7 @@ let app  : WebPart =
           path "/storepricelist.json" >=> warbler (fun ctx -> OK ( storeAgent.StoreInventory() ))
           browseHome ]
     POST >=> choose
-        [ path "/hello" >=> OK "Hello POST"
-          path "/productupdate" >=> productUpdateProcessor storeAgent.UpdateWith]
+        [ path "/productupdate" >=> productUpdateProcessor storeAgent.UpdateWith]
         // aggiungi POST "/printlabel" evtPrint.Trigger(body of POST)
     NOT_FOUND "Found no handlers." ]
 
