@@ -22,7 +22,8 @@
 			        {title:"EAN/UPC code", field:"eanCode", sorter:"number", align:"right"},
 			    ],
 			    cellEdited:function(cell){
-        			alert ("Row: " + cell.getRow() );
+                                var data = cell.getRow().getData();
+        			alert ("Row: " + data );
     			    },
 			});
 
