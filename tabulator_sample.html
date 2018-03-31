@@ -4,17 +4,13 @@
 		<link href="tabulator.min.css" rel="stylesheet">
 	</head>
 	<body>
-		<button id="ajax-trigger">Click Me!</button>
+		//<button id="ajax-trigger">Click Me!</button>
 		<div id="example-table"></div>
 		
 		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
 		<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
 		<script type="text/javascript" src="tabulator.min.js"></script>
 		<script type="text/javascript">
-			//sample data
-			var tabledata = [
-			    {id:1, sku:"1234", description:"Mozzarella no Lactose", unitPrice:"3.45", eanCode:"83434523324"},
-			    {id:2, sku:"1235", description:"Fusilli Barilla", unitPrice:"2.50", eanCode:"876454523320"},						];
 
 			$("#example-table").tabulator({
 			    // height:200, // set height of table to enable virtual DOM
@@ -31,9 +27,11 @@
 			    },
 			});
 
-			$("#ajax-trigger").click(function(){
-    				$("#example-table").tabulator("setData", "defaultinventory.json");
-			});
+			$("#example-table").tabulator("setData", "defaultinventory.json");
+			
+			//$("#ajax-trigger").click(function(){
+    			//	$("#example-table").tabulator("setData", "defaultinventory.json");
+			//});
 		</script>
 	</body>
 </html>
