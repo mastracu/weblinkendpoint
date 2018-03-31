@@ -2,9 +2,26 @@
 <html lang="en">
 	<head>
 		<link href="tabulator.min.css" rel="stylesheet">
+	<style>
+	.button {
+    		background-color: #4CAF50;
+    		border: none;
+    		color: white;
+    		padding: 15px 25px;
+    		text-align: center;
+    		font-size: 16px;
+    		cursor: pointer;
+		}
+
+	.button:hover {
+    		background: green;
+		}
+	</style>
 	</head>
 	<body>
 		<div id="example-table"></div>
+
+		<button id="add-row", class="button">Add Product</button>
 		
 		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
 		<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
@@ -13,7 +30,7 @@
 
 			$("#example-table").tabulator({
 			    // height:200, // set height of table to enable virtual DOM
-			    // data:tabledata, //load initial data into table
+			    addRowPos:"bottom",
 			    layout:"fitColumns", //fit columns to width of table (optional)
 			    columns:[ //Define Table Columns
 			        {title:"SKU", field:"sku", sorter:"number", width:150, align:"right"},
@@ -34,6 +51,10 @@
 
 			$("#example-table").tabulator("setData", "storepricelist.json");
 			
+			$("#add-row").click(function(){
+    				$("#example-table").tabulator("addRow", {});
+			});
+
 		</script>
 	</body>
 </html>
