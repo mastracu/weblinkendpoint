@@ -213,7 +213,8 @@ let app  : WebPart =
           path "/storepricelist.json" >=> warbler (fun ctx -> OK ( storeAgent.StoreInventory() ))
           browseHome ]
     POST >=> choose
-        [ path "/productupdate" >=> productUpdateProcessor storeAgent.UpdateWith]
+        [ path "/productupdate" >=> productUpdateProcessor storeAgent.UpdateWith
+          path "/printproduct" >=> productUpdateProcessor (fun prod -> evtPrint.TriggerEvent (buildpricetag prod.eanCode prod.description (prod.unitPrice.ToString()) )) ]
         // aggiungi POST "/printlabel" evtPrint.Trigger(body of POST)
     NOT_FOUND "Found no handlers." ]
 

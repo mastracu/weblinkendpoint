@@ -61,7 +61,11 @@
 			    }
 			    else {
 			        var myJSON = JSON.stringify(selectedData[0]);
-			        alert("Selected row: " + myJSON)
+			        var xhr = new XMLHttpRequest();
+			        var url = "printproduct";
+			        xhr.open("POST", url, true);
+			        xhr.setRequestHeader("Content-type", "application/json");
+			        xhr.send(myJSON);
 			    }
 			});
 
