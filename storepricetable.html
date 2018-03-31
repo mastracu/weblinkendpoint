@@ -39,23 +39,25 @@
 			        {title:"EAN/UPC code", field:"eanCode", sorter:"number", align:"right"},
 			    ],
 			    cellEdited:function(cell){
-				var data = cell.getRow().getData();
-				var myJSON = JSON.stringify(data);
-				var xhr = new XMLHttpRequest();
-				var url = "productupdate";
-				xhr.open("POST", url, true);
-				xhr.setRequestHeader("Content-type", "application/json");
-				xhr.send(myJSON);
-    			    },
+				    var data = cell.getRow().getData();
+				    var myJSON = JSON.stringify(data);
+				    var xhr = new XMLHttpRequest();
+				    var url = "productupdate";
+				    xhr.open("POST", url, true);
+				    xhr.setRequestHeader("Content-type", "application/json");
+				    xhr.send(myJSON);
+    			},
 			    rowSelectionChanged:function(data, rows){
         			//update selected row counter on selection change
-    			    },
+    			},
 			});
 
 			$("#example-table").tabulator("setData", "storepricelist.json");
 			
 			$("#printlabel-button").click(function(){
-    				$("#example-table").tabulator("addRow", {});
+			    var selectedData = $("#example-table").tabulator("getSelectedData");
+			    var myJSON = JSON.stringify(selectedData);
+                alert ("Selected rows: " + myJSON)
 			});
 
 		</script>
