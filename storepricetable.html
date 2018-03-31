@@ -23,7 +23,8 @@
 			    ],
 			    cellEdited:function(cell){
                                 var data = cell.getRow().getData();
-        			alert ("SKU: " + data.sku );
+				var myJSON = JSON.stringify(data);
+        			alert ("JSON: " + myJSON );
     			    },
 			});
 
