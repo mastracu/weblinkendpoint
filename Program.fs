@@ -40,7 +40,7 @@ let helloLabel = "
 ^PQ1,1,1,Y^XZ"
 
 let buildpricetag barcode description price =
-    let baselabel = "
+    let label0 = "
         ^XA
         ^MMT
         ^PW609
@@ -51,13 +51,13 @@ let buildpricetag barcode description price =
         ^FD>;BBBBBBBBBBBBB^FS
         ^FT280,148^A0N,28,28^FH\^FDPPPPPP\15 al pezzo^FS
         ^FT189,148^A0N,28,28^FH\^FDPrezzo:^FS
-        ^FT270,111^A0N,28,28^FH\^FDScatola di Scanner^FS
+        ^FT270,111^A0N,28,28^FH\^FDDDDDDDDDDDDDD^FS
         ^FT157,111^A0N,28,28^FH\^FDprodotto:^FS
         ^PQ1,0,1,Y^XZ
         "
-    let labelwithprice = String.replace "PPPPPP" price baselabel
-    let labelwithbarcode = String.replace "BBBBBBBBBBBBB" barcode labelwithprice
-    String.replace "BBBBBBBBBBBBB" description labelwithbarcode
+    let label1 = String.replace "PPPPPP" price label0
+    let label2 = String.replace "BBBBBBBBBBBBB" barcode label1
+    String.replace "DDDDDDDDDDDDD" description label2
 
 //TODO: https://github.com/SuaveIO/suave/issues/307
 
