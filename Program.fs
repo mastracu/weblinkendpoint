@@ -38,7 +38,7 @@ let helloLabel = "
 ^FT373,536^A0I,28,28^FH\^FDSUAVE F# APP CONNECTED !^FS
 ^PQ1,1,1,Y^XZ"
 
-let buildpricetag barcode description price =
+let buildpricetag (prod:Product) =
     let label0 = "
         ^XA
         ^MMT
@@ -54,9 +54,9 @@ let buildpricetag barcode description price =
         ^FT157,111^A0N,28,28^FH\^FDProdotto:^FS
         ^PQ1,0,1,Y^XZ
         "
-    let label1 = String.replace "PPPPPP" price label0
-    let label2 = String.replace "BBBBBBBBBBBBB" barcode label1
-    String.replace "XXXXXXXXXXXX" description label2
+    let label1 = String.replace "PPPPPP" (prod.unitPrice.ToString()) label0
+    let label2 = String.replace "BBBBBBBBBBBBB" prod.eanCode label1
+    String.replace "XXXXXXXXXXXX" prod.description label2
 
 //TODO: https://github.com/SuaveIO/suave/issues/307
 
@@ -162,7 +162,7 @@ let ws (logAgent:PrinterMsgAgent) (evt2Printer:PrintEventClass) (storeAgent:Stor
                                                 | Some prod -> 
                                                    let priceString = prod.unitPrice.ToString()
                                                    do logAgent.UpdateWith (sprintf "Barcode: %s Price: %s Description: %s" barcode priceString prod.description)       
-                                                   evt2Printer.TriggerEvent (buildpricetag barcode prod.description priceString)
+                                                   prod |> (buildpricetag >> evt2Printer.TriggerEvent)
                                                 | None ->
                                                    do logAgent.UpdateWith (sprintf "Barcode: %s not found in store" barcode)
                                  | _ -> ()
@@ -198,7 +198,7 @@ let app  : WebPart =
   let storeAgent = new StoreAgent()
   let toSendtoPrinter = evtPrint.Event1
   
-  let productUpdateProcessor func:WebPart = 
+  let productDo func:WebPart = 
      mapJson (fun (prod:Product) -> 
                        func prod
                        prod)
@@ -213,8 +213,8 @@ let app  : WebPart =
           path "/storepricelist.json" >=> warbler (fun ctx -> OK ( storeAgent.StoreInventory() ))
           browseHome ]
     POST >=> choose
-        [ path "/productupdate" >=> productUpdateProcessor storeAgent.UpdateWith
-          path "/printproduct" >=> productUpdateProcessor (fun prod -> evtPrint.TriggerEvent (buildpricetag prod.eanCode prod.description (prod.unitPrice.ToString()) )) ]
+        [ path "/productupdate" >=> productDo storeAgent.UpdateWith
+          path "/printproduct" >=> productDo (buildpricetag >> evtPrint.TriggerEvent) ]
         // aggiungi POST "/printlabel" evtPrint.Trigger(body of POST)
     NOT_FOUND "Found no handlers." ]
 
