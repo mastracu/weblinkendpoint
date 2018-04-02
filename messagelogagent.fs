@@ -1,34 +1,37 @@
 ﻿
 module MessageLogAgent
 
+open JsonHelper
+
 type DumpAgentMsg = 
     | Exit
     | Reset
-    | UpdateWith of string
-    | DumpDevicesState  of AsyncReplyChannel<string>
+    | AppendToLog of string
+    | LogDump  of AsyncReplyChannel<string>
 
-type MessageDump = 
-   { DebugLog : string list } 
-   static member Empty = {DebugLog = [] }
-   member x.UpdateWith (msg:string) = 
-      { DebugLog = (string System.DateTime.Now + " " + msg) :: x.DebugLog }
+type Log = 
+   { msgList : string list } 
+   static member Empty = {msgList = [] }
+   member x.AppendToLog (msg:string) = 
+      { msgList = (string System.DateTime.Now + " " + msg) :: x.msgList }
 
 type PrinterMsgAgent() =
     let printerMsgMailboxProcessor =
         MailboxProcessor.Start(fun inbox ->
-            let rec locationAgentLoop msgDump =
+            let rec locationAgentLoop agentLog =
                 async { let! msg = inbox.Receive()
                         match msg with
                         | Exit -> return ()
-                        | Reset -> return! locationAgentLoop MessageDump.Empty
-                        | UpdateWith newMsg -> return! locationAgentLoop (msgDump.UpdateWith newMsg)
-                        | DumpDevicesState replyChannel -> 
-                            replyChannel.Reply (sprintf "%A" msgDump)
-                            return! locationAgentLoop msgDump
+                        | Reset -> return! locationAgentLoop Log.Empty
+                        | AppendToLog newMsg -> return! locationAgentLoop (agentLog.AppendToLog newMsg)
+                        | LogDump replyChannel ->
+                            replyChannel.Reply (json<string array> (List.toArray agentLog.msgList)) 
+                            // replyChannel.Reply (sprintf "%A" msgDump)
+                            return! locationAgentLoop agentLog
                       }
-            locationAgentLoop MessageDump.Empty
+            locationAgentLoop Log.Empty
         )
     member this.Exit() = printerMsgMailboxProcessor.Post(Exit)
     member this.Empty() = printerMsgMailboxProcessor.Post(Reset)
-    member this.UpdateWith re = printerMsgMailboxProcessor.Post(UpdateWith re)
-    member this.DumpDevicesState() = printerMsgMailboxProcessor.PostAndReply((fun reply -> DumpDevicesState reply), timeout = 2000)
+    member this.AppendToLog newEntry = printerMsgMailboxProcessor.Post(AppendToLog newEntry)
+    member this.LogDump() = printerMsgMailboxProcessor.PostAndReply((fun reply -> LogDump reply), timeout = 2000)

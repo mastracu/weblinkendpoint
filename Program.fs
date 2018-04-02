@@ -100,7 +100,7 @@ let ws (logAgent:PrinterMsgAgent) (evt2Printer:PrintEventClass) (storeAgent:Stor
     do pongTimeoutEvent |> Observable.subscribe (fun _ -> do inbox.Post (Pong, [||] , true)) |> ignore
     do pongTimer.Start()
 
-    do logAgent.UpdateWith "About to enter websocket read loop"
+    do logAgent.AppendToLog "About to enter websocket read loop"
 
     // if `loop` is set to false, the server will stop receiving messages
     let mutable loop = true
@@ -135,19 +135,19 @@ let ws (logAgent:PrinterMsgAgent) (evt2Printer:PrintEventClass) (storeAgent:Stor
         // the message can be converted to a string
         let str = UTF8.toString data
         let response = sprintf "Binary message from printer: %s" str
-        do logAgent.UpdateWith response
+        do logAgent.AppendToLog response
         let jval = JsonValue.Parse str
         match jval.TryGetProperty "discovery_b64" with
-        | Some str ->   do logAgent.UpdateWith "discovery_b64 property received. On main channel"
+        | Some str ->   do logAgent.AppendToLog "discovery_b64 property received. On main channel"
                         inbox.Post(Binary, UTF8.bytes """ { "configure_alert" : "ALL MESSAGES,SDK,Y,Y,,,N,|SGD SET,SDK,Y,Y,,,N,capture.channel1.data.raw" } """, true)
                         inbox.Post(Binary, UTF8.bytes """ { "open" : "v1.raw.zebra.com" } """, true)
         | None -> ()
 
         match jval.TryGetProperty "channel_name" with
         | Some jsonval ->   let chanid = JsonExtensions.AsString (jsonval)
-                            do logAgent.UpdateWith (sprintf "Channel name: %s" chanid)
+                            do logAgent.AppendToLog (sprintf "Channel name: %s" chanid)
                             if chanid = "v1.raw.zebra.com" then
-                               do evt2Printer.Event1 |> Observable.subscribe (fun lbl -> do logAgent.UpdateWith (sprintf "Printing request")
+                               do evt2Printer.Event1 |> Observable.subscribe (fun lbl -> do logAgent.AppendToLog (sprintf "Printing request")
                                                                                          inbox.Post(Binary, UTF8.bytes lbl , true)) |> ignore
                                do evt2Printer.TriggerEvent(helloLabel)
                             else 
@@ -161,10 +161,10 @@ let ws (logAgent:PrinterMsgAgent) (evt2Printer:PrintEventClass) (storeAgent:Stor
                                                 match maybeProd with
                                                 | Some prod -> 
                                                    let priceString = prod.unitPrice.ToString()
-                                                   do logAgent.UpdateWith (sprintf "Barcode: %s Price: %s Description: %s" barcode priceString prod.description)       
+                                                   do logAgent.AppendToLog (sprintf "Barcode: %s Price: %s Description: %s" barcode priceString prod.description)       
                                                    prod |> (buildpricetag >> evt2Printer.TriggerEvent)
                                                 | None ->
-                                                   do logAgent.UpdateWith (sprintf "Barcode: %s not found in store" barcode)
+                                                   do logAgent.AppendToLog (sprintf "Barcode: %s not found in store" barcode)
                                  | _ -> ()
         | None -> ()
 
@@ -173,13 +173,13 @@ let ws (logAgent:PrinterMsgAgent) (evt2Printer:PrintEventClass) (storeAgent:Stor
         // The printer sends a PING message roughly ever 60 seconds. The server needs to respond with a PONG, per RFC6455
         // After three failed PING attempts, the printer disconnects and attempts to reconnect
 
-        do logAgent.UpdateWith "Ping message from printer. Responding with Pong message"
+        do logAgent.AppendToLog "Ping message from printer. Responding with Pong message"
         // A Pong frame sent in response to a Ping frame must have identical "Application data" as found in the message body of the Ping frame being replied to.
         // the `send` function sends a message back to the client
         do inbox.Post (Pong, data, true)
 
       | (Close, _, _) ->
-        do logAgent.UpdateWith "Got Close message from printer!"
+        do logAgent.AppendToLog "Got Close message from printer!"
         do inbox.Post (Close, [||], true)
 
         // after sending a Close message, stop the loop
@@ -187,7 +187,7 @@ let ws (logAgent:PrinterMsgAgent) (evt2Printer:PrintEventClass) (storeAgent:Stor
         do pongTimer.Stop()
 
       | (_,_,fi) -> 
-        do logAgent.UpdateWith (sprintf "Unexpected message from printer of type %A" fi)
+        do logAgent.AppendToLog (sprintf "Unexpected message from printer of type %A" fi)
     
  }
 
@@ -208,7 +208,7 @@ let app  : WebPart =
     GET >=> choose 
         [ path "/hello" >=> OK "Hello GET"
           path "/hellolabel" >=>  warbler (fun ctx -> evtPrint.TriggerEvent(helloLabel); OK ("Triggered"))
-          path "/logdump" >=> warbler (fun ctx -> OK ( mLogAgent.DumpDevicesState() ))
+          path "/logdump" >=> warbler (fun ctx -> OK ( mLogAgent.LogDump() ))
           path "/clearlog" >=> warbler (fun ctx -> OK ( mLogAgent.Empty(); "Log cleared" ))
           path "/storepricelist.json" >=> warbler (fun ctx -> OK ( storeAgent.StoreInventory() ))
           browseHome ]
