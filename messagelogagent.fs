@@ -11,7 +11,7 @@ open JsonHelper
 type LogEntry =
    { 
       [<field: DataMember(Name = "timestamp")>]
-      timestamp : DateTime;
+      timestamp : string;
       [<field: DataMember(Name = "txt")>]
       txt : string;
    }
@@ -20,7 +20,7 @@ type Log =
    { msgList : LogEntry list } 
    static member Empty = {msgList = [] }
    member x.AppendToLog (msg:string) = 
-      { msgList = {timestamp = DateTime.Now; txt=msg} :: x.msgList }
+      { msgList = {timestamp = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"); txt=msg} :: x.msgList }
 
 type LogAgentMsg = 
     | Exit

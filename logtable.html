@@ -25,6 +25,7 @@
 
     <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="moment.min.js"></script>
     <script type="text/javascript" src="tabulator.min.js"></script>
     <script type="text/javascript">
 
@@ -32,7 +33,8 @@
 			    selectable:1,
 			    layout:"fitColumns", //fit columns to width of table (optional)
 			    columns:[ //Define Table Columns
-			        {title:"Timestamp", field:"timestamp", sorter:"date", align:"center"},
+			        { title: "Timestamp", field: "datetime", sorter: "date", align: "center" },
+                    //  the format of the date (default: DD/MM/YYYY hh:mm:ss)
 			        {title:"Log Entry", field:"txt", sorter:"string", editor:true, align:"left"},
 			    ],
 			    rowSelectionChanged:function(data, rows){
