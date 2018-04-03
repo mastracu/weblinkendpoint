@@ -1,6 +1,5 @@
 ﻿module StoreAgent
 
-open FSharp.Data
 
 open System
 open System.Runtime.Serialization.Json
@@ -9,6 +8,8 @@ open System.Runtime.Serialization
 open System.IO
 open System.Xml
 open System.Text
+
+open FSharp.Data
 
 open JsonHelper
 

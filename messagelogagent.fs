@@ -1,21 +1,34 @@
 ﻿
 module MessageLogAgent
 
+open System
+open System.Runtime.Serialization.Json
+open System.Runtime.Serialization
+
 open JsonHelper
 
-type DumpAgentMsg = 
+[<DataContract>]
+type LogEntry =
+   { 
+      [<field: DataMember(Name = "timestamp")>]
+      timestamp : DateTime;
+      [<field: DataMember(Name = "txt")>]
+      txt : string;
+   }
+
+type Log = 
+   { msgList : LogEntry list } 
+   static member Empty = {msgList = [] }
+   member x.AppendToLog (msg:string) = 
+      { msgList = {timestamp = DateTime.Now; txt=msg} :: x.msgList }
+
+type LogAgentMsg = 
     | Exit
     | Reset
     | AppendToLog of string
     | LogDump  of AsyncReplyChannel<string>
 
-type Log = 
-   { msgList : string list } 
-   static member Empty = {msgList = [] }
-   member x.AppendToLog (msg:string) = 
-      { msgList = (string System.DateTime.Now + " " + msg) :: x.msgList }
-
-type PrinterMsgAgent() =
+type LogAgent() =
     let printerMsgMailboxProcessor =
         MailboxProcessor.Start(fun inbox ->
             let rec locationAgentLoop agentLog =
@@ -25,7 +38,7 @@ type PrinterMsgAgent() =
                         | Reset -> return! locationAgentLoop Log.Empty
                         | AppendToLog newMsg -> return! locationAgentLoop (agentLog.AppendToLog newMsg)
                         | LogDump replyChannel ->
-                            replyChannel.Reply (json<string array> (List.toArray agentLog.msgList)) 
+                            replyChannel.Reply (json<LogEntry array> (List.toArray agentLog.msgList)) 
                             // replyChannel.Reply (sprintf "%A" msgDump)
                             return! locationAgentLoop agentLog
                       }

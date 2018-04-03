@@ -78,7 +78,7 @@ let config =
                     else HttpBinding.create HTTP ipZero (uint16 port)) ] }
 
 
-let ws (logAgent:PrinterMsgAgent) (evt2Printer:PrintEventClass) (storeAgent:StoreAgent) (webSocket : WebSocket) (context: HttpContext) =
+let ws (logAgent:LogAgent) (evt2Printer:PrintEventClass) (storeAgent:StoreAgent) (webSocket : WebSocket) (context: HttpContext) =
 
   let inbox = MailboxProcessor.Start (fun inbox -> async {
             let close = ref false
@@ -193,7 +193,7 @@ let ws (logAgent:PrinterMsgAgent) (evt2Printer:PrintEventClass) (storeAgent:Stor
 
 
 let app  : WebPart = 
-  let mLogAgent = new PrinterMsgAgent()
+  let mLogAgent = new LogAgent()
   let evtPrint = new PrintEventClass()
   let storeAgent = new StoreAgent()
   let toSendtoPrinter = evtPrint.Event1
@@ -208,14 +208,15 @@ let app  : WebPart =
     GET >=> choose 
         [ path "/hello" >=> OK "Hello GET"
           path "/hellolabel" >=>  warbler (fun ctx -> evtPrint.TriggerEvent(helloLabel); OK ("Triggered"))
-          path "/logdump" >=> warbler (fun ctx -> OK ( mLogAgent.LogDump() ))
           path "/clearlog" >=> warbler (fun ctx -> OK ( mLogAgent.Empty(); "Log cleared" ))
-          path "/storepricelist.json" >=> warbler (fun ctx -> OK ( storeAgent.StoreInventory() ))
+          path "/logdump.json" >=> warbler (fun ctx -> OK ( mLogAgent.LogDump() ))
+          path "/storepricelist.json" >=> warbler (fun ctx -> OK ( storeAgent.StoreInventory() )) 
+          // TODO: add "/connectedprinters.json"
           browseHome ]
     POST >=> choose
         [ path "/productupdate" >=> productDo storeAgent.UpdateWith
           path "/printproduct" >=> productDo (buildpricetag >> evtPrint.TriggerEvent) ]
-        // aggiungi POST "/printlabel" evtPrint.Trigger(body of POST)
+          // TODO: add "/printlabel" evtPrint.Trigger(body of POST) - event type is  printerid,label pair to support multiple printer connections 
     NOT_FOUND "Found no handlers." ]
 
 //https://help.heroku.com/tickets/560930
