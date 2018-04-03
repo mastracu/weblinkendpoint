@@ -203,6 +203,7 @@ let app  : WebPart =
                        func prod
                        prod)
 
+  do mLogAgent.AppendToLog "WebServer started"
   choose [
     path "/websocketWithSubprotocol" >=> handShakeWithSubprotocol (chooseSubprotocol "v1.weblink.zebra.com") (ws mLogAgent evtPrint storeAgent)
     GET >=> choose 
