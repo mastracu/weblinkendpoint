@@ -20,7 +20,7 @@ type Log =
    { msgList : LogEntry list } 
    static member Empty = {msgList = [] }
    member x.AppendToLog (msg:string) = 
-      { msgList = {timestamp = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"); txt=msg} :: x.msgList }
+      { msgList = {timestamp = DateTime.Now.ToString("DD/MM/YYYY hh:mm:ss"); txt=msg} :: x.msgList }
 
 type LogAgentMsg = 
     | Exit
