@@ -217,7 +217,8 @@ let app  : WebPart =
           // TODO: add "/connectedprinters.json"
           browseHome ]
     POST >=> choose
-        [ path "/productupdate" >=> productDo storeAgent.UpdateWith
+        [ path "/productupdate" >=> productDo (fun prod -> do mLogAgent.AppendToLog "productupdate received"
+                                                           storeAgent.UpdateWith prod)
           path "/printproduct" >=> productDo (buildpricetag >> evtPrint.TriggerEvent) ]
           // TODO: add "/printlabel" evtPrint.Trigger(body of POST) - event type is  printerid,label pair to support multiple printer connections 
     NOT_FOUND "Found no handlers." ]
