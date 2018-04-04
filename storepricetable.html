@@ -40,6 +40,7 @@
 			        {title:"Unit Price", field:"unitPrice", sorter:"number", editor:true, align:"right", sortable:false},
 			        {title:"EAN/UPC code", field:"eanCode", sorter:"number", align:"right"},
 			    ],
+                index:"sku",
 			    cellEdited:function(cell){
 				    var data = cell.getRow().getData();
 				    var myJSON = JSON.stringify(data);
