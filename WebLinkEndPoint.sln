@@ -7,6 +7,7 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "WebLinkEndpoint", "WebLinkE
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9B449302-41F0-4B24-B1F8-5B73FB7C8CB3}"
 	ProjectSection(SolutionItems) = preProject
+		defaultinventory.json = defaultinventory.json
 		logtable.html = logtable.html
 		Procfile = Procfile
 		storepricetable.html = storepricetable.html

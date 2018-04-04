@@ -1,1 +1,26 @@
-[{"description":"La casa misteriosa","eanCode":"9788856646238","sku":"1073","unitPrice":899},{"description":"dough","eanCode":"800223231","sku":"9342343","unitPrice":712},{"description":"beer","eanCode":"72432423","sku":"9342344","unitPrice":493}]
+[
+    {
+        "description": "La casa misteriosa",
+        "eanCode": "9788856646238",
+        "sku": "1073",
+        "unitPrice": 899
+    },
+    {
+        "description": "dough",
+        "eanCode": "800223231",
+        "sku": "9342343",
+        "unitPrice": 712
+    },
+    {
+        "description": "beer",
+        "eanCode": "72432423",
+        "sku": "9342344",
+        "unitPrice": 493
+    },
+    {
+        "description": "norda naturale 50cl",
+        "eanCode": "8007500111238",
+        "sku": "1212121212",
+        "unitPrice": 80
+    }
+]

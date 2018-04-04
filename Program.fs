@@ -147,6 +147,8 @@ let ws (logAgent:LogAgent) (evt2Printer:PrintEventClass) (storeAgent:StoreAgent)
         | Some jsonval ->   let chanid = JsonExtensions.AsString (jsonval)
                             do logAgent.AppendToLog (sprintf "Channel name: %s" chanid)
                             if chanid = "v1.raw.zebra.com" then
+                               // request friendly name of printer and associate it to the raw channel
+                               // https://support.zebra.com/cpws/docs/zpl/device_friendly_name.pdf
                                do evt2Printer.Event1 |> Observable.subscribe (fun lbl -> do logAgent.AppendToLog (sprintf "Printing request")
                                                                                          inbox.Post(Binary, UTF8.bytes lbl , true)) |> ignore
                                do evt2Printer.TriggerEvent(helloLabel)

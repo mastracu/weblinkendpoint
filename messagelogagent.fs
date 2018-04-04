@@ -39,7 +39,6 @@ type LogAgent() =
                         | AppendToLog newMsg -> return! locationAgentLoop (agentLog.AppendToLog newMsg)
                         | LogDump replyChannel ->
                             replyChannel.Reply (json<LogEntry array> (List.toArray agentLog.msgList)) 
-                            // replyChannel.Reply (sprintf "%A" msgDump)
                             return! locationAgentLoop agentLog
                       }
             locationAgentLoop Log.Empty
