@@ -22,6 +22,8 @@
 	<body>
 		<h1 style="text-align: center;">Zebra Store Product List</h1>
         <button id="printlabel-button" class="button">Print product label</button>
+        <button id="newrow-button" class="button">Add new product</button>
+
 		<div id="example-table"></div>
 		
 		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
@@ -67,6 +69,10 @@
 			        xhr.setRequestHeader("Content-type", "application/json");
 			        xhr.send(myJSON);
 			    }
+			});
+
+			$("#newrow-button").click(function () {
+			    $("#example-table").tabulator("addData", [{ sku: "999", description: "new row", "eanCode": "9788856646230", "unitPrice": 111 }], true);
 			});
 
 		</script>
