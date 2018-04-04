@@ -35,7 +35,7 @@
 			    selectable:1, 
 			    layout:"fitColumns", //fit columns to width of table (optional)
 			    columns:[ //Define Table Columns
-			        {title: "SKU", field: "sku", sorter: "number", editor: true, width: 150, align: "right", validator:unique },
+			        {title: "SKU", field: "sku", sorter: "number", editor: true, width: 150, align: "right", validator:"unique" },
 			        {title:"Description", field:"description", sorter:"string", editor:true, align:"left", width:200},
 			        {title:"Unit Price", field:"unitPrice", sorter:"number", editor:true, align:"right", sortable:false},
 			        {title:"EAN/UPC code", field:"eanCode", sorter:"number", editor:true, align:"right"},
