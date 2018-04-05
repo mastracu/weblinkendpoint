@@ -29,7 +29,7 @@
         <button id="newrow-button" class="button">Add new product</button>
         <button id="deleterow-button" class="button">Remove product</button>
         <button id="printlabel-button" class="button">Print product label</button>
-        <form class="form">SKU: <input type="text" id="sku" /> Description: <input type="text" name="description" > Initial Unit Price: <input type="text" name="price" > EAN code: <input type="text" name="ean"> </form>
+        <form class="form">SKU: <input type="text" id="sku" /> Description: <input type="text" id="description" > Unit Price: <input type="text" id="price" > EAN code: <input type="text" id="ean"> </form>
         
 		<div id="example-table"></div>
 		
@@ -80,9 +80,7 @@
 			});
 
 			$("#newrow-button").click(function () {
-			    window.alert( $('#sku').val() );
-			    // $("#example-table").tabulator("addData", [{}], true);
-			    //$("#example-table").tabulator("addData", [{ sku: "999", description: "new row", eanCode: "9788856646230", unitPrice: 111 }], true);
+			    $("#example-table").tabulator("addData", [{ sku: $('#sku').val(), description: $('#description').val(), eanCode: $('#ean').val(), unitPrice: $('#price').val() }], true);
 			});
 
 		</script>
