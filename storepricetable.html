@@ -57,9 +57,15 @@
 				    xhr.setRequestHeader("Content-type", "application/json");
 				    xhr.send(myJSON);
     			},
-			    rowSelectionChanged:function(data, rows){
-        			//update selected row counter on selection change
-    			},
+			    rowAdded: function (row) {
+			        var data = row.getData();
+			        var myJSON = JSON.stringify(data);
+			        var xhr = new XMLHttpRequest();
+			        var url = "productupdate";
+			        xhr.open("POST", url, true);
+			        xhr.setRequestHeader("Content-type", "application/json");
+			        xhr.send(myJSON);
+			    },
 			});
 
 			$("#example-table").tabulator("setData", "storepricelist.json");
@@ -82,6 +88,7 @@
 			$("#newrow-button").click(function () {
 			    $("#example-table").tabulator("addData", [{ sku: $('#sku').val(), description: $('#description').val(), eanCode: $('#ean').val(), unitPrice: $('#price').val() }], true);
 			    document.getElementById("newrowform").reset();
+
 			});
 
 		</script>
