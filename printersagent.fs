@@ -65,11 +65,7 @@ type PrintersAgent() =
                             replyChannel.Reply (json<Printer array> (List.toArray connPrts.PrinterList))
                             return! printersAgentLoop connPrts
                       }
-            // http://fsharp.github.io/FSharp.Data/library/Http.html
-            let defaultjson = Http.RequestString("http://weblinkendpoint.mastracu.it/defaultinventory.json")
-            let newStore = { PrinterList = Array.toList (unjson<Printer array> defaultjson) } 
-            printersAgentLoop newStore
-
+            printersAgentLoop ConnectedPrinters.Empty
         )
     member this.Exit() = storeAgentMailboxProcessor.Post(Exit)
     member this.Empty() = storeAgentMailboxProcessor.Post(Clear)

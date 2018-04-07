@@ -80,7 +80,9 @@ let config =
                     else HttpBinding.create HTTP ipZero (uint16 port)) ] }
 
 
-let ws (logAgent:LogAgent) (evt2Printer:PrintEventClass) (storeAgent:StoreAgent) (webSocket : WebSocket) (context: HttpContext) =
+let ws allAgents (evt2Printer:PrintEventClass) (webSocket : WebSocket) (context: HttpContext) =
+
+  let (storeAgent:StoreAgent, printersAgent:PrintersAgent, logAgent:LogAgent) = allAgents
 
   let inbox = MailboxProcessor.Start (fun inbox -> async {
             let close = ref false
@@ -146,6 +148,7 @@ let ws (logAgent:LogAgent) (evt2Printer:PrintEventClass) (storeAgent:StoreAgent)
                             let zebraDiscoveryPacket = JsonExtensions.AsString jsonval |> decode64
                             let uniqueID = List.rev (snd (List.fold (fun (pos,acclist) byte -> (pos+1, if (pos > 187 && pos < 200 ) then byte::acclist else acclist))  (0,[]) zebraDiscoveryPacket))
                             do channelUniqueId <- uniqueID |> intListToString
+                            do printersAgent.UpdateWith {uniqueID = channelUniqueId; partNumber = ""; appVersion = ""}
                             do logAgent.AppendToLog (sprintf "discovery_b64 property received on main channel unique_id: %s"  channelUniqueId)
                             inbox.Post(Binary, UTF8.bytes """ { "configure_alert" : "ALL MESSAGES,SDK,Y,Y,,,N,|SGD SET,SDK,Y,Y,,,N,capture.channel1.data.raw" } """, true)
                             inbox.Post(Binary, UTF8.bytes """ { "open" : "v1.raw.zebra.com" } """, true)
@@ -209,6 +212,7 @@ let app  : WebPart =
   let evtPrint = new PrintEventClass()
   let storeAgent = new StoreAgent()
   let printersAgent = new PrintersAgent()
+  let allAgents = (storeAgent, printersAgent, mLogAgent)
   let toSendtoPrinter = evtPrint.Event1
   
   let productDo func:WebPart = 
@@ -218,7 +222,7 @@ let app  : WebPart =
 
   do mLogAgent.AppendToLog "WebServer started"
   choose [
-    path "/websocketWithSubprotocol" >=> handShakeWithSubprotocol (chooseSubprotocol "v1.weblink.zebra.com") (ws mLogAgent evtPrint storeAgent)
+    path "/websocketWithSubprotocol" >=> handShakeWithSubprotocol (chooseSubprotocol "v1.weblink.zebra.com") (ws allAgents evtPrint)
     GET >=> choose 
         [ path "/hello" >=> OK "Hello GET"
           path "/clearlog" >=> warbler (fun ctx -> OK ( mLogAgent.Empty(); "Log cleared" ))
