@@ -76,8 +76,9 @@
 			$("#printers-table").tabulator({
 			    selectable: 1,
 			    width: 250,
+			    layout: "fitColumns",
 			    columns: [ //Define Table Columns
-			        { title: "Printer Serial Number", field: "uniqueID", sorter: "string", width: 250, align: "left", },
+			        { title: "Printer Serial Number", field: "uniqueID", sorter: "string", align: "left", },
 			    ],
 			    //index:"sku",
 			    cellEdited: function (cell) {
