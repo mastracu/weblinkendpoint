@@ -37,7 +37,7 @@ type PrintersAgentMsg =
     | PrintersInventory  of AsyncReplyChannel<String>
 
 [<DataContract>]
-type Store = 
+type ConnectedPrinters = 
    { [<field: DataMember(Name = "connectedPrinters")>] PrinterList : Printer list } 
    static member Empty = {PrinterList = [] }
    member x.IsKnownID id = 
@@ -52,28 +52,28 @@ type Store =
 type PrintersAgent() =
     let storeAgentMailboxProcessor =
         MailboxProcessor.Start(fun inbox ->
-            let rec storeAgentLoop store =
+            let rec printersAgentLoop connPrts =
                 async { let! msg = inbox.Receive()
                         match msg with
                         | Exit -> return ()
-                        | Clear -> return! storeAgentLoop Store.Empty
-                        | PrinterUpdate prod -> return! storeAgentLoop (store.PrinterUpdate prod)
-                        | IsKnownID (sku, replyChannel) -> 
-                            replyChannel.Reply (store.IsKnownID sku)
-                            return! storeAgentLoop store
+                        | Clear -> return! printersAgentLoop ConnectedPrinters.Empty
+                        | PrinterUpdate prod -> return! printersAgentLoop (connPrts.PrinterUpdate prod)
+                        | IsKnownID (id, replyChannel) -> 
+                            replyChannel.Reply (connPrts.IsKnownID id)
+                            return! printersAgentLoop connPrts
                         | PrintersInventory replyChannel -> 
-                            replyChannel.Reply (json<Printer array> (List.toArray store.PrinterList))
-                            return! storeAgentLoop store
+                            replyChannel.Reply (json<Printer array> (List.toArray connPrts.PrinterList))
+                            return! printersAgentLoop connPrts
                       }
             // http://fsharp.github.io/FSharp.Data/library/Http.html
             let defaultjson = Http.RequestString("http://weblinkendpoint.mastracu.it/defaultinventory.json")
             let newStore = { PrinterList = Array.toList (unjson<Printer array> defaultjson) } 
-            storeAgentLoop newStore
+            printersAgentLoop newStore
 
         )
     member this.Exit() = storeAgentMailboxProcessor.Post(Exit)
     member this.Empty() = storeAgentMailboxProcessor.Post(Clear)
     member this.UpdateWith prod = storeAgentMailboxProcessor.Post(PrinterUpdate prod)
     member this.IsKnownID sku = storeAgentMailboxProcessor.PostAndReply((fun reply -> IsKnownID(sku,reply)), timeout = 2000)
-    member this.StoreInventory() = storeAgentMailboxProcessor.PostAndReply((fun reply -> PrintersInventory reply), timeout = 2000)
+    member this.PrintersInventory() = storeAgentMailboxProcessor.PostAndReply((fun reply -> PrintersInventory reply), timeout = 2000)
 

@@ -71,9 +71,9 @@
 
 			$("#printers-table").tabulator({
 			    selectable: 1,
-			    layout: "fitColumns", //fit columns to width of table (optional)
+			    layout: "fitData", //fit columns to width of table (optional)
 			    columns: [ //Define Table Columns
-			        { title: "Serial Number", field: "uniqueID", sorter: "string", align: "left", },
+			        { title: "Serial Number", field: "uniqueID", sorter: "string", width: 150, align: "left", },
 			    ],
 			    //index:"sku",
 			    cellEdited: function (cell) {

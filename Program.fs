@@ -224,7 +224,7 @@ let app  : WebPart =
           path "/clearlog" >=> warbler (fun ctx -> OK ( mLogAgent.Empty(); "Log cleared" ))
           path "/logdump.json" >=> warbler (fun ctx -> OK ( mLogAgent.LogDump() ))
           path "/storepricelist.json" >=> warbler (fun ctx -> OK ( storeAgent.StoreInventory() )) 
-          path "/printerslist.json" >=> warbler (fun ctx -> OK ( storeAgent.StoreInventory() )) 
+          path "/printerslist.json" >=> warbler (fun ctx -> OK ( printersAgent.PrintersInventory() )) 
           browseHome 
         ]
     POST >=> choose
