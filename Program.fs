@@ -242,7 +242,8 @@ let app  : WebPart =
     POST >=> choose
         [ path "/productupdate" >=> productDo (fun prod -> do mLogAgent.AppendToLog "productupdate received"
                                                            storeAgent.UpdateWith prod)
-          path "/printproduct" >=> productDo (fun (prodprint:ProductPrinterObj) ->  evtPrint.TriggerEvent (prodprint.id,(buildpricetag prodprint.ProductObj)) )
+          path "/printproduct" >=> productDo (fun (prodprint:ProductPrinterObj) ->  do mLogAgent.AppendToLog (sprintf "printproduct. id: %s prod: %A" prodprint.id prodprint.ProductObj)
+                                                                                    evtPrint.TriggerEvent (prodprint.id,(buildpricetag prodprint.ProductObj)) )
         ]
     NOT_FOUND "Found no handlers." ]
 
