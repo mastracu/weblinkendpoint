@@ -32,11 +32,13 @@
 		<h1 style="text-align: center;">Zebra Store Product List</h1>
         <button id="newrow-button" class="button">Add new product</button>
         <button id="deleterow-button" class="button">Remove product</button>
-        <button id="printlabel-button" class="button">Print product label</button>
+        
         <form id ="newrowform" class="form"> <input type="text" placeholder="SKU" id="code" /> <input type="text" id="description" placeholder="Description" > <input type="text" id="price" placeholder="Price" > <input type="text" id="ean" placeholder="ean"> </form>
         
 		<div id="example-table" class="div"></div>
-        <div id="printers-table" class="div"></div>
+        <div id="printers-table" class="div">
+            <button id="printlabel-button" class="button">Print product label</button>
+        </div>
 		
 		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
 		<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
