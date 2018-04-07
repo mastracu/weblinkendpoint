@@ -211,8 +211,8 @@ type ProductPrinterObj =
    { 
       [<field: DataMember(Name = "ProductObj")>]
       ProductObj : Product;
-      [<field: DataMember(Name = "PrinterObj")>]
-      PrinterObj : Printer;
+      [<field: DataMember(Name = "id")>]
+      id : String;
    }
 
 let app  : WebPart = 
@@ -242,7 +242,7 @@ let app  : WebPart =
     POST >=> choose
         [ path "/productupdate" >=> productDo (fun prod -> do mLogAgent.AppendToLog "productupdate received"
                                                            storeAgent.UpdateWith prod)
-          path "/printproduct" >=> productDo (fun (prodprint:ProductPrinterObj) ->  evtPrint.TriggerEvent (prodprint.PrinterObj.uniqueID,(buildpricetag prodprint.ProductObj)) )
+          path "/printproduct" >=> productDo (fun (prodprint:ProductPrinterObj) ->  evtPrint.TriggerEvent (prodprint.id,(buildpricetag prodprint.ProductObj)) )
         ]
     NOT_FOUND "Found no handlers." ]
 
