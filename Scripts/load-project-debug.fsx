@@ -2,6 +2,7 @@
 #I __SOURCE_DIRECTORY__
 #load "load-references-debug.fsx"
 #load "../YoLo.fs"
+      "../b64.fs"
       "../jsonhelper.fs"
       "../storeagent.fs"
       "../messagelogagent.fs"
