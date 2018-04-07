@@ -38,16 +38,16 @@ type PrintersAgentMsg =
 
 [<DataContract>]
 type Store = 
-   { [<field: DataMember(Name = "connectedPrinters")>] ProductList : Printer list } 
-   static member Empty = {ProductList = [] }
+   { [<field: DataMember(Name = "connectedPrinters")>] PrinterList : Printer list } 
+   static member Empty = {PrinterList = [] }
    member x.IsKnownID id = 
-      List.exists (fun printer -> printer.uniqueID = id) x.ProductList
+      List.exists (fun printer -> printer.uniqueID = id) x.PrinterList
    member x.PrinterUpdate prt =  
-      { ProductList = 
+      { PrinterList = 
           if x.IsKnownID prt.uniqueID then
-              printerUpdate prt x.ProductList
+              printerUpdate prt x.PrinterList
           else
-              prt :: x.ProductList}
+              prt :: x.PrinterList}
 
 type PrintersAgent() =
     let storeAgentMailboxProcessor =
@@ -62,12 +62,12 @@ type PrintersAgent() =
                             replyChannel.Reply (store.IsKnownID sku)
                             return! storeAgentLoop store
                         | PrintersInventory replyChannel -> 
-                            replyChannel.Reply (json<Printer array> (List.toArray store.ProductList))
+                            replyChannel.Reply (json<Printer array> (List.toArray store.PrinterList))
                             return! storeAgentLoop store
                       }
             // http://fsharp.github.io/FSharp.Data/library/Http.html
             let defaultjson = Http.RequestString("http://weblinkendpoint.mastracu.it/defaultinventory.json")
-            let newStore = { ProductList = Array.toList (unjson<Printer array> defaultjson) } 
+            let newStore = { PrinterList = Array.toList (unjson<Printer array> defaultjson) } 
             storeAgentLoop newStore
 
         )
