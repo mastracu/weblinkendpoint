@@ -140,8 +140,9 @@ let ws (logAgent:LogAgent) (evt2Printer:PrintEventClass) (storeAgent:StoreAgent)
         let jval = JsonValue.Parse str
         match jval.TryGetProperty "discovery_b64" with
         | Some jsonval ->   do logAgent.AppendToLog "discovery_b64 property received. On main channel"
-                            let zebra_discovery_packet = JsonExtensions.AsString jsonval |> decode64 |> intListToString
-                            do logAgent.AppendToLog ("base64 decoding: " + zebra_discovery_packet)
+                            let zebraDiscoveryPacket = JsonExtensions.AsString jsonval |> decode64 |> intListToString
+                            let offsetSerialNumber = zebraDiscoveryPacket.LastIndexOf "50J163700136"
+                            do logAgent.AppendToLog (sprintf "discovery_b64 property received on main channel. Serial Number offset: %d"  offsetSerialNumber)
                             inbox.Post(Binary, UTF8.bytes """ { "configure_alert" : "ALL MESSAGES,SDK,Y,Y,,,N,|SGD SET,SDK,Y,Y,,,N,capture.channel1.data.raw" } """, true)
                             inbox.Post(Binary, UTF8.bytes """ { "open" : "v1.raw.zebra.com" } """, true)
         | None -> ()
