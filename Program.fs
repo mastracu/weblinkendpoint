@@ -139,8 +139,9 @@ let ws (logAgent:LogAgent) (evt2Printer:PrintEventClass) (storeAgent:StoreAgent)
         do logAgent.AppendToLog response
         let jval = JsonValue.Parse str
         match jval.TryGetProperty "discovery_b64" with
-        | Some jsonval ->   let zebraDiscoveryPacket = (JsonExtensions.AsString jsonval).Substring (240) |> decode64
-                            let uniqueID = snd (List.foldBack (fun byte (pos,acclist) -> (pos+1, if (pos < 10 ) then byte::acclist else acclist)) zebraDiscoveryPacket (0,[]))
+        | Some jsonval ->   
+                            let zebraDiscoveryPacket = JsonExtensions.AsString jsonval |> decode64
+                            let uniqueID = snd (List.foldBack (fun byte (pos,acclist) -> (pos+1, if (pos > 187 && pos < 195 ) then byte::acclist else acclist)) zebraDiscoveryPacket (0,[]))
                             do logAgent.AppendToLog (sprintf "discovery_b64 property received on main channel unique_id: %s"  (uniqueID |> intListToString))
                             inbox.Post(Binary, UTF8.bytes """ { "configure_alert" : "ALL MESSAGES,SDK,Y,Y,,,N,|SGD SET,SDK,Y,Y,,,N,capture.channel1.data.raw" } """, true)
                             inbox.Post(Binary, UTF8.bytes """ { "open" : "v1.raw.zebra.com" } """, true)

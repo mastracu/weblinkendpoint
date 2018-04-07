@@ -79,9 +79,5 @@
     |> getBuffers
     |> finalize
 
-  //Decode Test. The below codes are test for decoding
-//  let encoded = "QUJDREVGRw==" // <- encoded string of "ABCDEFG"
-//  assert ("ABCDEFG" = (decode64 encoded |> intListToString))
-//  printfn "%s -> %A" encoded <| (decode64 encoded |> intListToString)
 
 
