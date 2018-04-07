@@ -5,6 +5,7 @@
       "../b64.fs"
       "../jsonhelper.fs"
       "../storeagent.fs"
+      "../printersagent.fs"
       "../messagelogagent.fs"
       "../websocketum.fs"
       "../Program.fs"

@@ -32,6 +32,7 @@
         <form id ="newrowform" class="form"> <input type="text" placeholder="SKU" id="code" /> <input type="text" id="description" placeholder="Description" > <input type="text" id="price" placeholder="Price" > <input type="text" id="ean" placeholder="ean"> </form>
         
 		<div id="example-table"></div>
+        <div id="printers-table"></div>
 		
 		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
 		<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
@@ -68,7 +69,21 @@
 			    },
 			});
 
+			$("#printers-table").tabulator({
+			    selectable: 1,
+			    layout: "fitColumns", //fit columns to width of table (optional)
+			    columns: [ //Define Table Columns
+			        { title: "Serial Number", field: "uniqueId", sorter: "string", align: "left", },
+			    ],
+			    //index:"sku",
+			    cellEdited: function (cell) {
+			    },
+			    rowAdded: function (row) {
+			    },
+			});
+
 			$("#example-table").tabulator("setData", "storepricelist.json");
+			$("#printers-table").tabulator("setData", "printerslist.json");
 			
 			$("#printlabel-button").click(function(){
 			    var selectedData = $("#example-table").tabulator("getSelectedData");

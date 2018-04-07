@@ -27,6 +27,7 @@ open System.Text
 open tinyBase64Decoder
 open StoreAgent
 open MessageLogAgent
+open PrintersAgent
 
 let helloLabel = "
 CT~~CD,~CC^~CT~
@@ -62,11 +63,11 @@ let buildpricetag (prod:Product) =
 //TODO: https://github.com/SuaveIO/suave/issues/307
 
 type PrintEventClass() =
-   let event1 = new Event<String>()
+   let event1 = new Event<String*String>()
    
    member this.Event1 = event1.Publish
-   member this.TriggerEvent (str) =
-      event1.Trigger str
+   member this.TriggerEvent printerLabelPair =
+      event1.Trigger printerLabelPair
 
          
 let config = 
@@ -102,6 +103,8 @@ let ws (logAgent:LogAgent) (evt2Printer:PrintEventClass) (storeAgent:StoreAgent)
     do pongTimer.Start()
 
     do logAgent.AppendToLog "About to enter websocket read loop"
+
+    let mutable channelUniqueId = ""
 
     // if `loop` is set to false, the server will stop receiving messages
     let mutable loop = true
@@ -142,7 +145,8 @@ let ws (logAgent:LogAgent) (evt2Printer:PrintEventClass) (storeAgent:StoreAgent)
         | Some jsonval ->   
                             let zebraDiscoveryPacket = JsonExtensions.AsString jsonval |> decode64
                             let uniqueID = List.rev (snd (List.fold (fun (pos,acclist) byte -> (pos+1, if (pos > 187 && pos < 200 ) then byte::acclist else acclist))  (0,[]) zebraDiscoveryPacket))
-                            do logAgent.AppendToLog (sprintf "discovery_b64 property received on main channel unique_id: %s"  (uniqueID |> intListToString))
+                            do channelUniqueId <- uniqueID |> intListToString
+                            do logAgent.AppendToLog (sprintf "discovery_b64 property received on main channel unique_id: %s"  channelUniqueId)
                             inbox.Post(Binary, UTF8.bytes """ { "configure_alert" : "ALL MESSAGES,SDK,Y,Y,,,N,|SGD SET,SDK,Y,Y,,,N,capture.channel1.data.raw" } """, true)
                             inbox.Post(Binary, UTF8.bytes """ { "open" : "v1.raw.zebra.com" } """, true)
         | None -> () 
@@ -151,11 +155,13 @@ let ws (logAgent:LogAgent) (evt2Printer:PrintEventClass) (storeAgent:StoreAgent)
         | Some jsonval ->   let chanid = JsonExtensions.AsString (jsonval)
                             do logAgent.AppendToLog (sprintf "Channel name: %s" chanid)
                             if chanid = "v1.raw.zebra.com" then
-                               // request friendly name of printer and associate it to the raw channel
-                               // https://support.zebra.com/cpws/docs/zpl/device_friendly_name.pdf
-                               do evt2Printer.Event1 |> Observable.subscribe (fun lbl -> do logAgent.AppendToLog (sprintf "Printing request")
-                                                                                         inbox.Post(Binary, UTF8.bytes lbl , true)) |> ignore
-                               do evt2Printer.TriggerEvent(helloLabel)
+                               match jval.TryGetProperty "unique_id" with
+                               | Some jsonval ->   let uniqueId = JsonExtensions.AsString (jsonval)
+                                                   let eventForThisChannel = Event.filter (fun (print,_) -> print=uniqueId) evt2Printer.Event1
+                                                   do eventForThisChannel |> Observable.subscribe (fun (_,lbl) -> do logAgent.AppendToLog (sprintf "Printing request")
+                                                                                                                  do inbox.Post(Binary, UTF8.bytes lbl , true)) |> ignore
+                                                   do evt2Printer.TriggerEvent(uniqueId,helloLabel)
+                               | None -> ()
                             else 
                                ()
         | None -> ()
@@ -168,7 +174,7 @@ let ws (logAgent:LogAgent) (evt2Printer:PrintEventClass) (storeAgent:StoreAgent)
                                                 | Some prod -> 
                                                    let priceString = prod.unitPrice.ToString()
                                                    do logAgent.AppendToLog (sprintf "Barcode: %s Price: %s Description: %s" barcode priceString prod.description)       
-                                                   prod |> (buildpricetag >> evt2Printer.TriggerEvent)
+                                                   (channelUniqueId, buildpricetag prod) |> evt2Printer.TriggerEvent
                                                 | None ->
                                                    do logAgent.AppendToLog (sprintf "Barcode: %s not found in store" barcode)
                                  | _ -> ()
@@ -202,6 +208,7 @@ let app  : WebPart =
   let mLogAgent = new LogAgent()
   let evtPrint = new PrintEventClass()
   let storeAgent = new StoreAgent()
+  let printersAgent = new PrintersAgent()
   let toSendtoPrinter = evtPrint.Event1
   
   let productDo func:WebPart = 
@@ -214,17 +221,17 @@ let app  : WebPart =
     path "/websocketWithSubprotocol" >=> handShakeWithSubprotocol (chooseSubprotocol "v1.weblink.zebra.com") (ws mLogAgent evtPrint storeAgent)
     GET >=> choose 
         [ path "/hello" >=> OK "Hello GET"
-          path "/hellolabel" >=>  warbler (fun ctx -> evtPrint.TriggerEvent(helloLabel); OK ("Triggered"))
           path "/clearlog" >=> warbler (fun ctx -> OK ( mLogAgent.Empty(); "Log cleared" ))
           path "/logdump.json" >=> warbler (fun ctx -> OK ( mLogAgent.LogDump() ))
           path "/storepricelist.json" >=> warbler (fun ctx -> OK ( storeAgent.StoreInventory() )) 
-          // TODO: add "/connectedprinters.json"
-          browseHome ]
+          path "/printerslist.json" >=> warbler (fun ctx -> OK ( storeAgent.StoreInventory() )) 
+          browseHome 
+        ]
     POST >=> choose
         [ path "/productupdate" >=> productDo (fun prod -> do mLogAgent.AppendToLog "productupdate received"
                                                            storeAgent.UpdateWith prod)
-          path "/printproduct" >=> productDo (buildpricetag >> evtPrint.TriggerEvent) ]
-          // TODO: add "/printlabel" evtPrint.Trigger(body of POST) - event type is  printerid,label pair to support multiple printer connections 
+          //path "/printproduct" >=> productDo (buildpricetag >> evtPrint.TriggerEvent) 
+        ]
     NOT_FOUND "Found no handlers." ]
 
 //https://help.heroku.com/tickets/560930
