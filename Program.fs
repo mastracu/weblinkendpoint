@@ -141,6 +141,7 @@ let ws (logAgent:LogAgent) (evt2Printer:PrintEventClass) (storeAgent:StoreAgent)
         match jval.TryGetProperty "discovery_b64" with
         | Some jsonval ->   let zebraDiscoveryPacket = JsonExtensions.AsString jsonval |> decode64
                             //let offsetUniqueID = zebraDiscoveryPacket.LastIndexOf "50J163700136"
+                            do logAgent.AppendToLog (sprintf "discovery_b64 property decode length: %d" zebraDiscoveryPacket.Length)
                             let uniqueID = snd (List.foldBack (fun byte (pos,acclist) -> (pos+1, if (pos > 60 && pos < 130 ) then byte::acclist else acclist)) zebraDiscoveryPacket (0,[]))
                             do logAgent.AppendToLog (sprintf "discovery_b64 property received on main channel: b64 encoded unique_id: %s"  (uniqueID |> intListToString))
                             inbox.Post(Binary, UTF8.bytes """ { "configure_alert" : "ALL MESSAGES,SDK,Y,Y,,,N,|SGD SET,SDK,Y,Y,,,N,capture.channel1.data.raw" } """, true)
