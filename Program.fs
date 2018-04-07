@@ -206,6 +206,14 @@ let ws allAgents (evt2Printer:PrintEventClass) (webSocket : WebSocket) (context:
     
  }
 
+[<DataContract>]
+type ProductPrinterObj =
+   { 
+      [<field: DataMember(Name = "ProductObj")>]
+      ProductObj : Product;
+      [<field: DataMember(Name = "PrinterObj")>]
+      PrinterObj : Printer;
+   }
 
 let app  : WebPart = 
   let mLogAgent = new LogAgent()
@@ -216,9 +224,9 @@ let app  : WebPart =
   let toSendtoPrinter = evtPrint.Event1
   
   let productDo func:WebPart = 
-     mapJson (fun (prod:Product) -> 
-                       func prod
-                       prod)
+     mapJson (fun obj -> 
+                       func obj
+                       obj)
 
   do mLogAgent.AppendToLog "WebServer started"
   choose [
@@ -234,7 +242,7 @@ let app  : WebPart =
     POST >=> choose
         [ path "/productupdate" >=> productDo (fun prod -> do mLogAgent.AppendToLog "productupdate received"
                                                            storeAgent.UpdateWith prod)
-          //path "/printproduct" >=> productDo (buildpricetag >> evtPrint.TriggerEvent) 
+          path "/printproduct" >=> productDo (fun (prodprint:ProductPrinterObj) ->  evtPrint.TriggerEvent (prodprint.PrinterObj.uniqueID,(buildpricetag prodprint.ProductObj)) )
         ]
     NOT_FOUND "Found no handlers." ]
 
