@@ -1,26 +1,32 @@
 [
     {
-        "description": "La casa misteriosa",
-        "eanCode": "9788856646238",
-        "sku": "1073",
-        "unitPrice": 899
+        "description": "House of Sleep: book - J.Coe",
+        "eanCode": "9780241967744",
+        "sku": "0241967740",
+        "unitPrice": 7.99
     },
     {
-        "description": "dough",
+        "description": "Pasta dough",
         "eanCode": "800223231",
         "sku": "9342343",
-        "unitPrice": 712
+        "unitPrice": 0.30
     },
     {
-        "description": "beer",
+        "description": "Heineken Beer - 1 can",
         "eanCode": "72432423",
         "sku": "9342344",
-        "unitPrice": 493
+        "unitPrice": 2.32
     },
     {
         "description": "norda naturale 50cl",
         "eanCode": "8007500111238",
         "sku": "1212121212",
-        "unitPrice": 80
+        "unitPrice": 0.80
+    },
+    {
+        "description": "Ferreira Porto LBV 375ml",
+        "eanCode": "5601007425633",
+        "sku": "1212121212",
+        "unitPrice": 12.80
     }
 ]
