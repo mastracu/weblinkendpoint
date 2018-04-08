@@ -22,15 +22,23 @@
             margin-bottom: 25px;
     }
 
+    #example-table {
+            float:left;
+            margin-bottom: 25px;
+    }
+
     #printers-div {
+            width: 500px;
             margin-bottom: 25px;
     }
 
     .left-div {
-            float:left
+            float:left;
     }
-    .right-div {
-            float:right
+
+    .left-div-margin {
+            float:left;
+            margin-left:4px;
     }
 
 	</style>
@@ -42,10 +50,10 @@
         
         <form id ="newrowform" class="form"> <input type="text" placeholder="SKU" id="code" /> <input type="text" id="description" placeholder="Description" > <input type="text" id="price" placeholder="Price" > <input type="text" id="ean" placeholder="ean"> </form>
         
-		<div id="example-table" class="div"></div>
+		<div id="example-table"></div>
         <div id="printers-div">
             <div id="printers-table" class="left-div"></div>
-            <div id="printers-button" class="right-div">
+            <div id="printers-button" class="left-div-margin">
                 <button id="printlabel-button" class="button">Print product label</button>
             </div>
         </div>
@@ -61,7 +69,7 @@
 			    columns:[ //Define Table Columns
 			        { title: "SKU", field: "sku", sorter: "number", width: 150, align: "right",  },
 			        { title: "Description", field: "description", sorter: "string", align: "left", width: 200 },
-			        { title: "Unit Price", field: "unitPrice", width: 250, sorter: "number", editor: "input", validator: ["integer", "required"], align: "right", sortable: false },
+			        { title: "Unit Price", field: "unitPrice", width: 150, sorter: "number", editor: "input", validator: ["integer", "required"], align: "right", sortable: false },
 			        { title: "EAN/UPC code", field: "eanCode", sorter: "number", align: "right" },
 			    ],
                 //index:"sku",
