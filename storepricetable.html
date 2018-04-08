@@ -103,7 +103,7 @@
 			            alert("No printer selected !")
 			        }
 			        else {
-			            var ProductPrinterObj = { id: selectedData[0].uniqueID, PrinterObj: selectedPrinter[0] }
+			            var ProductPrinterObj = { id: selectedPrinter[0].uniqueID, ProductObj: selectedData[0] }
 			            var myJSON = JSON.stringify(ProductPrinterObj);
 			            //var xhr = new XMLHttpRequest();
 			            //var url = "printproduct";
