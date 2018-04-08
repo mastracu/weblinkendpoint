@@ -22,7 +22,7 @@ type Product =
       [<field: DataMember(Name = "description")>]
       description : string;
       [<field: DataMember(Name = "unitPrice")>]
-      unitPrice : int64;
+      unitPrice : float;
       [<field: DataMember(Name = "eanCode")>]
       eanCode : string;
    }
