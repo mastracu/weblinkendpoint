@@ -21,6 +21,8 @@ type Printer =
       partNumber : string;
       [<field: DataMember(Name = "appVersion")>]
       appVersion : string;
+      [<field: DataMember(Name = "friendlyName")>]
+      friendlyName : string;
    }
 
 let rec printerUpdate prod list =
