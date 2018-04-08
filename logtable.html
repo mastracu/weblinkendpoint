@@ -33,6 +33,7 @@
 
         $("#logclear-button").click(function () {
             $.get("clearlog");
+            $("#example-table").tabulator("setData", "logdump.json");
         });
 
 		$("#example-table").tabulator({
