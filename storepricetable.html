@@ -105,11 +105,12 @@
 			        else {
 			            var ProductPrinterObj = { id: selectedData[0].uniqueID, PrinterObj: selectedPrinter[0] }
 			            var myJSON = JSON.stringify(ProductPrinterObj);
-			            var xhr = new XMLHttpRequest();
-			            var url = "printproduct";
-			            xhr.open("POST", url, true);
-			            xhr.setRequestHeader("Content-type", "application/json");
-			            xhr.send(myJSON);
+			            //var xhr = new XMLHttpRequest();
+			            //var url = "printproduct";
+			            //xhr.open("POST", url, true);
+			            //xhr.setRequestHeader("Content-type", "application/json");
+			            //xhr.send(myJSON);
+			            console.log("JSON output: " + myJSON);
 			        }
 			    }
 			});
