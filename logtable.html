@@ -38,8 +38,7 @@
     <script type="text/javascript">
 
         $("#logclear-button").click(function () {
-            $.get("clearlog");
-            $("#example-table").tabulator("setData", "logdump.json");
+            $.get("clearlog", function () { $("#example-table").tabulator("setData", "logdump.json"); } );
         });
 
 		$("#example-table").tabulator({
@@ -55,6 +54,10 @@
 		});
 
 		$("#example-table").tabulator("setData", "logdump.json");
+
+		$("#refresh-button").click(function () {
+		    $("#example-table").tabulator("setData", "logdump.json");
+		});
 
     </script>
 </body>

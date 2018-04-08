@@ -46,15 +46,21 @@
 	</head>
 	<body>
 		<h1 style="text-align: center;">Zebra Store Product List</h1>
-        <button id="newrow-button" class="button">Add new product</button>
-        <button id="deleterow-button" class="button">Remove product</button>
+        <button id="newrow-button" class="button">
+            <span class="glyphicon glyphicon-plus"></span>
+        </button>
+        <button id="deleterow-button" class="button">
+            <span class="glyphicon glyphicon-minus"></span>
+        </button>
         
         <form id ="newrowform" class="form"> <input type="text" placeholder="SKU" id="code" /> <input type="text" id="description" placeholder="Description" > <input type="text" id="price" placeholder="Price" > <input type="text" id="ean" placeholder="ean"> </form>
         
 		<div id="example-table"></div>
         <div id="printers-div">
             <div id="printers-button" class="left-div">
-                <button id="printlabel-button" class="button">Print product label</button>
+                <button id="printlabel-button" class="button">
+                    <span class="glyphicon glyphicon-print"></span>
+                </button>
                 <button id="refresh-button" class="button">
                     <span class="glyphicon glyphicon-refresh"></span>
                 </button>
@@ -113,7 +119,11 @@
 
 			$("#example-table").tabulator("setData", "storepricelist.json");
 			$("#printers-table").tabulator("setData", "printerslist.json");
-			
+
+			$("#refresh-button").click(function () {
+			    $("#printers-table").tabulator("setData", "printerslist.json");
+			});
+
 			$("#printlabel-button").click(function(){
 			    var selectedData = $("#example-table").tabulator("getSelectedData");
 			    var selectedPrinter = $("#printers-table").tabulator("getSelectedData");
