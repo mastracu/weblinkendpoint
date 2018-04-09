@@ -31,11 +31,10 @@ open PrintersAgent
 
 let helloLabel = "
 CT~~CD,~CC^~CT~
-^XA~TA000~JSN^LT0^MNW^MTT^PON^PMN^LH0,0^JMA^PR3,3~SD17^JUS^LRN^CI0^XZ
 ^XA
 ^MMT
 ^PW609
-^LL0811
+^LL0400
 ^LS0
 ^FT100,150^A0N,28,28^FH\^FDSUAVE F# APP CONNECTED !^FS
 ^FT100,190^A0N,28,28^FH\^FDHOSTED BY HEROKU^FS
@@ -199,7 +198,8 @@ let ws allAgents (evt2Printer:PrintEventClass) (webSocket : WebSocket) (context:
       | (Close, _, _) ->
         do logAgent.AppendToLog "Got Close message from printer!"
         do inbox.Post (Close, [||], true)
-
+        
+        if channelUniqueId <> null then do (printersAgent.RemovePrinter channelUniqueId) else ()
         // after sending a Close message, stop the loop
         loop <- false
         do pongTimer.Stop()

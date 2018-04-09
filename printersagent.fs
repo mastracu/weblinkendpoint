@@ -30,12 +30,18 @@ let rec printerUpdate prod list =
       | [] -> []
       | prodHead :: xs -> if prodHead.uniqueID = prod.uniqueID then prod :: xs else (prodHead :: printerUpdate prod xs)
 
+let rec removePrinter id list =
+      match list with
+      | [] -> []
+      | prodHead :: xs -> if prodHead.uniqueID = id then xs else (prodHead :: removePrinter id xs)
+
 
 type PrintersAgentMsg = 
     | Exit
     | Clear
     | PrinterUpdate of Printer
     | IsKnownID of string * AsyncReplyChannel<Boolean>
+    | RemovePrinter of string 
     | PrintersInventory  of AsyncReplyChannel<String>
 
 [<DataContract>]
@@ -44,6 +50,8 @@ type ConnectedPrinters =
    static member Empty = {PrinterList = [] }
    member x.IsKnownID id = 
       List.exists (fun printer -> printer.uniqueID = id) x.PrinterList
+   member x.RemovePrinter id = 
+      { PrinterList = (removePrinter id x.PrinterList) }
    member x.PrinterUpdate prt =  
       { PrinterList = 
           if x.IsKnownID prt.uniqueID then
@@ -60,6 +68,7 @@ type PrintersAgent() =
                         | Exit -> return ()
                         | Clear -> return! printersAgentLoop ConnectedPrinters.Empty
                         | PrinterUpdate prod -> return! printersAgentLoop (connPrts.PrinterUpdate prod)
+                        | RemovePrinter id -> return! printersAgentLoop (connPrts.RemovePrinter id)
                         | IsKnownID (id, replyChannel) -> 
                             replyChannel.Reply (connPrts.IsKnownID id)
                             return! printersAgentLoop connPrts
@@ -72,6 +81,7 @@ type PrintersAgent() =
     member this.Exit() = storeAgentMailboxProcessor.Post(Exit)
     member this.Empty() = storeAgentMailboxProcessor.Post(Clear)
     member this.UpdateWith prod = storeAgentMailboxProcessor.Post(PrinterUpdate prod)
+    member this.RemovePrinter id = storeAgentMailboxProcessor.Post(RemovePrinter id)
     member this.IsKnownID sku = storeAgentMailboxProcessor.PostAndReply((fun reply -> IsKnownID(sku,reply)), timeout = 2000)
     member this.PrintersInventory() = storeAgentMailboxProcessor.PostAndReply((fun reply -> PrintersInventory reply), timeout = 2000)
 
