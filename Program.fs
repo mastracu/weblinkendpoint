@@ -37,7 +37,7 @@ let helloLabel = "
 ^PW609
 ^LL0811
 ^LS0
-^FT450,500^A0N,28,28^FH\^FDSUAVE F# APP CONNECTED !^FS
+^FT200,100^A0N,28,28^FH\^FDSUAVE F# APP CONNECTED !^FS
 ^PQ1,1,1,Y^XZ"
 
 let buildpricetag (prod:Product) =
