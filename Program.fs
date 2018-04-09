@@ -31,13 +31,13 @@ open PrintersAgent
 
 let helloLabel = "
 CT~~CD,~CC^~CT~
-^XA~TA000~JSN^LT0^MNW^MTT^POI^PMN^LH0,0^JMA^PR3,3~SD17^JUS^LRN^CI0^XZ
+^XA~TA000~JSN^LT0^MNW^MTT^PON^PMN^LH0,0^JMA^PR3,3~SD17^JUS^LRN^CI0^XZ
 ^XA
 ^MMC
 ^PW609
 ^LL0811
 ^LS0
-^FT450,500^A0I,28,28^FH\^FDSUAVE F# APP CONNECTED !^FS
+^FT450,500^A0N,28,28^FH\^FDSUAVE F# APP CONNECTED !^FS
 ^PQ1,1,1,Y^XZ"
 
 let buildpricetag (prod:Product) =
@@ -152,7 +152,6 @@ let ws allAgents (evt2Printer:PrintEventClass) (webSocket : WebSocket) (context:
                             channelUniqueId <- channelUniqueId.Substring (0, (channelUniqueId.IndexOf 'J' + 10))
                             do logAgent.AppendToLog (sprintf "adjusted unique_id: %s"  channelUniqueId)
                             do printersAgent.UpdateWith {uniqueID = channelUniqueId; partNumber = ""; appVersion = ""; friendlyName = ""}
-                            do logAgent.AppendToLog (sprintf "discovery_b64 property received on main channel unique_id: %s"  channelUniqueId)
                             inbox.Post(Binary, UTF8.bytes """ { "configure_alert" : "ALL MESSAGES,SDK,Y,Y,,,N,|SGD SET,SDK,Y,Y,,,N,capture.channel1.data.raw" } """, true)
                             inbox.Post(Binary, UTF8.bytes """ { "open" : "v1.raw.zebra.com" } """, true)
         | None -> () 
