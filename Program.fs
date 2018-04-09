@@ -149,7 +149,7 @@ let ws allAgents (evt2Printer:PrintEventClass) (webSocket : WebSocket) (context:
                             let uniqueID = List.rev (snd (List.fold (fun (pos,acclist) byte -> (pos+1, if (pos > 187 && pos < 202 ) then byte::acclist else acclist))  (0,[]) zebraDiscoveryPacket))
                             do channelUniqueId <- uniqueID |> intListToString
                             do logAgent.AppendToLog (sprintf "discovery_b64 property received on main channel unique_id: %s"  channelUniqueId)
-                            channelUniqueId <- channelUniqueId.Substring (0, (channelUniqueId.IndexOf 'J' + 9))
+                            channelUniqueId <- channelUniqueId.Substring (0, (channelUniqueId.IndexOf 'J' + 10))
                             do logAgent.AppendToLog (sprintf "adjusted unique_id: %s"  channelUniqueId)
                             do printersAgent.UpdateWith {uniqueID = channelUniqueId; partNumber = ""; appVersion = ""; friendlyName = ""}
                             do logAgent.AppendToLog (sprintf "discovery_b64 property received on main channel unique_id: %s"  channelUniqueId)
