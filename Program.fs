@@ -146,8 +146,11 @@ let ws allAgents (evt2Printer:PrintEventClass) (webSocket : WebSocket) (context:
         match jval.TryGetProperty "discovery_b64" with
         | Some jsonval ->   
                             let zebraDiscoveryPacket = JsonExtensions.AsString jsonval |> decode64
-                            let uniqueID = List.rev (snd (List.fold (fun (pos,acclist) byte -> (pos+1, if (pos > 187 && pos < 200 ) then byte::acclist else acclist))  (0,[]) zebraDiscoveryPacket))
+                            let uniqueID = List.rev (snd (List.fold (fun (pos,acclist) byte -> (pos+1, if (pos > 187 && pos < 202 ) then byte::acclist else acclist))  (0,[]) zebraDiscoveryPacket))
                             do channelUniqueId <- uniqueID |> intListToString
+                            do logAgent.AppendToLog (sprintf "discovery_b64 property received on main channel unique_id: %s"  channelUniqueId)
+                            channelUniqueId <- channelUniqueId.Substring (0, (channelUniqueId.IndexOf 'J' + 9))
+                            do logAgent.AppendToLog (sprintf "adjusted unique_id: %s"  channelUniqueId)
                             do printersAgent.UpdateWith {uniqueID = channelUniqueId; partNumber = ""; appVersion = ""; friendlyName = ""}
                             do logAgent.AppendToLog (sprintf "discovery_b64 property received on main channel unique_id: %s"  channelUniqueId)
                             inbox.Post(Binary, UTF8.bytes """ { "configure_alert" : "ALL MESSAGES,SDK,Y,Y,,,N,|SGD SET,SDK,Y,Y,,,N,capture.channel1.data.raw" } """, true)
