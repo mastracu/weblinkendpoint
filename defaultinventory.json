@@ -2,19 +2,19 @@
     {
         "description": "House of Sleep: book - J.Coe",
         "eanCode": "9780241967744",
-        "sku": "0241967740",
+        "sku": "1212121216",
         "unitPrice": 7.99
     },
     {
         "description": "Pasta dough",
         "eanCode": "800223231",
-        "sku": "9342343",
+        "sku": "1212121215",
         "unitPrice": 0.30
     },
     {
         "description": "Heineken Beer - 1 can",
         "eanCode": "72432423",
-        "sku": "9342344",
+        "sku": "1212121214",
         "unitPrice": 2.32
     },
     {
@@ -26,7 +26,7 @@
     {
         "description": "Ferreira Porto LBV 375ml",
         "eanCode": "5601007425633",
-        "sku": "1212121212",
+        "sku": "1212121213",
         "unitPrice": 12.80
     }
 ]

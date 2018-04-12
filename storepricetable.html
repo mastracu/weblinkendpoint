@@ -52,9 +52,6 @@
         <button id="deleterow-button" class="button">
             <span class="glyphicon glyphicon-minus"></span>
         </button>
-        <button id="save-button" class="button">
-            <span class="glyphicon glyphicon-saved"></span>
-        </button>
         
         <form id ="newrowform" class="form"> 
             <input type="text" placeholder="SKU" id="code" size="16"/> 
@@ -159,10 +156,6 @@
 			$("#newrow-button").click(function () {
 			    $("#example-table").tabulator("addData", [{ sku: $('#code').val(), description: $('#description').val(), eanCode: $('#ean').val(), unitPrice: $('#price').val() }], true);
 			    document.getElementById("newrowform").reset();
-			});
-
-			$("#save-button").click(function () {
-			    $("#example-table").tabulator("download", "json", "exported.json");
 			});
 
 		</script>
