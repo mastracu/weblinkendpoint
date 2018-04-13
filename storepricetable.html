@@ -106,6 +106,15 @@
 			        xhr.setRequestHeader("Content-type", "application/json");
 			        xhr.send(myJSON);
 			    },
+			    rowDeleted: function (row) {
+			        var data = row.getData();
+			        var myJSON = JSON.stringify(data);
+			        var xhr = new XMLHttpRequest();
+			        var url = "productremove";
+			        xhr.open("POST", url, true);
+			        xhr.setRequestHeader("Content-type", "application/json");
+			        xhr.send(myJSON);
+			    },
 			});
 
 			$("#printers-table").tabulator({
