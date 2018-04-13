@@ -256,8 +256,8 @@ let app  : WebPart =
           browseHome 
         ]
     POST >=> choose
-        [ path "/productupdate" >=> productDo (fun prod -> do mLogAgent.AppendToLog "productupdate received"
-                                                           storeAgent.UpdateWith prod)
+        [ path "/productupdate" >=> productDo (fun prod -> storeAgent.UpdateWith prod)
+          path "/productremove" >=> productDo (fun prod -> storeAgent.RemoveSku prod.sku)
           path "/printproduct" >=> productDo (fun (prodprint:ProductPrinterObj) ->  do mLogAgent.AppendToLog (sprintf "printproduct. id: %s prod: %A" prodprint.id prodprint.ProductObj)
                                                                                     evtPrint.TriggerEvent (prodprint.id,(buildpricetag prodprint.ProductObj)) )
         ]

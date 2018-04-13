@@ -158,6 +158,12 @@
 			    document.getElementById("newrowform").reset();
 			});
 
+			$("#deleterow-button").click(function () {
+			    var selectedRows = $("#example-table").tabulator("getSelectedRows");
+			    $("#example-table").tabulator("deleteRow", selectedRows[0]);
+			});
+
+			deleterow - button
 		</script>
 	</body>
 </html>

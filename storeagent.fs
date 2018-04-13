@@ -32,6 +32,11 @@ let rec productUpdate prod list =
       | [] -> []
       | prodHead :: xs -> if prodHead.sku = prod.sku then prod :: xs else (prodHead :: productUpdate prod xs)
 
+let rec removeSku sku list =
+      match list with
+      | [] -> []
+      | prodHead :: xs -> if prodHead.sku = sku then xs else (prodHead :: removeSku sku xs)
+
 let rec eanLookup barcode list =
       match list with
       | [] -> None
@@ -41,6 +46,7 @@ type StoreAgentMsg =
     | Exit
     | Clear
     | ProductUpdate of Product
+    | RemoveSku of string 
     | EanLookup of string * AsyncReplyChannel<Product option>
     | IsKnownSKU of string * AsyncReplyChannel<Boolean>
     | StoreInventory  of AsyncReplyChannel<String>
@@ -57,6 +63,8 @@ type Store =
               productUpdate prod x.ProductList
           else
               prod :: x.ProductList}
+   member x.RemoveSku sku =  
+      { ProductList = removeSku sku x.ProductList }
    member x.EanLookup barcode = eanLookup barcode x.ProductList
 
 type StoreAgent() =
@@ -74,6 +82,7 @@ type StoreAgent() =
                         | IsKnownSKU (sku, replyChannel) -> 
                             replyChannel.Reply (store.IsKnownSKU sku)
                             return! storeAgentLoop store
+                        | RemoveSku sku -> return! storeAgentLoop (store.RemoveSku sku)
                         | StoreInventory replyChannel -> 
                             replyChannel.Reply (json<Product array> (List.toArray store.ProductList))
                             return! storeAgentLoop store
@@ -87,6 +96,7 @@ type StoreAgent() =
     member this.Exit() = storeAgentMailboxProcessor.Post(Exit)
     member this.Empty() = storeAgentMailboxProcessor.Post(Clear)
     member this.UpdateWith prod = storeAgentMailboxProcessor.Post(ProductUpdate prod)
+    member this.RemoveSku sku = storeAgentMailboxProcessor.Post(RemoveSku sku)
     member this.EanLookup barcode = storeAgentMailboxProcessor.PostAndReply((fun reply -> EanLookup(barcode,reply)), timeout = 2000)
     member this.IsKnownSKU sku = storeAgentMailboxProcessor.PostAndReply((fun reply -> IsKnownSKU(sku,reply)), timeout = 2000)
     member this.StoreInventory() = storeAgentMailboxProcessor.PostAndReply((fun reply -> StoreInventory reply), timeout = 2000)
