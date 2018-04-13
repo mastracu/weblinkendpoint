@@ -143,13 +143,14 @@ let ws allAgents (evt2Printer:PrintEventClass) (webSocket : WebSocket) (context:
         let response = sprintf "Binary message from printer: %s" str
         do logAgent.AppendToLog response
         let jval = JsonValue.Parse str
+
         match jval.TryGetProperty "discovery_b64" with
         | Some jsonval ->   
                             let zebraDiscoveryPacket = JsonExtensions.AsString jsonval |> decode64
                             let uniqueID = List.rev (snd (List.fold (fun (pos,acclist) byte -> (pos+1, if (pos > 187 && pos < 202 ) then byte::acclist else acclist))  (0,[]) zebraDiscoveryPacket))
                             do channelUniqueId <- uniqueID |> intListToString
                             do logAgent.AppendToLog (sprintf "discovery_b64 property received on main channel unique_id: %s"  channelUniqueId)
-                            channelUniqueId <- channelUniqueId.Substring (0, (channelUniqueId.IndexOf 'J' + 10))
+                            do channelUniqueId <- channelUniqueId.Substring (0, (channelUniqueId.IndexOf 'J' + 10))
                             do logAgent.AppendToLog (sprintf "adjusted unique_id: %s"  channelUniqueId)
                             do printersAgent.UpdateWith {uniqueID = channelUniqueId; partNumber = ""; appVersion = ""; friendlyName = ""}
                             inbox.Post(Binary, UTF8.bytes """ { "configure_alert" : "ALL MESSAGES,SDK,Y,Y,,,N,|SGD SET,SDK,Y,Y,,,N,capture.channel1.data.raw" } """, true)
@@ -157,18 +158,24 @@ let ws allAgents (evt2Printer:PrintEventClass) (webSocket : WebSocket) (context:
         | None -> () 
 
         match jval.TryGetProperty "channel_name" with
-        | Some jsonval ->   let chanid = JsonExtensions.AsString (jsonval)
-                            do logAgent.AppendToLog (sprintf "Channel name: %s" chanid)
-                            if chanid = "v1.raw.zebra.com" then
-                               match jval.TryGetProperty "unique_id" with
-                               | Some jsonval ->   let uniqueId = JsonExtensions.AsString (jsonval)
-                                                   let eventForThisChannel = Event.filter (fun (print,_) -> print=uniqueId) evt2Printer.Event1
-                                                   do eventForThisChannel |> Observable.subscribe (fun (_,lbl) -> do logAgent.AppendToLog (sprintf "Printing request")
-                                                                                                                  do inbox.Post(Binary, UTF8.bytes lbl , true)) |> ignore
-                                                   do evt2Printer.TriggerEvent(uniqueId,helloLabel)
-                               | None -> ()
-                            else 
-                               ()
+        | Some jsonval ->   let channelName = JsonExtensions.AsString (jsonval)
+                            do logAgent.AppendToLog (sprintf "Channel name: %s" channelName)
+                            match channelName with
+                            | "v1.raw.zebra.com" -> 
+                                    match jval.TryGetProperty "unique_id" with
+                                    | Some jsonval ->   do channelUniqueId <- JsonExtensions.AsString (jsonval)
+                                                        let eventForThisChannel = Event.filter (fun (print,_) -> print=channelUniqueId) evt2Printer.Event1
+                                                        do eventForThisChannel |> Observable.subscribe (fun (_,lbl) -> do logAgent.AppendToLog (sprintf "Printing request")
+                                                                                                                       do inbox.Post(Binary, UTF8.bytes lbl , true)) |> ignore
+                                                        do evt2Printer.TriggerEvent(channelUniqueId,helloLabel)
+                                    | None -> ()
+                            | "v1.config.zebra.com" -> 
+                                    match jval.TryGetProperty "unique_id" with
+                                    | Some jsonval ->   do channelUniqueId <- JsonExtensions.AsString (jsonval)
+                                                        inbox.Post(Binary, UTF8.bytes """ {}{ "device.configuration_number":null } """, true)
+                                                        inbox.Post(Binary, UTF8.bytes """ {}{ "appl.name" :null } """, true)
+                                    | None -> ()
+                            | _ -> ()
         | None -> ()
 
         match jval.TryGetProperty "alert" with

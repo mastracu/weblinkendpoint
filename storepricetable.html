@@ -61,6 +61,7 @@
         </form>
         
 		<div id="example-table"></div>
+
         <div id="printers-div">
             <div id="printers-button" class="left-div">
                 <button id="printlabel-button" class="button">
@@ -119,10 +120,12 @@
 
 			$("#printers-table").tabulator({
 			    selectable: 1,
-			    width: 250,
+			    width: 800,
 			    layout: "fitColumns",
 			    columns: [ //Define Table Columns
 			        { title: "Printer Serial Number", field: "uniqueID", sorter: "string", align: "left", },
+			        { title: "Part Number", field: "partNumber", sorter: "string", align: "left", },
+			        { title: "App Version", field: "appVersion", sorter: "string", align: "left", },
 			    ],
 			    //index:"sku",
 			    cellEdited: function (cell) {
