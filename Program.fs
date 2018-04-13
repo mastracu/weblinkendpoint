@@ -155,6 +155,7 @@ let ws allAgents (evt2Printer:PrintEventClass) (webSocket : WebSocket) (context:
                             do printersAgent.UpdateWith {uniqueID = channelUniqueId; partNumber = ""; appVersion = ""; friendlyName = ""}
                             inbox.Post(Binary, UTF8.bytes """ { "configure_alert" : "ALL MESSAGES,SDK,Y,Y,,,N,|SGD SET,SDK,Y,Y,,,N,capture.channel1.data.raw" } """, true)
                             inbox.Post(Binary, UTF8.bytes """ { "open" : "v1.raw.zebra.com" } """, true)
+                            inbox.Post(Binary, UTF8.bytes """ { "open" : "v1.config.zebra.com" } """, true)
         | None -> () 
 
         match jval.TryGetProperty "channel_name" with
