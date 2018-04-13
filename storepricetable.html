@@ -160,7 +160,7 @@
 
 			$("#deleterow-button").click(function () {
 			    var selectedRows = $("#example-table").tabulator("getSelectedRows");
-			    $("#example-table").tabulator("deleteRow", selectedRows[0]);
+			    $("#example-table").tabulator("deleteRow", selectedRows[0].getPos());
 			});
 
 			deleterow - button
