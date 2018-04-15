@@ -152,11 +152,25 @@ let ws allAgents (evt2Printer:PrintEventClass) (webSocket : WebSocket) (context:
                             do logAgent.AppendToLog (sprintf "discovery_b64 property received on main channel unique_id: %s"  channelUniqueId)
                             do channelUniqueId <- channelUniqueId.Substring (0, (channelUniqueId.IndexOf 'J' + 10))
                             do logAgent.AppendToLog (sprintf "adjusted unique_id: %s"  channelUniqueId)
-                            do printersAgent.UpdateWith {uniqueID = channelUniqueId; partNumber = ""; appVersion = ""; friendlyName = ""}
+                            do printersAgent.AddPrinter {uniqueID = channelUniqueId; partNumber = ""; appVersion = ""; friendlyName = ""}
                             inbox.Post(Binary, UTF8.bytes """ { "configure_alert" : "ALL MESSAGES,SDK,Y,Y,,,N,|SGD SET,SDK,Y,Y,,,N,capture.channel1.data.raw" } """, true)
                             inbox.Post(Binary, UTF8.bytes """ { "open" : "v1.raw.zebra.com" } """, true)
                             inbox.Post(Binary, UTF8.bytes """ { "open" : "v1.config.zebra.com" } """, true)
         | None -> () 
+
+        match jval.TryGetProperty "alert" with
+        | Some jsonalertval ->   match (jsonalertval.GetProperty "condition_id").AsString() with
+                                 | "SGD SET" -> let barcode = (jsonalertval.GetProperty "setting_value").AsString()
+                                                let maybeProd = storeAgent.EanLookup barcode
+                                                match maybeProd with
+                                                | Some prod -> 
+                                                   let priceString = prod.unitPrice.ToString()
+                                                   do logAgent.AppendToLog (sprintf "Barcode: %s Price: %s Description: %s" barcode priceString prod.description)       
+                                                   (channelUniqueId, buildpricetag prod) |> evt2Printer.TriggerEvent
+                                                | None ->
+                                                   do logAgent.AppendToLog (sprintf "Barcode: %s not found in store" barcode)
+                                 | _ -> ()
+        | None -> ()
 
         match jval.TryGetProperty "channel_name" with
         | Some jsonval ->   let channelName = JsonExtensions.AsString (jsonval)
@@ -179,18 +193,14 @@ let ws allAgents (evt2Printer:PrintEventClass) (webSocket : WebSocket) (context:
                             | _ -> ()
         | None -> ()
 
-        match jval.TryGetProperty "alert" with
-        | Some jsonalertval ->   match (jsonalertval.GetProperty "condition_id").AsString() with
-                                 | "SGD SET" -> let barcode = (jsonalertval.GetProperty "setting_value").AsString()
-                                                let maybeProd = storeAgent.EanLookup barcode
-                                                match maybeProd with
-                                                | Some prod -> 
-                                                   let priceString = prod.unitPrice.ToString()
-                                                   do logAgent.AppendToLog (sprintf "Barcode: %s Price: %s Description: %s" barcode priceString prod.description)       
-                                                   (channelUniqueId, buildpricetag prod) |> evt2Printer.TriggerEvent
-                                                | None ->
-                                                   do logAgent.AppendToLog (sprintf "Barcode: %s not found in store" barcode)
-                                 | _ -> ()
+        match jval.TryGetProperty "device.configuration_number" with
+        | Some jsonval ->   let devConfigNumber = JsonExtensions.AsString (jsonval)
+                            do printersAgent.UpdatePartNumber channelUniqueId devConfigNumber
+        | None -> ()
+
+        match jval.TryGetProperty "appl.name" with
+        | Some jsonval ->   let applName = JsonExtensions.AsString (jsonval)
+                            do printersAgent.UpdateAppVersion channelUniqueId applName
         | None -> ()
 
       | (Ping, data, true) ->
