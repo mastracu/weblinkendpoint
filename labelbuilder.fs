@@ -37,7 +37,7 @@ let buildpricetag (prod:Product) =
 
 
 let convertIfadLabel (label:string) =
-    let index1 = label.IndexOf("^FO20,10^ADN80,50^FD") + "FO20,10^ADN80,50^FD".Length   // IFAD INVENTORY
+    let index1 = label.IndexOf("^FO20,10^ADN80,50^FD") + "^FO20,10^ADN80,50^FD".Length   // IFAD INVENTORY
     let field1 = label.Substring (index1, label.IndexOf("^FS", index1) - index1)
     let index2 = label.IndexOf("^FO20,80^ADN60,30^FD") + "^FO20,80^ADN60,30^FD".Length   // NOTEBOOK
     let field2 = label.Substring (index2, label.IndexOf("^FS", index2) - index2)
@@ -55,7 +55,7 @@ let convertIfadLabel (label:string) =
     "^FO13,80^ADN20,7^FD" + field3 + "^FS" +
     "^FO58,80^A0N22,25^FD" + field4 + "^FS" + 
     "^FO53,107^B3N,N,87,N,N^FD" + field5 + "^FS" +
-    "^FO100,203^A0N22,25^F" + field6 + "^FS^XZ"
+    "^FO100,203^A0N22,25^FD" + field6 + "^FS^XZ"
 
 
 
