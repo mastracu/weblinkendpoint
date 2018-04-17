@@ -13,6 +13,9 @@ open FSharp.Data
 open JsonHelper
 
 [<DataContract>]
+type SgdSetAlertFeedback = PriceTag | IfadLabelConversion
+
+[<DataContract>]
 type Printer =
    { 
       [<field: DataMember(Name = "uniqueID")>]
@@ -23,6 +26,8 @@ type Printer =
       appVersion : string;
       [<field: DataMember(Name = "friendlyName")>]
       friendlyName : string;
+      [<field: DataMember(Name = "sgdSetAlertFeedback")>]
+      sgdSetAlertFeedback : SgdSetAlertFeedback;
    }
 
 let rec addPrinter prod list =
@@ -45,6 +50,11 @@ let rec updateAppVersion id ver list =
       | [] -> []
       | prodHead :: xs -> if prodHead.uniqueID = id then {prodHead with appVersion = ver} :: xs else (prodHead :: updateAppVersion id ver xs)
 
+let rec fetchPrinterInfo id list = 
+      match list with
+      | [] -> None
+      | prodHead :: xs -> if prodHead.uniqueID = id then Some prodHead else (fetchPrinterInfo id xs)
+
 type PrintersAgentMsg = 
     | Exit
     | Clear
@@ -54,7 +64,7 @@ type PrintersAgentMsg =
     | PrintersInventory  of AsyncReplyChannel<String>
     | UpdatePartNumber of string * string
     | UpdateAppVersion of string * string
-
+    | FetchPrinterInfo of string * AsyncReplyChannel<Printer Option>
 
 [<DataContract>]
 type ConnectedPrinters = 
@@ -72,6 +82,7 @@ type ConnectedPrinters =
               prt :: x.PrinterList}
    member x.UpdatePartNumber id pn = { PrinterList = updatePartNumber id pn x.PrinterList} 
    member x.UpdateAppVersion id ver = { PrinterList = updateAppVersion id ver x.PrinterList} 
+   member x.FetchPrinterInfo id = fetchPrinterInfo id x.PrinterList
 
 
 
@@ -93,6 +104,9 @@ type PrintersAgent() =
                         | PrintersInventory replyChannel -> 
                             replyChannel.Reply (json<Printer array> (List.toArray connPrts.PrinterList))
                             return! printersAgentLoop connPrts
+                        | FetchPrinterInfo (id, replyChannel) -> 
+                            replyChannel.Reply (connPrts.FetchPrinterInfo id)
+                            return! printersAgentLoop connPrts                           
                       }
             printersAgentLoop ConnectedPrinters.Empty
         )
@@ -104,4 +118,4 @@ type PrintersAgent() =
     member this.UpdateAppVersion id ver = storeAgentMailboxProcessor.Post(UpdateAppVersion (id,ver))
     member this.IsKnownID sku = storeAgentMailboxProcessor.PostAndReply((fun reply -> IsKnownID(sku,reply)), timeout = 2000)
     member this.PrintersInventory() = storeAgentMailboxProcessor.PostAndReply((fun reply -> PrintersInventory reply), timeout = 2000)
-
+    member this.FetchPrinterInfo id = storeAgentMailboxProcessor.PostAndReply((fun reply -> FetchPrinterInfo(id,reply)), timeout = 2000)
