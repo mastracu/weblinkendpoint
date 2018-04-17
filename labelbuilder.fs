@@ -54,7 +54,7 @@ let convertIfadLabel (label:string) =
     "^FO13,53^A0N22,25^FD" + field2 + "^FS" + 
     "^FO13,80^ADN20,7^FD" + field3 + "^FS" +
     "^FO58,80^A0N22,25^FD" + field4 + "^FS" + 
-    "^FO53,107^B3N,N,87,N,N^FD" + field5 + "^FS" +
+    "^FO13,107^B3N,N,87,N,N^FD" + field5 + "^FS" +
     "^FO140,203^A0N22,25^FD" + field6 + "^FS^XZ"
 
 
