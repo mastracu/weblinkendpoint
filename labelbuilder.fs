@@ -50,12 +50,12 @@ let convertIfadLabel (label:string) =
     let index6 = label.IndexOf("^FO150,305^ADN30,35^FD") + "^FO150,305^ADN30,35^FD".Length // 000000054986
     let field6 = label.Substring (index6, label.IndexOf("^FS", index6) - index6)
 
-    "^XA^BY1,3,10^LH20,20^FO13,7^ADN53,33^FD" + field1 + "^FS" +
+    "^XA^BY2,3,10^LH20,20^FO13,7^ADN53,33^FD" + field1 + "^FS" +
     "^FO13,53^A0N22,25^FD" + field2 + "^FS" + 
     "^FO13,80^ADN20,7^FD" + field3 + "^FS" +
     "^FO58,80^A0N22,25^FD" + field4 + "^FS" + 
     "^FO53,107^B3N,N,87,N,N^FD" + field5 + "^FS" +
-    "^FO100,203^A0N22,25^FD" + field6 + "^FS^XZ"
+    "^FO140,203^A0N22,25^FD" + field6 + "^FS^XZ"
 
 
 
