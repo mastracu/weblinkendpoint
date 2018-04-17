@@ -28,37 +28,8 @@ open tinyBase64Decoder
 open StoreAgent
 open MessageLogAgent
 open PrintersAgent
+open LabelBuilder
 
-let helloLabel = "
-CT~~CD,~CC^~CT~
-^XA
-^MMT
-^PW609
-^LL0400
-^LS0
-^FT100,150^A0N,28,28^FH\^FDSUAVE F# APP CONNECTED !^FS
-^FT100,190^A0N,28,28^FH\^FDHOSTED BY HEROKU^FS
-^PQ1,1,1,Y^XZ"
-
-let buildpricetag (prod:Product) =
-    let label0 = "
-        ^XA
-        ^MMT
-        ^PW609
-        ^LL0240
-        ^LS0
-        ^FT176,49^A0N,28,50^FB236,1,0,C^FH\^FDZebra Store^FS
-        ^BY3,3,41^FT156,210^BCN,,Y,N
-        ^FD>;BBBBBBBBBBBBB^FS
-        ^FT280,148^A0N,28,28^FH\^FDPPPPPP\15 a piece^FS
-        ^FT189,148^A0N,28,28^FH\^FDPrice ^FS
-        ^FT270,111^A0N,28,28^FH\^FDXXXXXXXXXXXX^FS
-        ^FT157,111^A0N,28,28^FH\^FDProduct ^FS
-        ^PQ1,0,1,Y^XZ
-        "
-    let label1 = String.replace "PPPPPP" (prod.unitPrice.ToString()) label0
-    let label2 = String.replace "BBBBBBBBBBBBB" prod.eanCode label1
-    String.replace "XXXXXXXXXXXX" prod.description label2
 
 //TODO: https://github.com/SuaveIO/suave/issues/307
 
@@ -287,3 +258,4 @@ let app  : WebPart =
 let main _ =
   startWebServer config app
   0
+  
