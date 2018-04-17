@@ -131,15 +131,15 @@ let ws allAgents (printJob:Msg2PrinterFeed) (jsonRequest:Msg2PrinterFeed) (webSo
 
         match jval.TryGetProperty "alert" with
         | Some jsonalertval ->   match (jsonalertval.GetProperty "condition_id").AsString() with
-////                                 | "SGD SET" -> let barcode = (jsonalertval.GetProperty "setting_value").AsString()
-////                                                let maybeProd = storeAgent.EanLookup barcode
-////                                                match maybeProd with
-////                                                | Some prod -> 
-////                                                   let priceString = prod.unitPrice.ToString()
-////                                                   do logAgent.AppendToLog (sprintf "Barcode: %s Price: %s Description: %s" barcode priceString prod.description)       
-////                                                   (channelUniqueId, buildpricetag prod) |> printJob.TriggerEvent
-////                                                | None ->
-////                                                   do logAgent.AppendToLog (sprintf "Barcode: %s not found in store" barcode)
+//                                 | "SGD SET" -> let barcode = (jsonalertval.GetProperty "setting_value").AsString()
+//                                                let maybeProd = storeAgent.EanLookup barcode
+//                                                match maybeProd with
+//                                                | Some prod -> 
+//                                                   let priceString = prod.unitPrice.ToString()
+//                                                   do logAgent.AppendToLog (sprintf "Barcode: %s Price: %s Description: %s" barcode priceString prod.description)       
+//                                                   (channelUniqueId, buildpricetag prod) |> printJob.TriggerEvent
+//                                                | None ->
+//                                                   do logAgent.AppendToLog (sprintf "Barcode: %s not found in store" barcode)
                                  | "SGD SET" -> let label300dpi = (jsonalertval.GetProperty "setting_value").AsString()
                                                 do logAgent.AppendToLog (sprintf "Input label: %s" label300dpi)    
                                                 do logAgent.AppendToLog (sprintf "New label: %s" (convertIfadLabel label300dpi))       
