@@ -176,11 +176,11 @@ let ws allAgents (printJob:Msg2PrinterFeed) (jsonRequest:Msg2PrinterFeed) (webSo
                                     | Some jsonval ->   do channelUniqueId <- JsonExtensions.AsString (jsonval)
                                                         let eventForThisChannel = Event.filter (fun (print,_) -> print=channelUniqueId) jsonRequest.Event1
                                                         do eventForThisChannel |> Observable.subscribe (fun (_,jsonCmd) -> do inbox.Post(Binary, UTF8.bytes jsonCmd , true)) |> ignore
-                                                        do jsonRequest.TriggerEvent(channelUniqueId, """ {}{ "device.configuration_number":null } """)
-                                                        do jsonRequest.TriggerEvent(channelUniqueId, """ {}{ "appl.name" :null } """)
-                                                        do jsonRequest.TriggerEvent (channelUniqueId, """{}{"capture.channel1.port":"bt"}""")
-                                                        do jsonRequest.TriggerEvent (channelUniqueId, """{}{"capture.channel1.delimiter":"\\015\\012"}""")
-                                                        do jsonRequest.TriggerEvent (channelUniqueId, """{}{"capture.channel1.max_length":"64"}""")
+                                                        do jsonRequest.TriggerEvent(channelUniqueId, """{}{"device.configuration_number":null } """)
+                                                        do jsonRequest.TriggerEvent(channelUniqueId, """{}{"appl.name" :null } """)
+                                                        do jsonRequest.TriggerEvent(channelUniqueId, """{}{"capture.channel1.port":"bt"}""")
+                                                        do jsonRequest.TriggerEvent(channelUniqueId, """{}{"capture.channel1.delimiter":"\\015\\012"}""")
+                                                        do jsonRequest.TriggerEvent(channelUniqueId, """{}{"capture.channel1.max_length":"64"}""")
                                     | None -> ()
                             | _ -> ()
         | None -> ()
