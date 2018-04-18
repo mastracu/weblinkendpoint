@@ -12,8 +12,6 @@ open FSharp.Data
 
 open JsonHelper
 
-[<DataContract>]
-type SgdSetAlertFeedback = PriceTag | IfadLabelConversion
 
 [<DataContract>]
 type Printer =
@@ -27,7 +25,8 @@ type Printer =
       [<field: DataMember(Name = "friendlyName")>]
       friendlyName : string;
       [<field: DataMember(Name = "sgdSetAlertFeedback")>]
-      sgdSetAlertFeedback : SgdSetAlertFeedback;
+      sgdSetAlertFeedback : string;
+      // PriceTag | IfadLabelConversion
    }
 
 let rec addPrinter prod list =
