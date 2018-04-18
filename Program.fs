@@ -59,7 +59,7 @@ let ws allAgents (printJob:Msg2PrinterFeed) (jsonRequest:Msg2PrinterFeed) (webSo
             let close = ref false
             while not !close do
                 let! op, data, fi = inbox.Receive()
-                // do logAgent.UpdateWith (sprintf "Sending message to printer of type %A" op)
+                do logAgent.AppendToLog (sprintf "Sending message to printer of type %A" op)
                 let! _ = webSocket.send op (data|> ByteSegment) fi
                 close := op = Close                    
         })
