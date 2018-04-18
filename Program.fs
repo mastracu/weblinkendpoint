@@ -260,7 +260,7 @@ let app  : WebPart =
           browseHome 
         ]
     POST >=> choose
-        [ path "/printupdate" >=> objectDo (fun prt -> printersAgent.AddPrinter prt)
+        [ path "/printerupdate" >=> objectDo (fun prt -> printersAgent.AddPrinter prt)
           path "/productupdate" >=> objectDo (fun prod -> storeAgent.UpdateWith prod)
           path "/productremove" >=> objectDo (fun prod -> storeAgent.RemoveSku prod.sku)
           path "/printproduct" >=> objectDo (fun (prodprint:ProductPrinterObj) ->  do mLogAgent.AppendToLog (sprintf "printproduct. id: %s prod: %A" prodprint.id prodprint.ProductObj)
