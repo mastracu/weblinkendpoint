@@ -230,7 +230,7 @@ let app  : WebPart =
   let printersAgent = new PrintersAgent()
   let allAgents = (storeAgent, printersAgent, mLogAgent)
   
-  let productDo func:WebPart = 
+  let objectDo func:WebPart = 
      mapJson (fun obj -> 
                        func obj
                        obj)
@@ -260,10 +260,11 @@ let app  : WebPart =
           browseHome 
         ]
     POST >=> choose
-        [ path "/productupdate" >=> productDo (fun prod -> storeAgent.UpdateWith prod)
-          path "/productremove" >=> productDo (fun prod -> storeAgent.RemoveSku prod.sku)
-          path "/printproduct" >=> productDo (fun (prodprint:ProductPrinterObj) ->  do mLogAgent.AppendToLog (sprintf "printproduct. id: %s prod: %A" prodprint.id prodprint.ProductObj)
-                                                                                    printJob.TriggerEvent (prodprint.id,(buildpricetag prodprint.ProductObj)) )        ]
+        [ path "/printupdate" >=> objectDo (fun prt -> printersAgent.AddPrinter prt)
+          path "/productupdate" >=> objectDo (fun prod -> storeAgent.UpdateWith prod)
+          path "/productremove" >=> objectDo (fun prod -> storeAgent.RemoveSku prod.sku)
+          path "/printproduct" >=> objectDo (fun (prodprint:ProductPrinterObj) ->  do mLogAgent.AppendToLog (sprintf "printproduct. id: %s prod: %A" prodprint.id prodprint.ProductObj)
+                                                                                      printJob.TriggerEvent (prodprint.id,(buildpricetag prodprint.ProductObj)) )        ]
     NOT_FOUND "Found no handlers." ]
 
 //https://help.heroku.com/tickets/560930

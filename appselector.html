@@ -68,10 +68,17 @@
                     "PriceTag":"Repricing app",
                     "IfadLabelConversion":"IFAD label conversion",
                 }}],
-			    //index:"sku",
-			    cellEdited: function (cell) {
+            cellEdited: function (cell) {
+                    var data = cell.getRow().getData();
+                    var myJSON = JSON.stringify(data);
+                    var xhr = new XMLHttpRequest();
+                    var url = "printerupdate";
+                    xhr.open("POST", url, true);
+                    xhr.setRequestHeader("Content-type", "application/json");
+                    xhr.send(myJSON);
+
 			    },
-			    rowAdded: function (row) {
+			rowAdded: function (row) {
 			    },
 			});
 
