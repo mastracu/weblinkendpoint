@@ -1,6 +1,6 @@
 [
     {
-        "description": "House of Sleep: book - J.Coe",
+        "description": "House of Sleep:J.Coe",
         "eanCode": "9780241967744",
         "sku": "1212121216",
         "unitPrice": 7.99
@@ -9,16 +9,16 @@
         "description": "Pasta dough",
         "eanCode": "9421021461303",
         "sku": "1212121215",
-        "unitPrice": 0.30
+        "unitPrice": 1.30
     },
     {
         "description": "Norda frizzante 50 cl",
-        "eanCode": "72432423",
-        "sku": "8007500111023",
-        "unitPrice": 2.32
+        "eanCode": "8007500111023",
+        "sku": "72432423",
+        "unitPrice": 0.80
     },
     {
-        "description": "norda naturale 50cl",
+        "description": "Norda naturale 50cl",
         "eanCode": "8007500111238",
         "sku": "1212121212",
         "unitPrice": 0.80
