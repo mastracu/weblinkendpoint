@@ -260,7 +260,16 @@ let app  : WebPart =
           browseHome 
         ]
     POST >=> choose
-        [ path "/printerupdate" >=> objectDo (fun prt -> printersAgent.AddPrinter prt)
+        [ path "/printerupdate" >=> objectDo (fun prt -> printersAgent.AddPrinter prt
+                                                         if prt.sgdSetAlertFeedback = "PriceTag" then
+                                                            jsonRequest.TriggerEvent (prt.uniqueID, """{}{"capture.channel1.port":"bt"}""")
+                                                            jsonRequest.TriggerEvent (prt.uniqueID, """{}{"capture.channel1.delimiter":"\\015\\012"}""")
+                                                            jsonRequest.TriggerEvent (prt.uniqueID, """{}{"capture.channel1.max_length":"64"}""")
+                                                         else
+                                                            jsonRequest.TriggerEvent (prt.uniqueID, """{}{"capture.channel1.port":"usb"}""")
+                                                            jsonRequest.TriggerEvent (prt.uniqueID, """{}{"capture.channel1.delimiter":"^XZ"}""")
+                                                            jsonRequest.TriggerEvent (prt.uniqueID, """{}{"capture.channel1.max_length":"512"}""")
+                                              )
           path "/productupdate" >=> objectDo (fun prod -> storeAgent.UpdateWith prod)
           path "/productremove" >=> objectDo (fun prod -> storeAgent.RemoveSku prod.sku)
           path "/printproduct" >=> objectDo (fun (prodprint:ProductPrinterObj) ->  do mLogAgent.AppendToLog (sprintf "printproduct. id: %s prod: %A" prodprint.id prodprint.ProductObj)
