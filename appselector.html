@@ -12,7 +12,6 @@
             text-align: center;
             font-size: 16px;
             cursor: pointer;
-            margin-bottom: 25px;
         }
 
             .button:hover {
@@ -20,7 +19,7 @@
             }
 
         .form {
-            margin-bottom: 25px;
+            margin-bottom: 5px;
             margin-left: 4px;
         }
 
@@ -30,6 +29,7 @@
         }
 
         .left-div {
+            margin-bottom: 10px;
             margin-left: 4px;
         }
 
@@ -54,8 +54,11 @@
             <form id="jsonform" class="form">
                 <input type="text" placeholder="Json Command" id="jsoncmd" size="50" />
             </form>
+            <div id="caption-div" class="left-div">
+                Afer sending JSON command, please check <a target="_blank" href="http://weblinkendpoint.mastracu.it/logtable.html">logtable</a> for printer response
+            </div>
             <div id="printers-table" class="left-div-margin"></div>
-</div>
+    </div>
 
     <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
