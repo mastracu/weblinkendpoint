@@ -33,8 +33,17 @@ open LabelBuilder
 
 //TODO: https://github.com/SuaveIO/suave/issues/307
 
+[<DataContract>]
+type Msg2Printer =
+   { 
+      [<field: DataMember(Name = "printerID")>]
+      printerID : string;
+      [<field: DataMember(Name = "msg")>]
+      msg : string;
+   }
+
 type Msg2PrinterFeed() =
-   let event1 = new Event<String*String>()
+   let event1 = new Event<Msg2Printer>()
    
    member this.Event1 = event1.Publish
    member this.TriggerEvent printerMsgPair =
@@ -147,14 +156,14 @@ let ws allAgents (printJob:Msg2PrinterFeed) (jsonRequest:Msg2PrinterFeed) (webSo
                         | Some prod -> 
                             let priceString = prod.unitPrice.ToString()
                             do logAgent.AppendToLog (sprintf "Barcode: %s Price: %s Description: %s" barcode priceString prod.description)       
-                            (channelUniqueId, buildpricetag prod) |> printJob.TriggerEvent
+                            {printerID = channelUniqueId; msg= (buildpricetag prod)} |> printJob.TriggerEvent
                         | None ->
                             do logAgent.AppendToLog (sprintf "Barcode: %s not found in store" barcode)
                     | "IfadLabelConversion" ->  
                         let label300dpi = (jsonalertval.GetProperty "setting_value").AsString()
                         do logAgent.AppendToLog (sprintf "Input label: %s" label300dpi)    
                         do logAgent.AppendToLog (sprintf "New label: %s" (convertIfadLabel label300dpi))       
-                        (channelUniqueId, convertIfadLabel label300dpi) |> printJob.TriggerEvent
+                        {printerID = channelUniqueId; msg = (convertIfadLabel label300dpi)} |> printJob.TriggerEvent
                     | _ -> ()
                 | None -> ()
             | _ -> ()
@@ -167,20 +176,20 @@ let ws allAgents (printJob:Msg2PrinterFeed) (jsonRequest:Msg2PrinterFeed) (webSo
                             | "v1.raw.zebra.com" -> 
                                     match jval.TryGetProperty "unique_id" with
                                     | Some jsonval ->   do channelUniqueId <- JsonExtensions.AsString (jsonval)
-                                                        let eventForThisChannel = Event.filter (fun (printid,_) -> printid=channelUniqueId) printJob.Event1
-                                                        do eventForThisChannel |> Observable.subscribe (fun (_,lbl) -> do inbox.Post(Binary, UTF8.bytes lbl , true)) |> ignore
-                                                        do printJob.TriggerEvent(channelUniqueId,helloLabel)
+                                                        let eventForThisChannel = Event.filter (fun pm -> pm.printerID=channelUniqueId) printJob.Event1
+                                                        do eventForThisChannel |> Observable.subscribe (fun pm -> do inbox.Post(Binary, UTF8.bytes pm.msg , true)) |> ignore
+                                                        do printJob.TriggerEvent {printerID = channelUniqueId; msg = helloLabel }
                                     | None -> ()
                             | "v1.config.zebra.com" -> 
                                     match jval.TryGetProperty "unique_id" with
                                     | Some jsonval ->   do channelUniqueId <- JsonExtensions.AsString (jsonval)
-                                                        let eventForThisChannel = Event.filter (fun (print,_) -> print=channelUniqueId) jsonRequest.Event1
-                                                        do eventForThisChannel |> Observable.subscribe (fun (_,jsonCmd) -> do inbox.Post(Binary, UTF8.bytes jsonCmd , true)) |> ignore
-                                                        do jsonRequest.TriggerEvent(channelUniqueId, """{}{"device.configuration_number":null } """)
-                                                        do jsonRequest.TriggerEvent(channelUniqueId, """{}{"appl.name" :null } """)
-                                                        do jsonRequest.TriggerEvent(channelUniqueId, """{}{"capture.channel1.port":"bt"}""")
-                                                        do jsonRequest.TriggerEvent(channelUniqueId, """{}{"capture.channel1.delimiter":"\\015\\012"}""")
-                                                        do jsonRequest.TriggerEvent(channelUniqueId, """{}{"capture.channel1.max_length":"64"}""")
+                                                        let eventForThisChannel = Event.filter (fun pm -> pm.printerID=channelUniqueId) jsonRequest.Event1
+                                                        do eventForThisChannel |> Observable.subscribe (fun pm -> do inbox.Post(Binary, UTF8.bytes pm.msg , true)) |> ignore
+                                                        do jsonRequest.TriggerEvent {printerID= channelUniqueId; msg= """{}{"device.configuration_number":null} """ }
+                                                        do jsonRequest.TriggerEvent {printerID= channelUniqueId; msg= """{}{"appl.name":null} """ }
+                                                        do jsonRequest.TriggerEvent {printerID= channelUniqueId; msg= """{}{"capture.channel1.port":"bt"} """ }
+                                                        do jsonRequest.TriggerEvent {printerID= channelUniqueId; msg= """{}{"capture.channel1.delimiter":"\\015\\012"} """ }
+                                                        do jsonRequest.TriggerEvent {printerID= channelUniqueId; msg= """{}{"capture.channel1.max_length":"64"} """ }
                                     | None -> ()
                             | _ -> ()
         | None -> ()
@@ -269,18 +278,19 @@ let app  : WebPart =
         [ path "/printerupdate" >=> 
            objectDo (fun prt -> printersAgent.AddPrinter prt
                                 if prt.sgdSetAlertFeedback = "PriceTag" then
-                                    jsonRequest.TriggerEvent (prt.uniqueID, """{}{"capture.channel1.port":"bt"}""")
-                                    jsonRequest.TriggerEvent (prt.uniqueID, """{}{"capture.channel1.delimiter":"\\015\\012"}""")
-                                    jsonRequest.TriggerEvent (prt.uniqueID, """{}{"capture.channel1.max_length":"64"}""")
+                                    do jsonRequest.TriggerEvent {printerID=prt.uniqueID; msg= """{}{"capture.channel1.port":"bt"} """ }
+                                    do jsonRequest.TriggerEvent {printerID=prt.uniqueID; msg= """{}{"capture.channel1.max_length":"64"} """ }
+                                    do jsonRequest.TriggerEvent {printerID=prt.uniqueID; msg= """{}{"capture.channel1.delimiter":"\\015\\012"} """ }
                                 else
-                                    jsonRequest.TriggerEvent (prt.uniqueID, """{}{"capture.channel1.port":"usb"}""")
-                                    jsonRequest.TriggerEvent (prt.uniqueID, """{}{"capture.channel1.delimiter":"^XZ"}""")
-                                    jsonRequest.TriggerEvent (prt.uniqueID, """{}{"capture.channel1.max_length":"512"}""")
+                                    do jsonRequest.TriggerEvent {printerID=prt.uniqueID; msg= """{}{"capture.channel1.port":"usb"} """ }
+                                    do jsonRequest.TriggerEvent {printerID=prt.uniqueID; msg= """{}{"capture.channel1.delimiter":"^XZ"} """ }
+                                    do jsonRequest.TriggerEvent {printerID=prt.uniqueID; msg= """{}{"capture.channel1.max_length":"512"} """ }
                     )
           path "/productupdate" >=> objectDo (fun prod -> storeAgent.UpdateWith prod)
+          path "/json2printer" >=> objectDo (fun pm -> jsonRequest.TriggerEvent pm) 
           path "/productremove" >=> objectDo (fun prod -> storeAgent.RemoveSku prod.sku)
           path "/printproduct" >=> objectDo (fun (prodprint:ProductPrinterObj) ->  do mLogAgent.AppendToLog (sprintf "printproduct. id: %s prod: %A" prodprint.id prodprint.ProductObj)
-                                                                                      printJob.TriggerEvent (prodprint.id,(buildpricetag prodprint.ProductObj)) )        ]
+                                                                                   do printJob.TriggerEvent {printerID=prodprint.id; msg =(buildpricetag prodprint.ProductObj)} )         ]
     NOT_FOUND "Found no handlers." ]
 
 //https://help.heroku.com/tickets/560930

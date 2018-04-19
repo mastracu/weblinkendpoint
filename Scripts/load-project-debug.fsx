@@ -8,4 +8,5 @@
       "../printersagent.fs"
       "../messagelogagent.fs"
       "../websocketum.fs"
+      "../labelbuilder.fs"
       "../Program.fs"

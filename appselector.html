@@ -21,6 +21,7 @@
 
         .form {
             margin-bottom: 25px;
+            margin-left: 4px;
         }
 
         #printers-div {
@@ -29,7 +30,7 @@
         }
 
         .left-div {
-            float: left;
+            margin-left: 4px;
         }
 
         .left-div-margin {
@@ -42,13 +43,19 @@
     <h1 style="text-align: center;">WEblinkEndPoint Application Selector</h1>
 
     <div id="printers-div">
-        <div id="printers-button" class="left-div">
-            <button id="refresh-button" class="button">
-                <span class="glyphicon glyphicon-refresh"></span>
-            </button>
-        </div>
-        <div id="printers-table" class="left-div-margin"></div>
-    </div>
+            <div id="printers-button" class="left-div">
+                <button id="refresh-button" class="button">
+                    <span class="glyphicon glyphicon-refresh"></span>
+                </button>
+                <button id="sendcmd-button" class="button">
+                    <span class="glyphicon glyphicon-play"></span>
+                </button>
+            </div>
+            <form id="jsonform" class="form">
+                <input type="text" placeholder="Json Command" id="jsoncmd" size="50" />
+            </form>
+            <div id="printers-table" class="left-div-margin"></div>
+</div>
 
     <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
@@ -87,6 +94,23 @@
 			$("#refresh-button").click(function () {
 			    $("#printers-table").tabulator("setData", "printerslist.json");
 			});
+
+		$("#sendcmd-button").click(function(){
+			var selectedPrinter = $("#printers-table").tabulator("getSelectedData");
+
+			if (selectedPrinter.length == 0) {
+			    alert("No printer selected !")
+			}
+			else {
+			    var ProductJsonCmdObj = { printerID: selectedPrinter[0].uniqueID, msg: $('#jsoncmd').val() }
+			    var myJSON = JSON.stringify(ProductJsonCmdObj);
+			    var xhr = new XMLHttpRequest();
+			    var url = "json2printer";
+			    xhr.open("POST", url, true);
+			    xhr.setRequestHeader("Content-type", "application/json");
+			    xhr.send(myJSON);                
+			}
+		});
 
 
     </script>
