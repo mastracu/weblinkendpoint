@@ -18,11 +18,25 @@
             .button:hover {
                 background: green;
             }
+        .left-div-margin {
+            margin-left:4px;
+        }
+        .button-margin {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 15px 25px;
+            text-align: center;
+            font-size: 16px;
+            cursor: pointer;
+            margin-bottom: 25px;
+            margin-left:4px;
+        }
     </style>
 </head>
 <body>
     <h1 style="text-align: center;">WebLinkEndpoint Log Table</h1>
-    <button id="logclear-button" class="button">
+    <button id="logclear-button" class="button-margin">
         <span class="glyphicon glyphicon-trash"></span>
     </button>
     <button id="refresh-button" class="button">
@@ -33,7 +47,7 @@
     </button>
 
 
-    <div id="example-table"></div>
+    <div id="example-table" class="left-div-margin"></div>
 
     <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
@@ -46,11 +60,8 @@
         });
 
 		$("#example-table").tabulator({
-			selectable:1,
+		    selectable: 1,
 			layout:"fitColumns", //fit columns to width of table (optional)
-			// layout: "fitDataFill",
-			layoutColumnsOnNewData: true,
-			height: "80%",
 			columns: [ //Define Table Columns
 			    { title: "Timestamp", field: "timestamp", sorter: "datetime", width: 180, align: "left", headerFilter: "input", headerFilterPlaceholder: "Since", headerFilterFunc: ">=" },
 			    { title: "Log Entry", field: "txt", sorter: "string", align: "left", headerFilter: "input", headerFilterPlaceholder: "Contains", headerFilterFunc: "like" },
