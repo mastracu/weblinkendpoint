@@ -55,7 +55,7 @@
                 <input type="text" placeholder="Json Command" id="jsoncmd" size="50" />
             </form>
             <div id="caption-div" class="left-div">
-                JSON cmds are like: {}{"device.friendly_name":null} <br />
+                JSON cmds are like: {}{"device.friendly_name":null}, {}{"ribbon.cartridge.length_remaining":null} or {}{"capture.channel1.port":"usb"} <br />
                 Afer sending JSON command, please check <a target="_blank" href="logtable.html">logtable</a> for printer response <br />
                 For Repricing app, you can access product table <a target="_blank" href="pricetag.html">here</a>
             </div>
@@ -74,7 +74,7 @@
             columns: [ //Define Table Columns
                 { title: "Printer Serial Number", field: "uniqueID", formatter:"link", width: 200, sorter: "string", align: "left", },
                 { title: "Part Number", field: "partNumber", width: 200, sorter: "string", align: "left", },
-                { title: "FW Version", field: "appVersion", width: 200, sorter: "string", align: "left", },
+                { title: "FW Version", field: "appVersion", width: 150, sorter: "string", align: "left", },
                 { title: "Application", field: "sgdSetAlertFeedback", width: 200, sorter: "string", align: "left", editor: "select", editorParams: {
                     "PriceTag":"Repricing app",
                     "IfadLabelConversion":"IFAD label conversion",
