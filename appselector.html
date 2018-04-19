@@ -36,6 +36,7 @@
         .left-div-margin {
             float: left;
             margin-left: 4px;
+            margin-bottom: 10px;
         }
     </style>
 </head>
@@ -57,9 +58,14 @@
             <div id="caption-div" class="left-div">
                 eg: {}{"ribbon.cartridge":null} or {}{"capture.channel1.port":"usb"} <br />
                 Afer sending JSON command, please check <a target="_blank" href="logtable.html">logtable</a> for printer response <br />
-                For Repricing app, you can access product table <a target="_blank" href="pricetag.html">here</a>
             </div>
             <div id="printers-table" class="left-div-margin"></div>
+            <div id="caption-div2" class="left-div">
+                <b> Repricing app:</b><br />please connect BT scanner (MASTER) to printer (SLAVE) <br />
+                You may want to print pairing barcodes from 123Scan <br />
+                Decoded barcode from scannner has to be CR-LF terminated. <br />
+                You can access product table <a target="_blank" href="pricetag.html">here</a>
+            </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
