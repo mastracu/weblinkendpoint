@@ -21,14 +21,15 @@ You then specify the address of the weblink endpoint by issuing
 ```
 ! U1 setvar "weblink.ip.conn1.location" "https://weblinkendpoint.mastracu.it/websocketWithSubprotocol"
 ```
+You then re-start / power-cycle the printer
 
 ### Running a demo session
 
-Check the printer is connected.
-If it is, it will be listed in http://weblinkendpoint.mastracu.it/appselector.html
+Check the printer is now connected.
+If it is, it will be listed in http://weblinkendpoint.mastracyu.it/appselector.html
 
-The printers will also spit out a welcome label once it’s connected
-On http://weblinkendpoint.mastracu.it/pricetag.html I add a new item to the list that I have handy in the meeting room.
+The printers will also spit out a welcome label once it’s connected.
+On http://weblinkendpoint.mastracu.it/pricetag.html you add a new item that you have handy in the meeting room.
 
 **Please ensure barcode is 13-digits long as only EAN-13 barcodes are currently supported.**
 
