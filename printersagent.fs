@@ -18,7 +18,7 @@ type Printer =
    { 
       [<field: DataMember(Name = "uniqueID")>]
       uniqueID : string;
-      [<field: DataMember(Name = "partNumber")>]
+      [<field: DataMember(Name = "productName")>]
       productName : string;
       [<field: DataMember(Name = "appVersion")>]
       appVersion : string;
