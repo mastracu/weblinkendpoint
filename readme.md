@@ -1,87 +1,59 @@
 # F# WeblinkEndpoint for Zebra Printers 
 
-One Paragraph of project description goes here
+Demo app to demonstrate how to leverage Weblink technology to support a couple
+of use-cases:
+
+*  printing price labels (repricing) using ZQ320 indoor version (label printer with Wifi and BT) + CS4070 BT scanner
+*  convertion of a 300 dpi label into a 200 dpi label – this is a real case from a recent customer request. For the customer modifying the printing app was just impossible.
+
+Tested with ZQ320 & CS4070, ZD3420 Cartridge and ZT420
 
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+Simple instructions follow
+
 
 ### Prerequisites
 
-What things you need to install the software and how to install them
+You will need to hook up your printer to the Internet (Configure Printer Connectivity in Zebra Setup Utility). I typically use Wifi printers and connect to ZGuest wireless network in Zebra office.
+You then specify the address of the weblink endpoint by issuing 
 
 ```
-Give examples
+! U1 setvar "weblink.ip.conn1.location" "https://weblinkendpoint.mastracu.it/websocketWithSubprotocol"
 ```
 
-### Installing
+### Running a demo session
 
-A step by step series of examples that tell you have to get a development env running
+Check the printer is connected.
+If it is, it will be listed in http://weblinkendpoint.mastracu.it/appselector.html
 
-Say what the step will be
+The printers will also spit out a welcome label once it’s connected
+On http://weblinkendpoint.mastracu.it/pricetag.html I add a new item to the list that I have handy in the meeting room.
 
-```
-Give the example
-```
+**Please ensure barcode is 13-digits long as only EAN-13 barcodes are currently supported.**
 
-And repeat
+Once this is done I pair the CS4070 to the ZQ320 printer (you can use 123scan to print the related barcodes).
 
-```
-until finished
-```
+**You will also need to ensure the BT scanner is configured to CR-LF terminate the barcode read.**
+ 
+I can then go ahead and scan the barcodes of the item above. 
+A pricetag will be automatically printed if the barcode is found. 
+I can then change the price of the item in the table on http://weblinkendpoint.mastracu.it/pricetag.html . I then scan the same product again and the label is printed with a different price. By selecting a product and a printer from http://weblinkendpoint.mastracu.it/pricetag.html I can also show how to print a label “remotely”.
 
-End with an example of getting some data out of the system or using it for a little demo
+For the label conversion demo, I change the application associated to the ZD420 printer to ifadlabelconvertion. I do that on http://weblinkendpoint.mastracu.it/appselector.html
 
-## Running the tests
+Now everything I send to the printer via USB gets forwarded on the cloud.
 
-Explain how to run the automated tests for this system
-
-### Break down into end to end tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
-
-### And coding style tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
-
-## Deployment
-
-Add additional notes about how to deploy this on a live system
-
-## Built With
-
-* [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
-* [Maven](https://maven.apache.org/) - Dependency Management
-* [ROME](https://rometools.github.io/rome/) - Used to generate RSS Feeds
-
-## Contributing
-
-Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
+Send file IFAAM004_2289143IFAAM004.txt via USB and it gets converted to a quasi-equivalent 200 dpi label.
 
 ## Versioning
 
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags). 
 
 ## Authors
 
-* **Ugo Mastracchio** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
-
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
 
 ## Acknowledgments
 
-* Hat tip to anyone who's code was used
-* Inspiration
-* etc
