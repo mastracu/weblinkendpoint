@@ -63,10 +63,13 @@
             </div>
             <div id="printers-table" class="left-div-margin"></div>
             <div id="caption-div2" class="left-div">
-                <b> Repricing app:</b><br />please connect BT scanner (MASTER) to printer (SLAVE) <br />
-                You may want to print pairing barcodes from 123Scan <br />
-                Decoded barcode from scannner has to be CR-LF terminated. <br />
-                You can access product table <a target="_blank" href="pricetag.html">here</a>
+                <b>Repricing app:</b> Printer captures BT data and forwards on to weblink endpoint
+                Configure BT scanner so that CR-LF is added to barcode. <br />
+                Connect BT scanner (MASTER) to printer (SLAVE):  use 123Scan to print pairing barcodes <br />
+                Scan proudct barcode, label gets printed. <br />
+                Change product price <a target="_blank" href="pricetag.html">here</a> and scan again <br />
+                <b>Label convertion:</b> Printer captures USB data and forwards on to weblink endpoint
+                Send 300dpi label via USB. 200dpi converted label with same data gets printed. <br />
             </div>
         </div>
 

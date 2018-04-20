@@ -47,6 +47,8 @@ I can then go ahead and scan the barcodes of the item above.
 A pricetag will be automatically printed if the barcode is found. 
 I can then change the price of the item in the table on http://weblinkendpoint.mastracu.it/pricetag.html . I then scan the same product again and the label is printed with a different price. By selecting a product and a printer from http://weblinkendpoint.mastracu.it/pricetag.html I can also show how to print a label “remotely”.
 
+**Please note - data are not persistent and application is restarted every 24 hours so price changes / new products will be lost the following day.**
+
 ### Label conversion
 
 For the label conversion demo, I change the application associated to the ZD420 printer to ifadlabelconvertion. I do that on http://weblinkendpoint.mastracu.it/appselector.html
