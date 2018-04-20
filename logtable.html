@@ -20,6 +20,7 @@
             }
         .left-div-margin {
             margin-left:4px;
+            margin-right:4px;
         }
         .button-margin {
             background-color: #4CAF50;
@@ -61,7 +62,7 @@
 
 		$("#example-table").tabulator({
 		    selectable: 1,
-		    layout: "fitDataFill", //fit columns to width of table (optional)
+		    layout: "fitColumns", //fit columns to width of table (optional)
 			columns: [ //Define Table Columns
 			    { title: "Timestamp", field: "timestamp", sorter: "datetime", width: 180, align: "left", headerFilter: "input", headerFilterPlaceholder: "Since", headerFilterFunc: ">=" },
 			    { title: "Log Entry", field: "txt", sorter: "string", align: "left", headerFilter: "input", headerFilterPlaceholder: "Contains", headerFilterFunc: "like" },
