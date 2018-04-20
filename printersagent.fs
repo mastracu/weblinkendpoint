@@ -19,7 +19,7 @@ type Printer =
       [<field: DataMember(Name = "uniqueID")>]
       uniqueID : string;
       [<field: DataMember(Name = "partNumber")>]
-      partNumber : string;
+      productName : string;
       [<field: DataMember(Name = "appVersion")>]
       appVersion : string;
       [<field: DataMember(Name = "friendlyName")>]
@@ -42,7 +42,7 @@ let rec removePrinter id list =
 let rec updatePartNumber id pn list =
       match list with
       | [] -> []
-      | prodHead :: xs -> if prodHead.uniqueID = id then {prodHead with partNumber = pn} :: xs else (prodHead :: updatePartNumber id pn xs)
+      | prodHead :: xs -> if prodHead.uniqueID = id then {prodHead with productName = pn} :: xs else (prodHead :: updatePartNumber id pn xs)
 
 let rec updateAppVersion id ver list =
       match list with
