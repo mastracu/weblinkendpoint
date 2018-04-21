@@ -51,6 +51,8 @@ I can then change the price of the item in the table on http://weblinkendpoint.m
 
 **Please note - data are not persistent and application is restarted every 24 hours so price changes / new products will be lost the following day.**
 
+See https://devcenter.heroku.com/articles/dynos#restarting and https://devcenter.heroku.com/articles/dynos#ephemeral-filesystem
+
 ### Label conversion
 
 For the label conversion demo, from http://weblinkendpoint.mastracu.it/appselector.html
