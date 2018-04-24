@@ -19,7 +19,7 @@ let buildpricetag (prod:Product) =
     let label0 = "
         ^XA
         ^MMT
-        ^PW609
+        ^PW400
         ^LL0240
         ^LS0
         ^FT176,49^A0N,28,50^FB236,1,0,C^FH\^FDZebra Store^FS
