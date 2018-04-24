@@ -136,7 +136,7 @@ let ws allAgents (printJob:Msg2PrinterFeed) (jsonRequest:Msg2PrinterFeed) (webSo
                             do channelUniqueId <- channelUniqueId.Substring (0, (channelUniqueId.IndexOf 'J' + 10))
                             do logAgent.AppendToLog (sprintf "adjusted unique_id: %s"  channelUniqueId)
                             do printersAgent.AddPrinter {uniqueID = channelUniqueId; productName = ""; appVersion = ""; friendlyName = ""; sgdSetAlertFeedback = "PriceTag"}
-                            inbox.Post(Binary, UTF8.bytes """ { "configure_alert" : "ALL MESSAGES,SDK,Y,Y,,,N,|SGD SET,SDK,Y,Y,,,N,capture.channel1.data.raw" } """, true)
+                            // inbox.Post(Binary, UTF8.bytes """ { "configure_alert" : "ALL MESSAGES,SDK,Y,Y,,,N,|SGD SET,SDK,Y,Y,,,N,capture.channel1.data.raw" } """, true)
                             inbox.Post(Binary, UTF8.bytes """ { "open" : "v1.raw.zebra.com" } """, true)
                             inbox.Post(Binary, UTF8.bytes """ { "open" : "v1.config.zebra.com" } """, true)
         | None -> () 
@@ -186,7 +186,7 @@ let ws allAgents (printJob:Msg2PrinterFeed) (jsonRequest:Msg2PrinterFeed) (webSo
                                                         let eventForThisChannel = Event.filter (fun pm -> pm.printerID=channelUniqueId) jsonRequest.Event1
                                                         do eventForThisChannel |> Observable.subscribe (fun pm -> do inbox.Post(Binary, UTF8.bytes pm.msg , true)) |> ignore
                                                         // do jsonRequest.TriggerEvent {printerID= channelUniqueId; msg= """{}{"device.configuration_number":null} """ }
-                                                        do jsonRequest.TriggerEvent {printerID= channelUniqueId; msg= """{}{"alerts.configured":"ALL MESSAGES,SDK,Y,Y,,,N,|SGD SET,SDK,Y,Y,,,N,capture.channel1.data.raw"} """}
+                                                        // do jsonRequest.TriggerEvent {printerID= channelUniqueId; msg= """{}{"alerts.configured":"ALL MESSAGES,SDK,Y,Y,,,N,|SGD SET,SDK,Y,Y,,,N,capture.channel1.data.raw"} """}
                                                         do jsonRequest.TriggerEvent {printerID= channelUniqueId; msg= """{}{"device.product_name":null} """ }
                                                         do jsonRequest.TriggerEvent {printerID= channelUniqueId; msg= """{}{"appl.name":null} """ }
                                                         do jsonRequest.TriggerEvent {printerID= channelUniqueId; msg= """{}{"capture.channel1.port":"bt"} """ }
