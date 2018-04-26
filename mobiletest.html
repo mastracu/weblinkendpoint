@@ -21,7 +21,7 @@
 
 <header class="w3-top w3-bar w3-theme">
   <button class="w3-bar-item w3-button w3-xxxlarge w3-hover-theme" onclick="openSidebar()">&#9776;</button>
-  <h1 class="w3-bar-item">Zebra Technologie Mobile</h1>
+  <h1 class="w3-bar-item">Zebra Mobile</h1>
 </header>
 
 <div class="w3-container" style="margin-top:90px">
@@ -36,7 +36,7 @@
   </div>
 </div>  
 <hr>
-<div class="w3-cell-row">
+<div id="bc_ndzl" class="w3-cell-row">
   <div class="w3-cell" style="width:30%">
     <img class="w3-circle" src="img_avatar.jpg" style="width:100%">
   </div>
@@ -72,4 +72,9 @@ function closeSidebar() {
 }
 </script>
 
+			<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+			<script type="text/javascript" src="jquery-barcode.js" ></script>
+			<script>
+			$("#bc_ndzl").barcode("1234567890128", "datamatrix", {moduleSize:10});     
+			</script>
 </body>
