@@ -6,7 +6,7 @@ of use-cases:
 *  printing price labels (repricing) using ZQ320 indoor version (label printer with Wifi and BT) + CS4070 BT scanner
 *  convertion of a 300 dpi label into a 200 dpi label – this is a real case from a recent customer request. For the customer modifying the printing app was just impossible.
 
-Tested with ZQ320 & CS4070, ZD420 Cartridge and ZT230
+Tested with ZQ320 indoor + CS4070, ZD420 203dpi Cartridge and ZT410 203 dpi
 
 ## Getting Started
 
@@ -34,6 +34,8 @@ Demonstrate how one can remotely send configuration commands to a printer by sen
 
 ### Repricing application
 
+Minimum label width: 5cms 
+Minimum label height: 3cms
 
 On http://weblinkendpoint.mastracu.it/pricetag.html you add a new item that you have handy in the meeting room.
 
@@ -49,13 +51,18 @@ I can then change the price of the item in the table on http://weblinkendpoint.m
 
 **Please note - data are not persistent and application is restarted every 24 hours so price changes / new products will be lost the following day.**
 
+See https://devcenter.heroku.com/articles/dynos#restarting and https://devcenter.heroku.com/articles/dynos#ephemeral-filesystem
+
 ### Label conversion
 
-For the label conversion demo, I change the application associated to the ZD420 printer to ifadlabelconvertion. I do that on http://weblinkendpoint.mastracu.it/appselector.html
-
-Now everything I send to the printer via USB gets forwarded on the cloud.
+For the label conversion demo, from http://weblinkendpoint.mastracu.it/appselector.html
+I change the application associated with any 200dpi printer to ifadlabelconvertion. 
+Now everything I send to the printer via USB gets forwarded onto the cloud.
 
 Send file IFAAM004_2289143IFAAM004.txt via USB and it gets converted to a quasi-equivalent 200 dpi label.
+
+Minimum label width: 5cms 
+Minimum label height: 3cms
 
 ## Versioning
 

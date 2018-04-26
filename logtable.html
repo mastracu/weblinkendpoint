@@ -4,6 +4,13 @@
     <link href="tabulator.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <style>
+        body, html {
+            width: 100%;
+            height: 95%;
+            margin: 0;
+            padding: 0;
+        }
+
         .button {
             background-color: #4CAF50;
             border: none;
@@ -15,12 +22,19 @@
             margin-bottom: 25px;
         }
 
-            .button:hover {
-                background: green;
-            }
+        .button:hover {
+            background: green;
+        }
+        
+        .top-div {
+        }
+
         .left-div-margin {
             margin-left:4px;
+            margin-right:4px;
+            height:80%
         }
+        
         .button-margin {
             background-color: #4CAF50;
             border: none;
@@ -35,6 +49,7 @@
     </style>
 </head>
 <body>
+    <div id="header-div" class="top-div">
     <h1 style="text-align: center;">WebLinkEndpoint Log Table</h1>
     <button id="logclear-button" class="button-margin">
         <span class="glyphicon glyphicon-trash"></span>
@@ -45,7 +60,7 @@
     <button id="download-button" class="button">
         <span class="glyphicon glyphicon-download"></span>
     </button>
-
+    </div>
 
     <div id="example-table" class="left-div-margin"></div>
 
@@ -61,7 +76,7 @@
 
 		$("#example-table").tabulator({
 		    selectable: 1,
-			layout:"fitColumns", //fit columns to width of table (optional)
+		    layout: "fitDataFill", //fit columns to width of table (optional)
 			columns: [ //Define Table Columns
 			    { title: "Timestamp", field: "timestamp", sorter: "datetime", width: 180, align: "left", headerFilter: "input", headerFilterPlaceholder: "Since", headerFilterFunc: ">=" },
 			    { title: "Log Entry", field: "txt", sorter: "string", align: "left", headerFilter: "input", headerFilterPlaceholder: "Contains", headerFilterFunc: "like" },
@@ -78,7 +93,7 @@
 		});
 
 		$("#download-button").click(function () {
-		    $("#example-table").tabulator("download", "csv", "log.csv", { delimiter: "." });
+		    $("#example-table").tabulator("download", "csv", "log.csv", { delimiter: "," });
 		});
 
     </script>

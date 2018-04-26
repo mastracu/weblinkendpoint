@@ -63,13 +63,25 @@
             </div>
             <div id="printers-table" class="left-div-margin"></div>
             <div id="caption-div2" class="left-div">
-                <b>Repricing app:</b> Printer captures BT data and forwards on to weblink endpoint
-                Configure BT scanner so that CR-LF is added to barcode. <br />
-                Connect BT scanner (MASTER) to printer (SLAVE):  use 123Scan to print pairing barcodes <br />
-                Scan proudct barcode, label gets printed. <br />
-                Change product price <a target="_blank" href="pricetag.html">here</a> and scan again <br />
-                <b>Label convertion:</b> Printer captures USB data and forwards on to weblink endpoint
-                Send 300dpi label via USB. 200dpi converted label with same data gets printed. <br />
+                <p>
+                    <b>Repricing app (Pricetag):</b>
+                    <br />Printer captures BT data and forwards on to weblink endpoint
+                    <ol type="1">
+                        <li> Configure BT scanner so that CR-LF is added to barcode.</li>
+                        <li> Use 123Scan to print pairing barcodes</li>
+                        <li> Connect BT scanner (MASTER) to printer (SLAVE):</li>
+                        <li> Scan proudct barcode, label gets printed.</li>
+                        <li> Change product price <a target="_blank" href="pricetag.html">here</a> and scan again</li>
+                    </ol>
+                </p>
+                <p>
+                    <b>Label convertion (ifadLabelConvertion):</b>
+                    <br />Printer captures USB data and forwards on to endpoint
+                    <ol type="1">
+                        <li>Send label via USB. See <a target="_blank" href="https://github.com/mastracu/weblinkendpoint">https://github.com/mastracu/weblinkendpoint</a>.</li>
+                        <li>Converted label for 200 dpi printer with same data gets printed.</li>
+                    </ol>
+                </p>
             </div>
         </div>
 
