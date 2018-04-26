@@ -1,0 +1,4 @@
+[
+    {id:1, sku:"gira dischi", description:"12", unitPrice:"129,90", eanCode:8003736},
+    {id:2, sku:"cassa tunz tunz", description:"17867", unitPrice:"230,50", eanCode:37365343},
+]
