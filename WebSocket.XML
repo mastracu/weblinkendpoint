@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doc>
+<assembly><name>WebSocket</name></assembly>
+<members>
+<member name="M:JsonHelper.unjson``1(System.String)">
+<summary>
+ Object from Json 
+</summary>
+</member>
+<member name="M:JsonHelper.json``1(``0)">
+<summary>
+ Object to Json 
+</summary>
+</member>
+<member name="M:Suave.Utils.YoLo.AsyncBuilder.Bind``1(Microsoft.FSharp.Control.FSharpAsyncBuilder,System.Threading.Tasks.Task,Microsoft.FSharp.Core.FSharpFunc{Microsoft.FSharp.Core.Unit,Microsoft.FSharp.Control.FSharpAsync{``0}})">
+<summary>
+ An extension method that overloads the standard &apos;Bind&apos; of the &apos;async&apos; builder. The new overload awaits on
+ a standard .NET task which does not commpute a value
+</summary>
+</member>
+<member name="M:Suave.Utils.YoLo.AsyncBuilder.Bind``2(Microsoft.FSharp.Control.FSharpAsyncBuilder,System.Threading.Tasks.Task{``0},Microsoft.FSharp.Core.FSharpFunc{``0,Microsoft.FSharp.Control.FSharpAsync{``1}})">
+<summary>
+ An extension method that overloads the standard &apos;Bind&apos; of the &apos;async&apos; builder. The new overload awaits on
+ a standard .NET task
+</summary>
+</member>
+<member name="M:Suave.Utils.YoLo.Async.AwaitTask.Static(System.Threading.Tasks.Task)">
+<summary>
+ Await a task asynchronously
+</summary>
+</member>
+<member name="M:Suave.Utils.YoLo.Async.AsyncRaise.Static``1(System.Exception)">
+<summary>
+ Raise an exception on the async computation/workflow.
+</summary>
+</member>
+<member name="M:Suave.Utils.YoLo.Random.NextUInt64(System.Random)">
+<summary>
+ generate a new random ulong64 value
+</summary>
+</member>
+<member name="M:Suave.Utils.YoLo.Dictionary.tryFind``2(``0,System.Collections.Generic.Dictionary{``0,``1})">
+<summary>
+ Attempts to retrieve a value as an option from a dictionary using the provided key
+</summary>
+</member>
+<member name="P:Suave.Utils.YoLo.App.resource">
+<summary>
+ Get the current assembly resource
+</summary>
+</member>
+<member name="M:Suave.Utils.YoLo.App.resourceIn(System.Reflection.Assembly,System.String)">
+<summary>
+ Get the assembly resource
+</summary>
+</member>
+<member name="M:Suave.Utils.YoLo.App.getVersion">
+<summary>
+ Gets the calling assembly&apos;s informational version number as a string
+</summary>
+</member>
+<member name="M:Suave.Utils.YoLo.List.sequenceChoiceA``2(Microsoft.FSharp.Collections.FSharpList{Microsoft.FSharp.Core.FSharpChoice{``0,``1}})">
+<summary>
+ Transform a &quot;list&lt;Choice&gt;&quot; into a &quot;Choice&lt;list&gt;&quot; and collect the results
+ using apply.
+</summary>
+</member>
+<member name="M:Suave.Utils.YoLo.List.traverseChoiceA``3(Microsoft.FSharp.Core.FSharpFunc{``0,Microsoft.FSharp.Core.FSharpChoice{``1,``2}},Microsoft.FSharp.Collections.FSharpList{``0})">
+<summary>
+ Map a Choice-producing function over a list to get a new Choice using
+ applicative style. (&apos;a -&gt; Choice&lt;&apos;b, &apos;c&gt;) -&gt; &apos;a list -&gt; Choice&lt;&apos;b list, &apos;c&gt;
+</summary>
+</member>
+<member name="M:Suave.Utils.YoLo.List.sequenceAsyncA``1(Microsoft.FSharp.Collections.FSharpList{Microsoft.FSharp.Control.FSharpAsync{``0}})">
+<summary>
+ Transform a &quot;list&lt;Async&gt;&quot; into a &quot;Async&lt;list&gt;&quot; and collect the results
+ using apply.
+</summary>
+</member>
+<member name="M:Suave.Utils.YoLo.List.traverseAsyncA``2(Microsoft.FSharp.Core.FSharpFunc{``0,Microsoft.FSharp.Control.FSharpAsync{``1}},Microsoft.FSharp.Collections.FSharpList{``0})">
+<summary>
+ Map a Async producing function over a list to get a new Async using
+ applicative style. (&apos;a -&gt; Async&lt;&apos;b&gt;) -&gt; &apos;a list -&gt; Async&lt;&apos;b list&gt;
+</summary>
+</member>
+<member name="M:Suave.Utils.YoLo.List.chunk``1(System.UInt32,Microsoft.FSharp.Collections.FSharpList{``0})">
+<summary>
+ Chunk a list into pageSize large chunks
+</summary>
+</member>
+<member name="M:Suave.Utils.YoLo.List.split``1(System.UInt32,Microsoft.FSharp.Collections.FSharpList{``0})">
+<summary>
+ Split xs at n, into two lists, or where xs ends if xs.Length &lt; n.
+</summary>
+</member>
+<member name="M:Suave.Utils.YoLo.Regex.match(System.String,System.String)">
+<summary>
+ Match the `input` against the regex `pattern`. You can do a 
+ `Seq.cast&lt;Group&gt;` on the result to get it as a sequence
+ and also index with `.[&quot;name&quot;]` into the result if you have
+ named capture groups.
+</summary>
+</member>
+<member name="M:Suave.Utils.YoLo.Array.equalsConstantTime``1(``0[],``0[])">
+<summary>
+ Ordinally compare two arrays in constant time, bounded by the length of the
+ longest array. This function uses the F# language equality.
+</summary>
+</member>
+<member name="M:Suave.Utils.YoLo.Comparisons.hashOn``2(Microsoft.FSharp.Core.FSharpFunc{``0,``1},``0)">
+<summary>
+ hash x on the selected value from f
+</summary>
+</member>
+<member name="M:Suave.Utils.YoLo.Comparisons.equalsOn``2(Microsoft.FSharp.Core.FSharpFunc{``0,``1},``0,System.Object)">
+<summary>
+ check equality on x and y mapped on selected value from function f
+</summary>
+</member>
+<member name="M:Suave.Utils.YoLo.Comparisons.compareOn``2(Microsoft.FSharp.Core.FSharpFunc{``0,``1},``0,System.Object)">
+<summary>
+ compare x to yobj mapped on selected value from function f
+</summary>
+</member>
+<member name="P:Suave.Utils.YoLo.UTF8.decodeBase64">
+<summary>
+ Convert the passed string `s`, assumed to be a valid Base64 encoding, to a
+ CLR string, going through UTF8.
+</summary>
+</member>
+<member name="P:Suave.Utils.YoLo.UTF8.encodeBase64">
+<summary>
+ Convert the passed string `s` to UTF8 and then encode the buffer with
+ base64.
+</summary>
+</member>
+<member name="M:Suave.Utils.YoLo.UTF8.bytes(System.String)">
+<summary>
+ Get the UTF8-encoding of the string.
+</summary>
+</member>
+<member name="M:Suave.Utils.YoLo.UTF8.toStringAtOffset(System.Byte[],System.Int32,System.Int32)">
+<summary>
+ Convert the byte array to a string, by indexing into the passed buffer `b`
+ and taking `count` bytes from it.
+</summary>
+</member>
+<member name="M:Suave.Utils.YoLo.UTF8.toString(System.Byte[])">
+<summary>
+ Convert the full buffer `b` filled with UTF8-encoded strings into a CLR
+ string.
+</summary>
+</member>
+<member name="M:Suave.Utils.YoLo.Map.put``2(``0,``1,Microsoft.FSharp.Collections.FSharpMap{``0,``1})">
+<summary>
+ put a key to the map; if it&apos;s not there already, just add it
+ otherwise, remove the existing key and place it there.
+</summary>
+</member>
+<member name="M:Suave.Utils.YoLo.Bytes.equalsConstantTime(System.Byte[],System.Byte[])">
+<summary>
+ Compare two byte arrays in constant time, bounded by the length of the
+ longest byte array.
+</summary>
+</member>
+<member name="M:Suave.Utils.YoLo.String.equalsConstantTime(System.String,System.String)">
+<summary>
+ Ordinally compare two strings in constant time, bounded by the length of the
+ longest string.
+</summary>
+</member>
+<member name="M:Suave.Utils.YoLo.String.equalsOrdinalCI(System.String,System.String)">
+<summary>
+ Compare ordinally with ignore case.
+</summary>
+</member>
+<member name="M:Suave.Utils.YoLo.String.equalsCaseInsensitive(System.String,System.String)">
+<summary>
+ Also, invariant culture
+</summary>
+</member>
+<member name="M:Suave.Utils.YoLo.String.equals(System.String,System.String)">
+<summary>
+ Also, invariant culture
+</summary>
+</member>
+<member name="M:Suave.WebSocketUM.WebSocket.readIntoByteSegment(Microsoft.FSharp.Core.FSharpFunc{System.Int32,System.ArraySegment{System.Byte}})">
+<summary>
+ Reads from the websocket and puts the data into a ByteSegment selected by the byteSegmentForLengthFunc parameter
+ &lt;param name=&quot;byteSegmentForLengthFunc&quot;&gt;A function that takes in the message length in bytes required to hold the next websocket message and returns an appropriately sized ArraySegment of bytes&lt;/param&gt;
+</summary>
+</member>
+<member name="T:Suave.WebSocketUM.WebSocket">
+<summary>
+ This class represents a WebSocket connection, it provides an interface to read and write to a WebSocket.
+</summary>
+</member>
+<member name="M:Suave.WebSocketUM.handShake(Microsoft.FSharp.Core.FSharpFunc{Suave.WebSocketUM.WebSocket,Microsoft.FSharp.Core.FSharpFunc{Suave.Http.HttpContext,Microsoft.FSharp.Control.FSharpAsync{Microsoft.FSharp.Core.FSharpChoice{Microsoft.FSharp.Core.Unit,Suave.Sockets.Error}}}},Suave.Http.HttpContext)">
+<summary>
+ The handShake combinator captures a WebSocket and pass it to the provided `continuation`
+</summary>
+</member>
+<member name="M:Suave.WebSocketUM.handShakeWithSubprotocol(Microsoft.FSharp.Core.FSharpFunc{System.String[],Microsoft.FSharp.Core.FSharpFunc{Suave.Http.HttpContext,Microsoft.FSharp.Control.FSharpAsync{Microsoft.FSharp.Core.FSharpOption{System.String}}}},Microsoft.FSharp.Core.FSharpFunc{Suave.WebSocketUM.WebSocket,Microsoft.FSharp.Core.FSharpFunc{Suave.Http.HttpContext,Microsoft.FSharp.Control.FSharpAsync{Microsoft.FSharp.Core.FSharpChoice{Microsoft.FSharp.Core.Unit,Suave.Sockets.Error}}}},Suave.Http.HttpContext)">
+<summary>
+ The handShakeWithSubprotocol combinator captures a WebSocket and pass it to the provided `continuation`
+</summary>
+</member>
+</members>
+</doc>
