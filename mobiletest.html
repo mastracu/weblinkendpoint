@@ -69,7 +69,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3mobile.css">
 <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-teal.css">
+
 <body onload="document.getElementById('ordernum').innerHTML = 'Order #'+ cur_order_num">
+
 
 <script>
 
@@ -104,6 +106,13 @@ var itemsDescriptions = ['Nike shoes', 'Napapijri bag', 'Cutlery 36pcs', 'Screws
 var itemsPrices = [120.99, 103.40, 99.90, 110.15, 201.01, 176.82, 93.12, 223.99, 81.15, 581.11];
  shuffle(itemsPrices);  
 
+ function showShipmentBarcode(){
+
+
+	document.getElementById('finaldiv').style.display = 'block';
+ 
+ }
+
 </script>
 
  
@@ -126,9 +135,15 @@ var itemsPrices = [120.99, 103.40, 99.90, 110.15, 201.01, 176.82, 93.12, 223.99,
 <div id="example-table" ></div>
 <hr style="clear:both;">
 <div id="shipmentchoices-table" ></div>
+<hr style="clear:both;">
+<div id="button_checkout" >
+	    <button id="newrow-button" class="button-left" onclick="showShipmentBarcode()">
+                <span class="glyphicon glyphicon-barcode"> I'm done!</span>
+        </button>
+</div>
 
 <hr>
-<div  class="w3-cell-row">
+<div id="finaldiv" class="w3-cell-row" style="display:none;">
   <div id="bc_ndzl" class="w3-cell" style="width:30%">
     
   </div>
@@ -199,7 +214,7 @@ var itemsPrices = [120.99, 103.40, 99.90, 110.15, 201.01, 176.82, 93.12, 223.99,
 		{id:3,  description:"I have a discount code", price:"---", time: "N/A" },
 	];
 	$("#shipmentchoices-table").tabulator("setData", choices_for_shipment);
-			  </script>
+</script>
 
 
 </body>
