@@ -51,7 +51,7 @@ let convertIfadLabel (label:string) =
     let field6 = label.Substring (index6, label.IndexOf("^FS", index6) - index6)
 
     "^XA^BY2,2,10^LH10,20^FO13,7^ADN53,33^FD" + field1 + "^FS" +
-    // "^XA^BY2,2,10^LH20,20^FO13,7^ADN53,33^FD" + "CONVERTED LABEL" + "^FS" +
+    // "^XA^PW700^BY2,2,10^LH20,20^FO13,7^ADN53,33^FD" + "CONVERTED LABEL" + "^FS" +
     "^FO08,53^A0N22,25^FD" + field2 + "^FS" + 
     "^FO08,80^ADN20,7^FD" + field3 + "^FS" +
     "^FO53,80^A0N22,25^FD" + field4 + "^FS" + 
