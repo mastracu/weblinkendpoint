@@ -106,12 +106,7 @@ var itemsDescriptions = ['Nike shoes', 'Napapijri bag', 'Cutlery 36pcs', 'Screws
 var itemsPrices = [120.99, 103.40, 99.90, 110.15, 201.01, 176.82, 93.12, 223.99, 81.15, 581.11];
  shuffle(itemsPrices);  
 
- function showShipmentBarcode(){
 
-
-	document.getElementById('finaldiv').style.display = 'block';
- 
- }
 
 </script>
 
@@ -128,7 +123,7 @@ var itemsPrices = [120.99, 103.40, 99.90, 110.15, 201.01, 176.82, 93.12, 223.99,
 
   <div class="w3-cell w3-container">
     <h3 id="ordernum"></h3>
-    <p>Choose one item you want to return</p>
+    <p id="subtitle1">Choose one item you want to return</p>
   </div>
  
 </div>  
@@ -157,18 +152,9 @@ var itemsPrices = [120.99, 103.40, 99.90, 110.15, 201.01, 176.82, 93.12, 223.99,
 
 <hr>
 </div>
-			<script src="https://code.jquery.com/jquery-latest.min.js"></script>
-			<script type="text/javascript" src="jquery-barcode.js" ></script>
-			<script>
-			$("#bc_ndzl").barcode(''+cur_order_num, "datamatrix", {moduleSize:4, showHRI:false});     
-			</script>
-
-
-	            
-
-
             <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
             <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
+			<script type="text/javascript" src="jquery-barcode.js" ></script>
             <script type="text/javascript" src="tabulator.min.js"></script>
             <script type="text/javascript">
 
@@ -191,14 +177,7 @@ var itemsPrices = [120.99, 103.40, 99.90, 110.15, 201.01, 176.82, 93.12, 223.99,
 
     $("#example-table").tabulator("setData", itemstolist);
 
-            </script>
 
-
-
-<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
-            <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
-            <script type="text/javascript" src="tabulator.min.js"></script>
-			  <script>  
                  $("#shipmentchoices-table").tabulator({
                     selectable: 1,
                     layout: "fitColumns", //fit columns to width of table (optional)
@@ -214,7 +193,43 @@ var itemsPrices = [120.99, 103.40, 99.90, 110.15, 201.01, 176.82, 93.12, 223.99,
 		{id:3,  description:"I have a discount code", price:"---", time: "N/A" },
 	];
 	$("#shipmentchoices-table").tabulator("setData", choices_for_shipment);
+
+
+	function showShipmentBarcode() {
+
+                   var selectedItem = $("#example-table").tabulator("getSelectedData");
+                    var selectedShipmentType = $("#shipmentchoices-table").tabulator("getSelectedData");
+
+                    if (selectedItem.length == 0) {
+                        alert("No products selected to return.")
+                    }
+                    else {
+                        if (selectedShipmentType.length == 0) {
+                            alert("No Shipment Type selected.")
+                        }
+                        else {
+							var transaction_epoch = Date.now()/1000;
+							var barcodetobescanned =
+								"{\"epoch\":"+transaction_epoch +
+								",\"order\":"+cur_order_num  + 
+								",\"returnItem\":"+JSON.stringify(selectedItem)  + 
+								",\"returnType\":"+JSON.stringify(selectedShipmentType)  + 
+								"}"
+								;
+
+								document.getElementById('finaldiv').style.display = 'block';   
+								document.getElementById('subtitle1').style.display = 'none';   
+								document.getElementById('example-table').style.display = 'none';   
+								document.getElementById('shipmentchoices-table').style.display = 'none';   
+
+								$("#bc_ndzl").barcode(''+barcodetobescanned, "datamatrix", {moduleSize:4, showHRI:false});     
+
+							//alert("generating barcode for "+barcodetobescanned);
+                        }
+                    }
+                };
 </script>
+
 
 
 </body>
