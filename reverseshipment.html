@@ -73,7 +73,6 @@
                 <input type="text" id="description" placeholder="Description" size="22">
                 <input type="text" id="price" placeholder="Price" size="10">
                 <input type="text" id="ean" placeholder="Ean-13" size="15">
-                
 			</form>
 			
 
@@ -93,7 +92,7 @@
                     columns: [ //Define Table Columns
                         { title: "SKU", field: "sku", sorter: "number", width: 150, align: "right", },
                         { title: "Description", field: "description", sorter: "string", align: "left", width: 200 },
-                        { title: "Unit Price", field: "unitPrice", width: 100, sorter: "number", editor: "input", validator: ["float", "required"], align: "right", sortable: false },
+                        { title: "Unit Price", field: "unitPrice", width: 100, sorter: "number", validator: ["float", "required"], align: "right", sortable: false },
                         { title: "EAN 13 code", field: "eanCode", width: 150, sorter: "number", align: "right" },
                     ],
                     //index:"sku",
