@@ -17,16 +17,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		reverseshipment.html = reverseshipment.html
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "return_labels", "return_labels", "{22A8E6FA-E2B6-40A0-8F4F-D84A829942BD}"
-	ProjectSection(SolutionItems) = preProject
-		..\OD\EVENTS\LINKOS ADVANTAGE\MODULI DI RESO\crono.png = ..\OD\EVENTS\LINKOS ADVANTAGE\MODULI DI RESO\crono.png
-		..\OD\EVENTS\LINKOS ADVANTAGE\MODULI DI RESO\nexive.png = ..\OD\EVENTS\LINKOS ADVANTAGE\MODULI DI RESO\nexive.png
-		..\OD\EVENTS\LINKOS ADVANTAGE\MODULI DI RESO\reso-zalando-ups-768x543.jpg = ..\OD\EVENTS\LINKOS ADVANTAGE\MODULI DI RESO\reso-zalando-ups-768x543.jpg
-		..\OD\EVENTS\LINKOS ADVANTAGE\MODULI DI RESO\sda.png = ..\OD\EVENTS\LINKOS ADVANTAGE\MODULI DI RESO\sda.png
-		..\OD\EVENTS\LINKOS ADVANTAGE\MODULI DI RESO\tnt.PNG = ..\OD\EVENTS\LINKOS ADVANTAGE\MODULI DI RESO\tnt.PNG
-		..\OD\EVENTS\LINKOS ADVANTAGE\MODULI DI RESO\tnt2.png = ..\OD\EVENTS\LINKOS ADVANTAGE\MODULI DI RESO\tnt2.png
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -46,9 +36,6 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{22A8E6FA-E2B6-40A0-8F4F-D84A829942BD} = {9B449302-41F0-4B24-B1F8-5B73FB7C8CB3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5FD699D6-388B-46B5-B89A-0A77DACBA620}
