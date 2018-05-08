@@ -87,8 +87,6 @@ let ws allAgents (printJob:Msg2PrinterFeed) (jsonRequest:Msg2PrinterFeed) (webSo
     do pongTimeoutEvent |> Observable.subscribe (fun _ -> do inbox.Post (Pong, [||] , true)) |> ignore
     do pongTimer.Start()
 
-    do logAgent.AppendToLog "About to enter websocket read loop"
-
     let mutable channelUniqueId = ""
 
     // if `loop` is set to false, the server will stop receiving messages
@@ -179,7 +177,7 @@ let ws allAgents (printJob:Msg2PrinterFeed) (jsonRequest:Msg2PrinterFeed) (webSo
                                     | Some jsonval ->   do channelUniqueId <- JsonExtensions.AsString (jsonval)
                                                         let eventForThisChannel = Event.filter (fun pm -> pm.printerID=channelUniqueId) printJob.Event1
                                                         do eventForThisChannel |> Observable.subscribe (fun pm -> do inbox.Post(Binary, UTF8.bytes pm.msg , true)) |> ignore
-                                                        // do printJob.TriggerEvent {printerID = channelUniqueId; msg = helloLabel }
+                                                        do printJob.TriggerEvent {printerID = channelUniqueId; msg = helloLabel() }
                                     | None -> ()
                             | "v1.config.zebra.com" -> 
                                     match jval.TryGetProperty "unique_id" with

@@ -3,17 +3,24 @@
 open StoreAgent
 open Suave.Utils
 
+let helloLabel () =
+    let createdAt = System.Environment.GetEnvironmentVariable("HEROKU_RELEASE_CREATED_AT")
+    let releaseVersion = System.Environment.GetEnvironmentVariable("HEROKU_RELEASE_VERSION")
 
-let helloLabel = "
-CT~~CD,~CC^~CT~
-^XA
-^MMT
-^PW609
-^LL0400
-^LS0
-^FT100,150^A0N,28,28^FH\^FDSUAVE F# APP CONNECTED !^FS
-^FT100,190^A0N,28,28^FH\^FDHOSTED BY HEROKU^FS
-^PQ1,1,1,Y^XZ"
+    let helloLabel = "
+    CT~~CD,~CC^~CT~
+    ^XA
+    ^MMT
+    ^PW400
+    ^LL0240
+    ^LS0
+    ^FT20,50^A0N,28,28^FH\^FDCONNECTED TO HEROKU^FS
+    ^FT20,90^A0N,28,28^FH\^FDSUAVE F# APP: XXXXXXXXX^FS
+    ^FT20,130^A0N,28,28^FH\^FDRELEASED: YYYYYYYYYYYY^FS
+    ^PQ1,1,1,Y^XZ"
+
+    let label1 = String.replace "XXXXXXXXX" createdAt helloLabel
+    String.replace "YYYYYYYYYYYY" releaseVersion label1
 
 let buildpricetag (prod:Product) =
     let label0 = "

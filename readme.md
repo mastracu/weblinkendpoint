@@ -32,6 +32,8 @@ If it is, it will be listed in http://weblinkendpoint.mastracyu.it/appselector.h
 
 The printers will also spit out a welcome label once it’s connected.
 
+You may also need to calibrate the printer and/or reset the sensor settings depending on the media being used.
+
 ### Sending JSON configuration commands to the printer
 
 Demonstrate how one can remotely send configuration commands to a printer by sending commands from appselector page and checking response on logtable.
