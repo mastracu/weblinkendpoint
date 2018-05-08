@@ -1,12 +1,12 @@
 # F# WeblinkEndpoint for Zebra Printers 
 
-Demo app to demonstrate how to leverage Weblink technology to support a couple
-of use-cases:
+Demo app to demonstrate how to leverage Weblink technology to support multiple use-cases:
 
 *  printing price labels (repricing) using ZQ320 indoor version (label printer with Wifi and BT) + CS4070 BT scanner
 *  convertion of a 300 dpi label into a 200 dpi label – this is a real case from a recent customer request. For the customer modifying the printing app was just impossible.
+*  self-service label printing in parcel shops to - for instance - return goods purchased online
 
-Tested with ZQ320 indoor + CS4070, ZD420 203dpi Cartridge and ZT410 203 dpi
+Tested with ZQ310 (2inch) and ZQ320 (3 inch) indoor + CS4070, ZD420 203dpi Cartridge and ZT410 203 dpi
 
 ## Getting Started
 
@@ -21,7 +21,11 @@ You then specify the address of the weblink endpoint by issuing
 ```
 ! U1 setvar "weblink.ip.conn1.location" "https://weblinkendpoint.mastracu.it/websocketWithSubprotocol"
 ```
-You then re-start / power-cycle the printer
+You then re-start / power-cycle the printer by issuing
+
+```
+! U1 setvar "device.reset" ""
+```
 
 Check the printer is now connected.
 If it is, it will be listed in http://weblinkendpoint.mastracyu.it/appselector.html
