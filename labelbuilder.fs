@@ -16,11 +16,11 @@ let helloLabel () =
     ^LS0
     ^FT20,50^A0N,28,28^FH\^FDCONNECTED TO HEROKU^FS
     ^FT20,90^A0N,28,28^FH\^FDSUAVE F# APP: XXXXXXXXX^FS
-    ^FT20,130^A0N,28,28^FH\^FDRELEASED: YYYYYYYYYYYY^FS
+    ^FT20,130^A0N,28,28^FH\^FDYYYYYYYYYYYY^FS
     ^PQ1,1,1,Y^XZ"
 
-    let label1 = String.replace "XXXXXXXXX" createdAt helloLabel
-    String.replace "YYYYYYYYYYYY" releaseVersion label1
+    let label1 = String.replace "XXXXXXXXX" releaseVersion helloLabel
+    String.replace "YYYYYYYYYYYY" createdAt label1
 
 let buildpricetag (prod:Product) =
     let label0 = "
