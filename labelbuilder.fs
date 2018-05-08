@@ -22,13 +22,13 @@ let buildpricetag (prod:Product) =
         ^PW400
         ^LL0240
         ^LS0
-        ^FT176,49^A0N,28,50^FB236,1,0,C^FH\^FDZebra Store^FS
-        ^BY3,3,41^FT156,210^BEN,,Y,N
+        ^FT76,49^A0N,28,50^FB236,1,0,C^FH\^FDZebra Store^FS
+        ^BY3,3,41^FT56,210^BEN,,Y,N
         ^FDBBBBBBBBBBBBB^FS
-        ^FT280,148^A0N,28,28^FH\^FDPPPPPP\15 a piece^FS
-        ^FT189,148^A0N,28,28^FH\^FDPrice ^FS
-        ^FT270,111^A0N,28,28^FH\^FDXXXXXXXXXXXX^FS
-        ^FT157,111^A0N,28,28^FH\^FDProduct ^FS
+        ^FT180,148^A0N,28,28^FH\^FDPPPPPP\15 a piece^FS
+        ^FT89,148^A0N,28,28^FH\^FDPrice ^FS
+        ^FT170,111^A0N,28,28^FH\^FDXXXXXXXXXXXX^FS
+        ^FT57,111^A0N,28,28^FH\^FDProduct ^FS
         ^PQ1,0,1,Y^XZ
         "
     let label1 = String.replace "PPPPPP" (prod.unitPrice.ToString()) label0
