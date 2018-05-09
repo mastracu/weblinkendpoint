@@ -34,9 +34,29 @@ The printers will also spit out a welcome label once it’s connected.
 
 You may also need to calibrate the printer and/or reset the sensor settings depending on the media being used.
 
+### Notes for mobile printers
+
+Also note for mobile printers like ZQ320 and ZQ310, I turn sleep mode off if using WebLink by issuing
+```
+! U1 setvar "power.sleep.enable" "off"
+```
+Testing with ZQ310, I have noted mobile printer will shut down weblink connection after issuing battery low alert.
+
+
 ### Sending JSON configuration commands to the printer
 
-Demonstrate how one can remotely send configuration commands to a printer by sending commands from appselector page and checking response on logtable.
+Demonstrate how one can remotely send configuration commands to a printer or query printer data by sending commands from appselector page and checking response on logtable.
+
+You may want to issue
+```
+{}{"ribbon.cartridge":null} 
+```
+on a ZD420 cartridge TT printer and
+```
+{}{"power":null} 
+```
+on a mobile printer.
+
 
 ### Repricing application
 
