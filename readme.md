@@ -15,7 +15,10 @@ Simple instructions follow
 
 ### Demo session setup
 
-You will need to hook up your printer to the Internet (Configure Printer Connectivity in Zebra Setup Utility). I typically use Wifi printers and connect to ZGuest wireless network in Zebra office.
+You will need to hook up your printer to the Internet
+In order to do that, you may use "Configure Printer Connectivity" in Zebra Setup Utility. 
+I typically use Wifi printers and connect to ZGuest wireless network in Zebra office.
+
 You then specify the address of the weblink endpoint by issuing 
 
 ```
@@ -36,18 +39,21 @@ You may also need to calibrate the printer and/or reset the sensor settings depe
 
 ### Notes for mobile printers
 
-Also note for mobile printers like ZQ320 and ZQ310, I turn sleep mode off if using WebLink by issuing
+On mobile printers like ZQ320 and ZQ310, I have seen a behaviour where the printer will not stay in sleep mode (https://www.zebra.com/content/dam/zebra/software/en/application-notes/AppNote-SleepMode-v5.pdf) if weblink is enabled.
+The printer will awake seconds after entering sleep mode.
+Because of this, I turn sleep mode off by issuing
 ```
 ! U1 setvar "power.sleep.enable" "off"
 ```
-Testing with ZQ310, I have noted mobile printer will shut down weblink connection after issuing battery low alert.
+Also testing with ZQ310, I have noted mobile printer will shut down weblink connection after issuing battery low alert.
+In my test battery low alert was issued at about 10% battery level (6.5 Volts) and printer did shut down at about 6% battery level (6.28 Volts)
 
 
 ### Sending JSON configuration commands to the printer
 
 Demonstrate how one can remotely send configuration commands to a printer or query printer data by sending commands from appselector page and checking response on logtable.
 
-You may want to issue
+Some revealing commands to issue are
 ```
 {}{"ribbon.cartridge":null} 
 ```
@@ -67,7 +73,9 @@ On http://weblinkendpoint.mastracu.it/pricetag.html you add a new item that you 
 
 **Please ensure barcode is 13-digits long as only EAN-13 barcodes are currently supported.**
 
-Once this is done I pair the CS4070 to the ZQ320 printer (you can use 123scan to print the related barcodes).
+Once this is done I pair the CS4070 to the ZQ printer.
+You can use 123scan to print the related barcodes (Bluetooth Pairing barcode for Serial Port Profile - Master).
+Please note that scanning the BT addr barcode on the back of the printer will not work.
 
 **You will also need to ensure the BT scanner is configured to CR-LF terminate the barcode read.**
  
