@@ -66,7 +66,7 @@ on a mobile printer.
 
 ### Repricing application
 
-Minimum label width: 5cms 
+Minimum label width: 5cms or 2 inches
 Minimum label height: 3cms
 
 On http://weblinkendpoint.mastracu.it/pricetag.html you add a new item that you have handy in the meeting room.
