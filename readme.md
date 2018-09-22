@@ -69,15 +69,22 @@ on a mobile printer.
 Minimum label width: 5cms or 2 inches
 Minimum label height: 3cms
 
+Follow the following steps to set it up
+
+1. Ensure the BT scanner is configured to CR-LF terminate the barcode read. 
+![Image](enter.png "icon")        
+2. Verify the printer is listed as connected in the the WebLinkEndPoint. Send the following json command to get the btaddress of the printer: 
+```
+{}{"bluetooth.short_address":null} 
+```  
+3. From 123scan generate the Bluetooth Pairing barcode (Serial Port Profile - Master) by keying in the address retrieved in previous point.
+4. Scan the barcode with CS4070 and the scanner should establish the BT connection with the printer (solid blue LED on the printer) 
+
 On http://weblinkendpoint.mastracu.it/pricetag.html you add a new item that you have handy in the meeting room.
 
 **Please ensure barcode is 13-digits long as only EAN-13 barcodes are currently supported.**
 
-Once this is done I pair the CS4070 to the ZQ printer.
-You can use 123scan to print the related barcodes (Bluetooth Pairing barcode for Serial Port Profile - Master).
 Please note that scanning the BT addr barcode on the back of the printer will not work.
-
-**You will also need to ensure the BT scanner is configured to CR-LF terminate the barcode read.**
  
 I can then go ahead and scan the barcodes of the item above. 
 A pricetag will be automatically printed if the barcode is found. 
