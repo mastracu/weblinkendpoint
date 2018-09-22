@@ -72,7 +72,9 @@ Minimum label height: 3cms
 Follow the following steps to set it up
 
 1. Ensure the BT scanner is configured to CR-LF terminate the barcode. 
+
 ![Barcode](img/enter.png)        
+
 2. Verify the printer is listed as connected in the the WebLinkEndPoint. Send the following json command to get the btaddress of the printer: 
 ```
 {}{"bluetooth.short_address":null} 
