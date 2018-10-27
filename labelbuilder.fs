@@ -66,4 +66,14 @@ let convertIfadLabel (label:string) =
     "^FO115,203^A0N22,25^FD" + field6 + "^FS^XZ"
 
 
-
+let convertWikipediaLabel (label:string) =
+//^XA
+//^LH30,30
+//^FO20,10
+//^ADN,90,50
+//^AD^FDWikipedia^FS
+//^XZ
+    let index1 = label.IndexOf("^AD^FD") + "^AD^FD".Length   // IFAD INVENTORY
+    let field1 = label.Substring (index1, label.IndexOf("^FS", index1) - index1)
+    
+    "^XA^LH30,30^FO20,10^ADN,90,50^AD^FD" + "Converted" + "^FS^XZ"
