@@ -142,11 +142,14 @@ let ws allAgents (printJob:Msg2PrinterFeed) (jsonRequest:Msg2PrinterFeed) (webSo
 
         match jval.TryGetProperty "alert" with
         | Some jsonalertval ->   
+            do logAgent.AppendToLog ("Inside alert management") 
             match (jsonalertval.GetProperty "condition_id").AsString() with
             | "SGD SET" -> 
+                do logAgent.AppendToLog ("Inside SGD SET" ) 
                 let sgdFeedback = printersAgent.FetchPrinterInfo channelUniqueId
                 match sgdFeedback with 
                 | Some feedback -> 
+                    do logAgent.AppendToLog (sprintf "Printer application: %s" feedback.sgdSetAlertFeedback )
                     match feedback.sgdSetAlertFeedback with
                     | "priceTag" -> 
                         let barcode = (jsonalertval.GetProperty "setting_value").AsString()
