@@ -166,7 +166,7 @@ let ws allAgents (printJob:Msg2PrinterFeed) (jsonRequest:Msg2PrinterFeed) (webSo
                         do logAgent.AppendToLog (sprintf "Input label: %s" label300dpi)    
                         do logAgent.AppendToLog (sprintf "New label: %s" (convertIfadLabel label300dpi))       
                         {printerID = channelUniqueId; msg = (convertIfadLabel label300dpi)} |> printJob.TriggerEvent
-                    | "wikipediaConvertion" ->  
+                    | "wikipediaConversion" ->  
                         let demolabel = (jsonalertval.GetProperty "setting_value").AsString()
                         do logAgent.AppendToLog (sprintf "Input label: %s" demolabel)    
                         do logAgent.AppendToLog (sprintf "New label: %s" (convertWikipediaLabel demolabel))       
