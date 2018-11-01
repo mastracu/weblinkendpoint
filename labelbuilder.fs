@@ -63,7 +63,7 @@ let convertIfadLabel (label:string) =
     "^FO08,80^ADN20,7^FD" + field3 + "^FS" +
     "^FO53,80^A0N22,25^FD" + field4 + "^FS" + 
     "^FO08,107^B3N,N,87,N,N^FD" + field5 + "^FS" +
-    "^FO80,203^A0N,40,40^FD" + field6 + "^FS^XZ"
+    "^FO80,203^A0N,38,38^FD" + field6 + "^FS^XZ"
 
 
 let convertWikipediaLabel (label:string) =

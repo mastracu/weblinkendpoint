@@ -196,12 +196,9 @@ let ws allAgents (printJob:Msg2PrinterFeed) (jsonRequest:Msg2PrinterFeed) (webSo
                                                         do jsonRequest.TriggerEvent {printerID= channelUniqueId; msg= """{}{"alerts.configured":"ALL MESSAGES,SDK,Y,Y,WEBLINK.IP.CONN1,0,N,|SGD SET,SDK,Y,Y,WEBLINK.IP.CONN1,0,N,capture.channel1.data.raw"} """}
                                                         do jsonRequest.TriggerEvent {printerID= channelUniqueId; msg= """{}{"device.product_name":null} """ }
                                                         do jsonRequest.TriggerEvent {printerID= channelUniqueId; msg= """{}{"appl.name":null} """ }
-                                                        do jsonRequest.TriggerEvent {printerID= channelUniqueId; msg= """{}{"capture.channel1.port":"bt"} """ }
-                                                        do jsonRequest.TriggerEvent {printerID= channelUniqueId; msg= """{}{"capture.channel1.max_length":"64"} """ }
-                                                        do jsonRequest.TriggerEvent {printerID= channelUniqueId; msg= """{}{"capture.channel1.delimiter":"\\015\\012"} """ }
-                                                        
-
-
+                                                        do jsonRequest.TriggerEvent {printerID=channelUniqueId; msg= """{}{"capture.channel1.port":"usb"} """ }
+                                                        do jsonRequest.TriggerEvent {printerID=channelUniqueId; msg= """{}{"capture.channel1.delimiter":"^XZ"} """ }
+                                                        do jsonRequest.TriggerEvent {printerID=channelUniqueId; msg= """{}{"capture.channel1.max_length":"512"} """ }                                                        
                                     | None -> ()
                             | _ -> ()
         | None -> ()
