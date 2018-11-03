@@ -3,5 +3,5 @@ WORKDIR /src
 
 
 COPY . /src
-RUN nuget restore
+RUN nuget restore && xbuild
 EXPOSE 8083
