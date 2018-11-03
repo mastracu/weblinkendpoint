@@ -161,13 +161,13 @@ let ws allAgents (printJob:Msg2PrinterFeed) (jsonRequest:Msg2PrinterFeed) (webSo
                             do logAgent.AppendToLog (sprintf "Barcode: %s not found in store" barcode)
                     | "ifadLabelConversion" ->  
                         let label300dpi = (jsonalertval.GetProperty "setting_value").AsString()
-                        do logAgent.AppendToLog (sprintf "Input label: %s" label300dpi)    
-                        do logAgent.AppendToLog (sprintf "New label: %s" (convertIfadLabel label300dpi))       
+                        do logAgent.AppendToLog (sprintf "Original label: %s" label300dpi)    
+                        do logAgent.AppendToLog (sprintf "Converted label: %s" (convertIfadLabel label300dpi))       
                         {printerID = channelUniqueId; msg = (convertIfadLabel label300dpi)} |> printJob.TriggerEvent
                     | "wikipediaConversion" ->  
                         let demolabel = (jsonalertval.GetProperty "setting_value").AsString()
-                        do logAgent.AppendToLog (sprintf "Input label: %s" demolabel)    
-                        do logAgent.AppendToLog (sprintf "New label: %s" (convertWikipediaLabel demolabel))       
+                        do logAgent.AppendToLog (sprintf "Original label: %s" demolabel)    
+                        do logAgent.AppendToLog (sprintf "Converted label: %s" (convertWikipediaLabel demolabel))       
                         {printerID = channelUniqueId; msg = (convertWikipediaLabel demolabel)} |> printJob.TriggerEvent
                     | _ -> ()
                 | None -> ()
