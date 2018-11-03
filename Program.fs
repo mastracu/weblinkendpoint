@@ -142,10 +142,8 @@ let ws allAgents (printJob:Msg2PrinterFeed) (jsonRequest:Msg2PrinterFeed) (webSo
 
         match jval.TryGetProperty "alert" with
         | Some jsonalertval ->   
-            do logAgent.AppendToLog ("Inside alert management") 
             match (jsonalertval.GetProperty "condition_id").AsString() with
             | "SGD SET" -> 
-                do logAgent.AppendToLog ("Inside SGD SET" ) 
                 let sgdFeedback = printersAgent.FetchPrinterInfo channelUniqueId
                 match sgdFeedback with 
                 | Some feedback -> 
