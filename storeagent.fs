@@ -89,7 +89,7 @@ type StoreAgent() =
                       }
             // http://fsharp.github.io/FSharp.Data/library/Http.html
             // let defaultjson = Http.RequestString("http://weblinkendpoint.mastracu.it/defaultinventory.json")
-            let defaultjson = Http.RequestString("defaultinventory.json")
+            let defaultjson =File.ReadAllText("defaultinventory.json")
             let newStore = { ProductList = Array.toList (unjson<Product array> defaultjson) } 
             storeAgentLoop newStore
 
