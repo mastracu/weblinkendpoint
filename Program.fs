@@ -56,7 +56,7 @@ let config =
     let ipZero = IPAddress.Parse("0.0.0.0")
 
     { defaultConfig with 
-        bindings=[ (if port = null then HttpBinding.create HTTP ip127 (uint16 8080)
+        bindings=[ (if port = null then HttpBinding.create HTTP ipZero (uint16 8083)  // 3 Nov - it was ipZero
                     else HttpBinding.create HTTP ipZero (uint16 port)) ] }
 
 
