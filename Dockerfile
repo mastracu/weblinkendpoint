@@ -2,7 +2,6 @@ FROM fsharp
 WORKDIR /src
 
 
-RUN nuget restore
-
 COPY . /src
+RUN nuget restore
 EXPOSE 8083
