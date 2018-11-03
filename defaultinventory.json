@@ -1,32 +1,38 @@
 [
-    {
-        "description": "House of Sleep:J.Coe",
-        "eanCode": "9780241967744",
-        "sku": "1212121216",
-        "unitPrice": 7.99
-    },
-    {
-        "description": "Pasta dough",
-        "eanCode": "9421021461303",
-        "sku": "1212121215",
-        "unitPrice": 1.30
-    },
-    {
-        "description": "Norda friz 50 cl",
-        "eanCode": "8007500111023",
-        "sku": "72432423",
-        "unitPrice": 0.80
-    },
-    {
-        "description": "Norda naturale 50cl",
-        "eanCode": "8007500111238",
-        "sku": "1212121212",
-        "unitPrice": 0.80
-    },
-    {
-        "description": "Ferreira Porto LBV 375ml",
-        "eanCode": "5601007425633",
-        "sku": "1212121213",
-        "unitPrice": 12.80
-    }
+  {
+    "description": "House of Sleep:J.Coe",
+    "eanCode": "9780241967744",
+    "sku": "1212121216",
+    "unitPrice": 7.99
+  },
+  {
+    "description": "Pasta dough",
+    "eanCode": "9421021461303",
+    "sku": "1212121215",
+    "unitPrice": 1.30
+  },
+  {
+    "description": "Norda friz 50 cl",
+    "eanCode": "8007500111023",
+    "sku": "72432423",
+    "unitPrice": 0.80
+  },
+  {
+    "description": "Norda naturale 50cl",
+    "eanCode": "8007500111238",
+    "sku": "1212121212",
+    "unitPrice": 0.80
+  },
+  {
+    "description": "Ferreira Porto LBV 375ml",
+    "eanCode": "5601007425633",
+    "sku": "1212121213",
+    "unitPrice": 12.80
+  },
+  {
+    "description": "MacBookAir",
+    "eanCode": "5601007425638",
+    "sku": "1212121215",
+    "unitPrice": 1221.80
+  }
 ]
