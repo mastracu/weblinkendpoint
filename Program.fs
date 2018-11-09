@@ -11,6 +11,7 @@ open Suave.RequestErrors
 open Suave.Logging
 open Suave.Utils
 open Suave.Json
+open Suave.EventSource
 
 open System
 open System.Net
@@ -29,9 +30,11 @@ open StoreAgent
 open MessageLogAgent
 open PrintersAgent
 open LabelBuilder
+open System
 
 
 //TODO: https://github.com/SuaveIO/suave/issues/307
+//TODO: Nov518 Do not send print label when printer connects
 
 [<DataContract>]
 type Msg2Printer =
@@ -59,7 +62,13 @@ let config =
         bindings=[ (if port = null then HttpBinding.create HTTP ipZero (uint16 8083)  // 3 Nov - it was ipZero
                     else HttpBinding.create HTTP ipZero (uint16 port)) ] }
 
-
+let sseCont (cn:Connection) = 
+    socket {
+        EventSource.send cn (Message.create "12" "ciccio") |> ignore
+        return cn
+    }
+    // SocketOp.bind (fun () -> SocketOp.mreturn cn) (EventSource.send cn (Message.create "12" "ciccio"))
+    
 let ws allAgents (printJob:Msg2PrinterFeed) (jsonRequest:Msg2PrinterFeed) (webSocket : WebSocket) (context: HttpContext) =
 
   let (storeAgent:StoreAgent, printersAgent:PrintersAgent, logAgent:LogAgent) = allAgents
@@ -183,7 +192,7 @@ let ws allAgents (printJob:Msg2PrinterFeed) (jsonRequest:Msg2PrinterFeed) (webSo
                                     | Some jsonval ->   do channelUniqueId <- JsonExtensions.AsString (jsonval)
                                                         let eventForThisChannel = Event.filter (fun pm -> pm.printerID=channelUniqueId) printJob.Event1
                                                         do eventForThisChannel |> Observable.subscribe (fun pm -> do inbox.Post(Binary, UTF8.bytes pm.msg , true)) |> ignore
-                                                        do printJob.TriggerEvent {printerID = channelUniqueId; msg = helloLabel() }
+                                                        // do printJob.TriggerEvent {printerID = channelUniqueId; msg = helloLabel() }
                                     | None -> ()
                             | "v1.config.zebra.com" -> 
                                     match jval.TryGetProperty "unique_id" with
@@ -273,7 +282,9 @@ let app  : WebPart =
      ()
 
   choose [
-    path "/websocketWithSubprotocol" >=> handShakeWithSubprotocol (chooseSubprotocol "v1.weblink.zebra.com") (ws allAgents printJob jsonRequest)
+    path "/websocketWithSubprotocol" >=> WebSocketUM.handShakeWithSubprotocol (chooseSubprotocol "v1.weblink.zebra.com") (ws allAgents printJob jsonRequest)
+    path "/sseTest" >=> EventSource.handShake (sseCont)
+
     GET >=> choose 
         [ path "/hello" >=> OK "Hello GET"
           path "/clearlog" >=> warbler (fun ctx -> OK ( mLogAgent.Empty(); "Log cleared" ))

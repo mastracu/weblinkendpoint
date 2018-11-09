@@ -57,6 +57,7 @@
             </div>
             <form id="jsonform" class="form">
                 <input type="text" placeholder="Json Command" id="jsoncmd" size="50" />
+                <input type="text" placeholder="Server-sent Event" id="sse" size="50" />
             </form>
             <div id="caption-div" class="left-div">
                 eg: {}{"bluetooth.short_address":null} or {}{"ribbon.cartridge":null} <br />
@@ -155,6 +156,10 @@
                 }
             });
 
+            var source = new EventSource("sseTest");
+            source.onmessage = function (event) {
+                $("#sse").text = event.data;
+            };
 
         </script>
 </body>
