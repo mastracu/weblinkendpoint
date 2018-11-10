@@ -64,8 +64,12 @@ let config =
 
 let sseCont (logAgent:LogAgent) (cn:Connection) = 
     socket {
+        let mutable loop = true
         do logAgent.AppendToLog (sprintf "inside sseCont")
-        EventSource.send cn (Message.create "12" "ciccio") |> ignore
+
+        while loop do
+            EventSource.send cn (Message.create "12" "ciccio") |> ignore
+            Async.Sleep 3000 |> ignore
         return cn
     }
     // SocketOp.bind (fun () -> SocketOp.mreturn cn) (EventSource.send cn (Message.create "12" "ciccio"))
