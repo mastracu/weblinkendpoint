@@ -7,12 +7,19 @@
 
 <script>
 if(typeof(EventSource) !== "undefined") {
-    var source = new EventSource("sseTest");
+    var source = new EventSource('/sseTest');
+    console.log(source.withCredentials);
+    console.log(source.readyState);
+    console.log(source.url);
+
     source.onmessage = function(event) {
         document.getElementById("result").innerHTML += event.data + "<br>";
     };
+    evtSource.onopen = function () {
+        console.log("Connection to server opened.");
+    };
     source.onerror = function (event) {
-        document.getElementById("result").innerHTML += "Errore" + event.data + "<br>";
+        console.log("EventSource error");
     }
 } else {
     document.getElementById("result").innerHTML = "Sorry, your browser does not support server-sent events...";
