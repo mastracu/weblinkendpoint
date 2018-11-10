@@ -62,8 +62,9 @@ let config =
         bindings=[ (if port = null then HttpBinding.create HTTP ipZero (uint16 8083)  // 3 Nov - it was ipZero
                     else HttpBinding.create HTTP ipZero (uint16 port)) ] }
 
-let sseCont (cn:Connection) = 
+let sseCont (logAgent:LogAgent) (cn:Connection) = 
     socket {
+        do logAgent.AppendToLog (sprintf "inside sseCont")
         EventSource.send cn (Message.create "12" "ciccio") |> ignore
         return cn
     }
@@ -283,7 +284,7 @@ let app  : WebPart =
 
   choose [
     path "/websocketWithSubprotocol" >=> WebSocketUM.handShakeWithSubprotocol (chooseSubprotocol "v1.weblink.zebra.com") (ws allAgents printJob jsonRequest)
-    path "/sseSuave" >=> EventSource.handShake (sseCont)
+    path "/sseSuave" >=> EventSource.handShake (sseCont mLogAgent)
 
     GET >=> choose 
         [ path "/hello" >=> OK "Hello GET"
