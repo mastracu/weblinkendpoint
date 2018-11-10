@@ -289,7 +289,14 @@ let app  : WebPart =
 
   choose [
     path "/websocketWithSubprotocol" >=> WebSocketUM.handShakeWithSubprotocol (chooseSubprotocol "v1.weblink.zebra.com") (ws allAgents printJob jsonRequest)
-    path "/sseSuave" >=> EventSource.handShake (sseCont mLogAgent)
+    path "/sseSuave" >=> request (fun _ -> EventSource.handShake (fun out ->
+          socket {
+            let msg = { id = "1"; data = "First Message"; ``type`` = None }
+            do! msg |> send out
+            let msg = { id = "2"; data = "Second Message"; ``type`` = None }
+            do! msg |> send out
+            return out
+          }))
 
     GET >=> choose 
         [ path "/hello" >=> OK "Hello GET"
