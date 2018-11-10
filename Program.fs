@@ -69,6 +69,7 @@ let sseCont (logAgent:LogAgent) (cn:Connection) =
 
         while loop do
             EventSource.send cn (Message.create "12" "ciccio") |> ignore
+            EventSource.dispatch cn |> ignore
             Async.Sleep 3000 |> ignore
         return cn
     }
