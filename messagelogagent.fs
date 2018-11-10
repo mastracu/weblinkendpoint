@@ -28,7 +28,7 @@ type LogAgentMsg =
     | AppendToLog of string
     | LogDump  of AsyncReplyChannel<string>
 
-type LogAgent() =
+type LogAgent(evNewLogEntry: Event<String>) =
     let printerMsgMailboxProcessor =
         MailboxProcessor.Start(fun inbox ->
             let rec locationAgentLoop agentLog =
@@ -36,7 +36,9 @@ type LogAgent() =
                         match msg with
                         | Exit -> return ()
                         | Reset -> return! locationAgentLoop Log.Empty
-                        | AppendToLog newMsg -> return! locationAgentLoop (agentLog.AppendToLog newMsg)
+                        | AppendToLog newMsg ->
+                            evNewLogEntry.Trigger newMsg
+                            return! locationAgentLoop (agentLog.AppendToLog newMsg)
                         | LogDump replyChannel ->
                             replyChannel.Reply (json<LogEntry array> (List.toArray agentLog.msgList)) 
                             return! locationAgentLoop agentLog

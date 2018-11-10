@@ -261,7 +261,10 @@ type ProductPrinterObj =
    }
 
 let app  : WebPart = 
-  let mLogAgent = new LogAgent()
+  let eventLogENtry = (new Event<String> ())
+  let eventLog= eventLogENtry.Publish
+  let mLogAgent = new LogAgent(eventLog)
+  
   let printJob = new Msg2PrinterFeed()
   let jsonRequest = new Msg2PrinterFeed()
   let storeAgent = new StoreAgent()

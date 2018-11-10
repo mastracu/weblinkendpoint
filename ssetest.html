@@ -20,6 +20,7 @@ if(typeof(EventSource) !== "undefined") {
     };
     source.onerror = function (event) {
         console.log("EventSource error");
+        source.close();
     }
 } else {
     document.getElementById("result").innerHTML = "Sorry, your browser does not support server-sent events...";
