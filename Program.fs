@@ -62,18 +62,6 @@ let config =
         bindings=[ (if port = null then HttpBinding.create HTTP ipZero (uint16 8083)  // 3 Nov - it was ipZero
                     else HttpBinding.create HTTP ipZero (uint16 port)) ] }
 
-let sseCont (logAgent:LogAgent) (cn:Connection) = 
-    socket {
-        let mutable loop = true
-        do logAgent.AppendToLog (sprintf "inside sseCont")
-
-        while loop do
-            EventSource.send cn (Message.create "12" "ciccio") |> ignore
-            EventSource.dispatch cn |> ignore
-            Async.Sleep 3000 |> ignore
-        return cn
-    }
-    // SocketOp.bind (fun () -> SocketOp.mreturn cn) (EventSource.send cn (Message.create "12" "ciccio"))
     
 let ws allAgents (printJob:Msg2PrinterFeed) (jsonRequest:Msg2PrinterFeed) (webSocket : WebSocket) (context: HttpContext) =
 
@@ -261,9 +249,7 @@ type ProductPrinterObj =
    }
 
 let app  : WebPart = 
-  let eventLogENtry = (new Event<String> ())
-  let eventLog= eventLogENtry.Publish
-  let mLogAgent = new LogAgent(eventLog)
+  let mLogAgent = new LogAgent()
   
   let printJob = new Msg2PrinterFeed()
   let jsonRequest = new Msg2PrinterFeed()
