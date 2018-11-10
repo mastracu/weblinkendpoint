@@ -7,7 +7,7 @@
 
 <script>
 if(typeof(EventSource) !== "undefined") {
-    var source = new EventSource('/sseTest');
+    var source = new EventSource('/sseSuave');
     console.log(source.withCredentials);
     console.log(source.readyState);
     console.log(source.url);
@@ -15,7 +15,7 @@ if(typeof(EventSource) !== "undefined") {
     source.onmessage = function(event) {
         document.getElementById("result").innerHTML += event.data + "<br>";
     };
-    evtSource.onopen = function () {
+    source.onopen = function () {
         console.log("Connection to server opened.");
     };
     source.onerror = function (event) {
