@@ -249,7 +249,8 @@ type ProductPrinterObj =
    }
 
 let app  : WebPart = 
-  let mLogAgent = new LogAgent()
+  let logEvent = new Event<String>()
+  let mLogAgent = new LogAgent(logEvent)
   
   let printJob = new Msg2PrinterFeed()
   let jsonRequest = new Msg2PrinterFeed()
@@ -284,6 +285,15 @@ let app  : WebPart =
             do! msg |> send out
             let msg = { id = "2"; data = "Second Message"; ``type`` = None }
             do! msg |> send out
+            return out
+          }))
+    path "/sseLog" >=> request (fun _ -> EventSource.handShake (fun out ->
+          socket {
+            while true do
+                let! newLogEntry = Control.Async.AwaitEvent(logEvent.Publish) |> Suave.Sockets.SocketOp.ofAsync
+                let msg = { id = "1"; data = newLogEntry; ``type`` = None }
+                // see example in example.fs/counter to learn how to manage id increment
+                do! msg |> send out
             return out
           }))
 

@@ -12,7 +12,8 @@ if(typeof(EventSource) !== "undefined") {
     console.log(source.readyState);
     console.log(source.url);
 
-    source.onmessage = function(event) {
+    source.onmessage = function (event) {
+        console.log("Message received: " + event.data);
         document.getElementById("result").innerHTML += event.data + "<br>";
     };
     source.onopen = function () {
