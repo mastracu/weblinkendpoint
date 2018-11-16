@@ -7,7 +7,7 @@
 
 <script>
 if(typeof(EventSource) !== "undefined") {
-    var source = new EventSource('/sseSuave');
+    var source = new EventSource('/sseLog');
     console.log(source.withCredentials);
     console.log(source.readyState);
     console.log(source.url);
