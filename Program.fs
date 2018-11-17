@@ -283,7 +283,11 @@ let app  : WebPart =
           socket {
             let msg = { id = "1"; data = "First Message"; ``type`` = None }
             do! msg |> send out
+            do! Async.Sleep 30000 |> Suave.Sockets.SocketOp.ofAsync
             let msg = { id = "2"; data = "Second Message"; ``type`` = None }
+            do! msg |> send out
+            do! Async.Sleep 30000 |> Suave.Sockets.SocketOp.ofAsync
+            let msg = { id = "3"; data = "Third Message"; ``type`` = None }
             do! msg |> send out
             return out
           }))
@@ -294,6 +298,7 @@ let app  : WebPart =
             let msg = { id = "1"; data = newLogEntry; ``type`` = None }
                 // see example in example.fs/counter to learn how to manage id increment
             do! msg |> send out
+                       
             return out
           }))
 
