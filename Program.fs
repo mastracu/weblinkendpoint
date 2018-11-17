@@ -283,9 +283,10 @@ let app  : WebPart =
           socket {
             let msg = { id = "1"; data = "First Message"; ``type`` = None }
             do! msg |> send out
+            let! cippa =  Suave.Sockets.AsyncSocket.flush out
             do! Async.Sleep 30000 |> Suave.Sockets.SocketOp.ofAsync
             let msg = { id = "2"; data = "Second Message"; ``type`` = None }
-            do! msg |> send out
+            do! msg |> send cippa
             do! Async.Sleep 30000 |> Suave.Sockets.SocketOp.ofAsync
             let msg = { id = "3"; data = "Third Message"; ``type`` = None }
             do! msg |> send out
