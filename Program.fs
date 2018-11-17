@@ -289,11 +289,11 @@ let app  : WebPart =
           }))
     path "/sseLog" >=> request (fun _ -> EventSource.handShake (fun out ->
           socket {
-            while true do
-                let! newLogEntry = Control.Async.AwaitEvent(logEvent.Publish) |> Suave.Sockets.SocketOp.ofAsync
-                let msg = { id = "1"; data = newLogEntry; ``type`` = None }
+            // while true do
+            let! newLogEntry = Control.Async.AwaitEvent(logEvent.Publish) |> Suave.Sockets.SocketOp.ofAsync
+            let msg = { id = "1"; data = newLogEntry; ``type`` = None }
                 // see example in example.fs/counter to learn how to manage id increment
-                do! msg |> send out
+            do! msg |> send out
             return out
           }))
 
