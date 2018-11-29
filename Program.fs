@@ -283,22 +283,22 @@ let app  : WebPart =
           socket {
             let msg = { id = "1"; data = "First Message"; ``type`` = None }
             do! msg |> send out
-            let! cippa =  Suave.Sockets.AsyncSocket.flush out
-            do! Async.Sleep 30000 |> Suave.Sockets.SocketOp.ofAsync
+            do! Async.Sleep 5000 |> Suave.Sockets.SocketOp.ofAsync
             let msg = { id = "2"; data = "Second Message"; ``type`` = None }
-            do! msg |> send cippa
-            do! Async.Sleep 30000 |> Suave.Sockets.SocketOp.ofAsync
+            do! msg |> send out
+            do! Async.Sleep 5000 |> Suave.Sockets.SocketOp.ofAsync
             let msg = { id = "3"; data = "Third Message"; ``type`` = None }
             do! msg |> send out
             return out
           }))
+
     path "/sseLog" >=> request (fun _ -> EventSource.handShake (fun out ->
           socket {
-            // while true do
-            let! newLogEntry = Control.Async.AwaitEvent(logEvent.Publish) |> Suave.Sockets.SocketOp.ofAsync
-            let msg = { id = "1"; data = newLogEntry; ``type`` = None }
+            while true do
+                let! newLogEntry = Control.Async.AwaitEvent(logEvent.Publish) |> Suave.Sockets.SocketOp.ofAsync
+                let msg = { id = "1"; data = newLogEntry; ``type`` = None }
                 // see example in example.fs/counter to learn how to manage id increment
-            do! msg |> send out
+                do! msg |> send out
                        
             return out
           }))
