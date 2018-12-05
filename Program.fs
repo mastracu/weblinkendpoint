@@ -282,14 +282,14 @@ let app  : WebPart =
 
     path "/sseLog" >=> request (fun _ -> EventSource.handShake (fun out ->
           socket {
-            for i in [1..1000] do
+             for i in [1..1000] do
                 let! newLogEntry = Control.Async.AwaitEvent(logEvent.Publish) |> Suave.Sockets.SocketOp.ofAsync
-                // https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events
-                // let newLogEntryLines = newLogEntry.Split '\n'
-                // for line in newLogEntryLines do
-                let msg = Message.create (string i) newLogEntry                     
-                do! msg |> send out                       
-            return out
+                do! string i |> esId out 
+                let newLogEntryLines = newLogEntry.Split '\n'
+                for line in newLogEntryLines do
+                   do! line |> data out
+                return! dispatch out
+             return out
           }))
 
     GET >=> choose 
