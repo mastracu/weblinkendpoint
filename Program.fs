@@ -285,10 +285,10 @@ let app  : WebPart =
             for i in [1..1000] do
                 let! newLogEntry = Control.Async.AwaitEvent(logEvent.Publish) |> Suave.Sockets.SocketOp.ofAsync
                 // https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events
-                let newLogEntryLines = newLogEntry.Split '\n'
-                for line in newLogEntryLines do
-                    let msg = { id = string i; data = line; ``type`` = None }
-                    do! msg |> send out                       
+                // let newLogEntryLines = newLogEntry.Split '\n'
+                // for line in newLogEntryLines do
+                let msg = Message.create (string i) newLogEntry                     
+                do! msg |> send out                       
             return out
           }))
 
