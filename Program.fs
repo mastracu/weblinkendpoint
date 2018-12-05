@@ -279,26 +279,16 @@ let app  : WebPart =
 
   choose [
     path "/websocketWithSubprotocol" >=> WebSocketUM.handShakeWithSubprotocol (chooseSubprotocol "v1.weblink.zebra.com") (ws allAgents printJob jsonRequest)
-    path "/sseSuave" >=> request (fun _ -> EventSource.handShake (fun out ->
-          socket {
-            let msg = { id = "1"; data = "First Message"; ``type`` = None }
-            do! msg |> send out
-            do! Async.Sleep 5000 |> Suave.Sockets.SocketOp.ofAsync
-            let msg = { id = "2"; data = "Second Message"; ``type`` = None }
-            do! msg |> send out
-            do! Async.Sleep 5000 |> Suave.Sockets.SocketOp.ofAsync
-            let msg = { id = "3"; data = "Third Message"; ``type`` = None }
-            do! msg |> send out
-            return out
-          }))
 
     path "/sseLog" >=> request (fun _ -> EventSource.handShake (fun out ->
           socket {
-            while true do
+            for i in [1..1000] do
                 let! newLogEntry = Control.Async.AwaitEvent(logEvent.Publish) |> Suave.Sockets.SocketOp.ofAsync
-                let msg = { id = "1"; data = newLogEntry; ``type`` = None }
-                // see example in example.fs/counter to learn how to manage id increment
-                do! msg |> send out                       
+                // https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events
+                let newLogEntryLines = newLogEntry.Split '\n'
+                for line in newLogEntryLines do
+                    let msg = { id = string i; data = line; ``type`` = None }
+                    do! msg |> send out                       
             return out
           }))
 
