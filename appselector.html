@@ -43,124 +43,142 @@
 </head>
 <body>
     <h1 style="text-align: center;">WeblinkEndpoint Application Selector</h1>
-    <h5 style="text-align: center;"><span style="font-family:Arial; color:red">! U1 setvar "weblink.ip.conn1.location" "https://weblinkendpoint.mastracu.it/websocketWithSubprotocol"</span> and power-cycle the printer</h5>
+    <h5 style="text-align: center;"><span style="font-family:Arial; color:red">! U1 setvar "weblink.ip.conn1.location" "https://ifad.mastracu.it/websocketWithSubprotocol"</span> and power-cycle the printer</h5>
     <h5 style="text-align: center;">Code and readme file <a target="_blank" href="https://github.com/mastracu/weblinkendpoint">here</a></h5>
 
-        <div id="printers-div">
-            <div id="printers-button" class="left-div">
-                <button id="refresh-button" class="button">
-                    <span class="glyphicon glyphicon-refresh"></span>
-                </button>
-                <button id="sendcmd-button" class="button">
-                    <span class="glyphicon glyphicon-play"></span>
-                </button>
-            </div>
-            <form id="jsonform" class="form">
-                <input type="text" placeholder="Json Command" id="jsoncmd" size="50" />
-                <input type="text" placeholder="Server-sent Event" id="sse" size="50" />
-            </form>
-            <div id="caption-div" class="left-div">
-                eg: {}{"bluetooth.short_address":null} or {}{"ribbon.cartridge":null} <br />
-                eg: {}{"capture.channel1.port":"usb"} <br />
-                Afer sending JSON command, please check <a target="_blank" href="logtable.html">logtable</a> for printer response <br />
-            </div>
-            <div id="printers-table" class="left-div-margin"></div>
-            <div id="caption-div2" class="left-div">
-                <p>
-                    <b>Repricing app (priceTag):</b>
-                    <br />Printer captures BT data and forwards on to weblink endpoint
-                    <br /><img src="img/enter.png" alt="barcode">
-                    <ol type="1">
-                        <li> Read barcode above so that CR-LF is added to barcode.</li>
-                        <li> Use 123Scan to print pairing barcodes (Scanner as MASTER - Serial Port Profile)</li>
-                        <li> Connect BT scanner to printer by scanning barcode</li>
-                        <li> Scan product barcode, label gets printed.</li>
-                        <li> Change product price <a target="_blank" href="pricetag.html">here</a> and scan again</li>
-                    </ol>
-                </p>
-                <p>
-                    <b>Label convertion (ifadLabelConvertion):</b>
-                    <br />Printer captures USB data and forwards on to endpoint
-                    <ol type="1">
-                        <li>Send label via USB. See <a target="_blank" href="https://github.com/mastracu/weblinkendpoint">https://github.com/mastracu/weblinkendpoint</a>.</li>
-                        <li>Converted label for 200 dpi printer with same data gets printed.</li>
-                    </ol>
-                </p>
-                <p>
-                    <b>Label to go (labelToGo):</b>
-                    <br />Printer gets template id and var data via BT scanner - endpoint sends label down to printer
-                    <ol type="1">
-                        <li>Configure and pair BT scanner (see 1-3 in Repricing app)
-                        <li>Generate return barcode <a target="_blank" href="mobiletest.html">here</a></li>
-                        <li>Scan with BT scanner; label gets printed.</li>
-                    </ol>
-                </p>
-            </div>
+    <div id="printers-table" class="left-div-margin"></div>
+    <div id="printers-div">
+        <div id="printers-button" class="left-div">
+            <button id="refresh-button" class="button">
+                <span class="glyphicon glyphicon-refresh"></span>
+            </button>
+            <button id="sendcmd-button" class="button">
+                <span class="glyphicon glyphicon-play"></span>
+            </button>
         </div>
+        <form id="jsonform" class="form">
+            <input type="text" placeholder="Json Command" id="jsoncmd" size="50" />
+        </form>
+        <div id="caption-div" class="left-div">
+            eg: {}{"bluetooth.short_address":null} or {}{"ribbon.cartridge":null} <br />
+            eg: {}{"capture.channel1.port":"usb"} <br />
+            Full logtable <a target="_blank" href="logtable.html">here</a><br />
+        </div>
+        <div id="live-log-table" class="left-div-margin"></div>
+        <div id="caption-div2" class="left-div">
+            <p>
+                <b>Repricing app (priceTag):</b>
+                <br />Printer captures BT data and forwards on to weblink endpoint
+                <br /><img src="img/enter.png" alt="barcode">
+                <ol type="1">
+                    <li> Read barcode above so that CR-LF is added to barcode.</li>
+                    <li> Use 123Scan to print pairing barcodes (Scanner as MASTER - Serial Port Profile)</li>
+                    <li> Connect BT scanner to printer by scanning barcode</li>
+                    <li> Scan product barcode, label gets printed.</li>
+                    <li> Change product price <a target="_blank" href="pricetag.html">here</a> and scan again</li>
+                </ol>
+            </p>
+            <p>
+                <b>Label convertion (ifadLabelConvertion):</b>
+                <br />Printer captures USB data and forwards on to endpoint
+                <ol type="1">
+                    <li>Send label via USB. See <a target="_blank" href="https://github.com/mastracu/weblinkendpoint">https://github.com/mastracu/weblinkendpoint</a>.</li>
+                    <li>Converted label for 200 dpi printer with same data gets printed.</li>
+                </ol>
+            </p>
+            <p>
+                <b>Label to go (labelToGo):</b>
+                <br />Printer gets template id and var data via BT scanner - endpoint sends label down to printer
+                <ol type="1">
+                    <li>Configure and pair BT scanner (see 1-3 in Repricing app)
+                    <li>Generate return barcode <a target="_blank" href="mobiletest.html">here</a></li>
+                    <li>Scan with BT scanner; label gets printed.</li>
+                </ol>
+            </p>
+        </div>
+    </div>
 
-        <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
-        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
-        <script type="text/javascript" src="tabulator.min.js"></script>
-        <script type="text/javascript">
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
+    <script src="eventsource.js"></script>
+    <script type="text/javascript" src="tabulator.min.js"></script>
+    <script type="text/javascript">
 
+        $("#live-log-table").tabulator({
+            selectable: 1,
+            layout: "fitColumns", //fit columns to width of table (optional)
+            columns: [ //Define Table Columns
+                { title: "Live Log", field: "txt", width: 1000, sorter: "string", align: "left", },
+            ],
+            rowSelectionChanged: function (data, rows) {
+                //update selected row counter on selection change
+            },
+        });
 
-            $("#printers-table").tabulator({
-                selectable: 1,
-                layout: "fitColumns",
-                columns: [ //Define Table Columns
-                    { title: "Printer Serial Number", field: "uniqueID", formatter: "link", width: 200, sorter: "string", align: "left", },
-                    { title: "Product Name", field: "productName", width: 200, sorter: "string", align: "left", },
-                    { title: "FW Version", field: "appVersion", width: 150, sorter: "string", align: "left", },
-                    {
-                        title: "Application", field: "sgdSetAlertFeedback", width: 200, sorter: "string", align: "left", editor: "select", editorParams: {
-                            "ifadLabelConversion": "ifadLabelConversion",
-                            "priceTag": "priceTag",
-                            "wikipediaConversion": "wikipediaConversion",
-                            "labelToGo": "labelToGo",
-                        }
-                    }],
-                cellEdited: function (cell) {
-                    var data = cell.getRow().getData();
-                    var myJSON = JSON.stringify(data);
-                    var xhr = new XMLHttpRequest();
-                    var url = "printerupdate";
-                    xhr.open("POST", url, true);
-                    xhr.setRequestHeader("Content-type", "application/json");
-                    xhr.send(myJSON);
+        $("#printers-table").tabulator({
+            selectable: 1,
+            layout: "fitColumns",
+            columns: [ //Define Table Columns
+                { title: "Printer Serial Number", field: "uniqueID", formatter: "link", width: 200, sorter: "string", align: "left", },
+                { title: "Product Name", field: "productName", width: 200, sorter: "string", align: "left", },
+                { title: "FW Version", field: "appVersion", width: 150, sorter: "string", align: "left", },
+                {
+                    title: "Application", field: "sgdSetAlertFeedback", width: 200, sorter: "string", align: "left", editor: "select", editorParams: {
+                        "ifadLabelConversion": "ifadLabelConversion",
+                        "priceTag": "priceTag",
+                        "wikipediaConversion": "wikipediaConversion",
+                        "labelToGo": "labelToGo",
+                    }
+                }],
+            cellEdited: function (cell) {
+                var data = cell.getRow().getData();
+                var myJSON = JSON.stringify(data);
+                var xhr = new XMLHttpRequest();
+                var url = "printerupdate";
+                xhr.open("POST", url, true);
+                xhr.setRequestHeader("Content-type", "application/json");
+                xhr.send(myJSON);
 
-                },
-                rowAdded: function (row) {
-                },
-            });
+            },
+            rowAdded: function (row) {
+            },
+        });
 
+        $("#printers-table").tabulator("setData", "printerslist.json");
+
+        $("#refresh-button").click(function () {
             $("#printers-table").tabulator("setData", "printerslist.json");
+        });
 
-            $("#refresh-button").click(function () {
-                $("#printers-table").tabulator("setData", "printerslist.json");
-            });
+        $("#sendcmd-button").click(function () {
+            var selectedPrinter = $("#printers-table").tabulator("getSelectedData");
 
-            $("#sendcmd-button").click(function () {
-                var selectedPrinter = $("#printers-table").tabulator("getSelectedData");
+            if (selectedPrinter.length == 0) {
+                alert("No printer selected !")
+            }
+            else {
+                var ProductJsonCmdObj = { printerID: selectedPrinter[0].uniqueID, msg: $('#jsoncmd').val() }
+                var myJSON = JSON.stringify(ProductJsonCmdObj);
+                var xhr = new XMLHttpRequest();
+                var url = "json2printer";
+                xhr.open("POST", url, true);
+                xhr.setRequestHeader("Content-type", "application/json");
+                xhr.send(myJSON);
+            }
+        });
 
-                if (selectedPrinter.length == 0) {
-                    alert("No printer selected !")
-                }
-                else {
-                    var ProductJsonCmdObj = { printerID: selectedPrinter[0].uniqueID, msg: $('#jsoncmd').val() }
-                    var myJSON = JSON.stringify(ProductJsonCmdObj);
-                    var xhr = new XMLHttpRequest();
-                    var url = "json2printer";
-                    xhr.open("POST", url, true);
-                    xhr.setRequestHeader("Content-type", "application/json");
-                    xhr.send(myJSON);
-                }
-            });
+        var es = new EventSource("sseLog");
+        var listener = function (event) {
+            var type = event.type;
+            if (type == "message") {
+                $("#live-log-table").tabulator("addRow", event.data);
+            }
+        };
+        es.addEventListener("open", listener);
+        es.addEventListener("message", listener);
+        es.addEventListener("error", listener);
 
-            var source = new EventSource("sseTest");
-            source.onmessage = function (event) {
-                $("#sse").text = event.data;
-            };
 
-        </script>
+    </script>
 </body>
 </html>

@@ -34,7 +34,6 @@ open System
 
 
 //TODO: https://github.com/SuaveIO/suave/issues/307
-//TODO: Nov518 Do not send print label when printer connects
 
 [<DataContract>]
 type Msg2Printer =
@@ -268,17 +267,9 @@ let app  : WebPart =
 
   do mLogAgent.AppendToLog "WebServer started"
 
-  let appname = System.Environment.GetEnvironmentVariable("HEROKU_APP_NAME")
-  let releaseAt = System.Environment.GetEnvironmentVariable("HEROKU_RELEASE_CREATED_AT")
-  let releaseVersion = System.Environment.GetEnvironmentVariable("HEROKU_RELEASE_VERSION")
-
-  if appname <> null then
-     do mLogAgent.AppendToLog (sprintf "Heroku appname: %s" appname)
-     do mLogAgent.AppendToLog (sprintf "Heroku app released at: %s" releaseAt)
-     do mLogAgent.AppendToLog (sprintf "Heroku app release version: %s" releaseVersion)
-  else
-     // doesn't run on Heroku
-     ()
+  //let appname = System.Environment.GetEnvironmentVariable("HEROKU_APP_NAME")
+  //let releaseAt = System.Environment.GetEnvironmentVariable("HEROKU_RELEASE_CREATED_AT")
+  //let releaseVersion = System.Environment.GetEnvironmentVariable("HEROKU_RELEASE_VERSION")
 
   choose [
     path "/websocketWithSubprotocol" >=> WebSocketUM.handShakeWithSubprotocol (chooseSubprotocol "v1.weblink.zebra.com") (ws allAgents printJob jsonRequest)
