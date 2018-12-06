@@ -284,11 +284,11 @@ let app  : WebPart =
     path "/websocketWithSubprotocol" >=> WebSocketUM.handShakeWithSubprotocol (chooseSubprotocol "v1.weblink.zebra.com") (ws allAgents printJob jsonRequest)
 
     path "/sseLog" >=> request (fun _ -> EventSource.handShake (fun out ->
-          socket {
-             let Timer15sec = new System.Timers.Timer(float 15000)
-             do Timer15sec.AutoReset <- true
-             let timeoutEvent = Timer15sec.Elapsed
-             let newEvent = (logEvent.Publish |> Event.map (fun str -> LogEntry str) , timeoutEvent |> Event.map (fun _ -> Timeout)) ||> Event.merge
+          let Timer15sec = new System.Timers.Timer(float 15000)
+          do Timer15sec.AutoReset <- true
+          let timeoutEvent = Timer15sec.Elapsed
+          let newEvent = (logEvent.Publish |> Event.map (fun str -> LogEntry str) , timeoutEvent |> Event.map (fun _ -> Timeout)) ||> Event.merge
+          socket {   
              // https://stackoverflow.com/questions/21064524/merge-two-events-detect-which-is-raised
              for i in [1..1000] do
                 let! newLogEntry = Control.Async.AwaitEvent(newEvent) |> Suave.Sockets.SocketOp.ofAsync
