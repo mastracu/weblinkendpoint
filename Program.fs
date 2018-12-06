@@ -287,6 +287,7 @@ let app  : WebPart =
           let Timer15sec = new System.Timers.Timer(float 15000)
           do Timer15sec.AutoReset <- true
           let timeoutEvent = Timer15sec.Elapsed
+          do Timer15sec.Start()
           let newEvent = (logEvent.Publish |> Event.map (fun str -> LogEntry str) , timeoutEvent |> Event.map (fun _ -> Timeout)) ||> Event.merge
           socket {   
              // https://stackoverflow.com/questions/21064524/merge-two-events-detect-which-is-raised
@@ -298,7 +299,8 @@ let app  : WebPart =
                     let newLogEntryLines = str.Split '\n'
                     for line in newLogEntryLines do
                        do! line |> data out
-                | Timeout -> 
+                | Timeout ->
+                    do! string i |> esId out
                     do! "keepAlive" |> data out
                 return! dispatch out
              return out
