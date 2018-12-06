@@ -248,6 +248,9 @@ type ProductPrinterObj =
       id : String;
    }
 
+
+type LogEntryOrTimeout = Timeout | LogEntry of String
+
 let app  : WebPart = 
   let logEvent = new Event<String>()
   let mLogAgent = new LogAgent(logEvent)
@@ -282,12 +285,21 @@ let app  : WebPart =
 
     path "/sseLog" >=> request (fun _ -> EventSource.handShake (fun out ->
           socket {
+             let Timer15sec = new System.Timers.Timer(float 15000)
+             do Timer15sec.AutoReset <- true
+             let timeoutEvent = Timer15sec.Elapsed
+             let newEvent = (logEvent.Publish |> Event.map (fun str -> LogEntry str) , timeoutEvent |> Event.map (fun _ -> Timeout)) ||> Event.merge
+             // https://stackoverflow.com/questions/21064524/merge-two-events-detect-which-is-raised
              for i in [1..1000] do
-                let! newLogEntry = Control.Async.AwaitEvent(logEvent.Publish) |> Suave.Sockets.SocketOp.ofAsync
-                do! string i |> esId out 
-                let newLogEntryLines = newLogEntry.Split '\n'
-                for line in newLogEntryLines do
-                   do! line |> data out
+                let! newLogEntry = Control.Async.AwaitEvent(newEvent) |> Suave.Sockets.SocketOp.ofAsync
+                match newLogEntry with
+                | LogEntry str -> 
+                    do! string i |> esId out 
+                    let newLogEntryLines = str.Split '\n'
+                    for line in newLogEntryLines do
+                       do! line |> data out
+                | Timeout -> 
+                    do! "keepAlive" |> comment out
                 return! dispatch out
              return out
           }))
