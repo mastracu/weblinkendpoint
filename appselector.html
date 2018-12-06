@@ -171,7 +171,7 @@
         var listener = function (event) {
             var type = event.type;
             if (type == "message") {
-                $("#live-log-table").tabulator("addRow", { "Live Log": event.data });
+                $("#live-log-table").tabulator("addRow", { "Live Log": "ciccio" });
             }
         };
         es.addEventListener("open", listener);
