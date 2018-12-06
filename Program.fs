@@ -299,7 +299,7 @@ let app  : WebPart =
                     for line in newLogEntryLines do
                        do! line |> data out
                 | Timeout -> 
-                    do! "keepAlive" |> comment out
+                    do! "keepAlive" |> data out
                 return! dispatch out
              return out
           }))
