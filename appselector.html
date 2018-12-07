@@ -8,9 +8,9 @@
             background-color: #4CAF50;
             border: none;
             color: white;
-            padding: 15px 25px;
+            padding: 10px 20px;
             text-align: center;
-            font-size: 16px;
+            font-size: 15px;
             cursor: pointer;
         }
 
@@ -23,22 +23,37 @@
             margin-left: 4px;
         }
 
-        #printers-div {
-            width: 500px;
-            margin-bottom: 25px;
+        #query-div {
+            width: 1500px;
+            margin-left: 4px;
+            margin-bottom: 20px;
+            margin-top: 20px;
+        }
+
+        #jsoncmd {
+            height: 40px;
+            font-size: 12pt;
+            vertical-align : top;
         }
 
         .left-div {
-            width: 600px;
+            width: 1300px;
             margin-bottom: 10px;
             margin-left: 4px;
         }
 
         .left-div-margin {
-            float: left;
+            width: 1300px;
             margin-left: 4px;
             margin-bottom: 10px;
         }
+
+        .ugo {
+            width: 800px;
+            display: inline-block;
+            vertical-align: top;
+        }
+
     </style>
 </head>
 <body>
@@ -46,56 +61,65 @@
     <h5 style="text-align: center;"><span style="font-family:Arial; color:red">! U1 setvar "weblink.ip.conn1.location" "https://ifad.mastracu.it/websocketWithSubprotocol"</span> and power-cycle the printer</h5>
     <h5 style="text-align: center;">Code and readme file <a target="_blank" href="https://github.com/mastracu/weblinkendpoint">here</a></h5>
 
-    <div id="printers-table" class="left-div-margin"></div>
-    <div id="printers-div">
-        <div id="printers-button" class="left-div">
-            <button id="refresh-button" class="button">
-                <span class="glyphicon glyphicon-refresh"></span>
-            </button>
-            <button id="sendcmd-button" class="button">
-                <span class="glyphicon glyphicon-play"></span>
-            </button>
-        </div>
-        <form id="jsonform" class="form">
-            <input type="text" placeholder="Json Command" id="jsoncmd" size="50" />
-        </form>
-        <div id="caption-div" class="left-div">
-            eg: {}{"bluetooth.short_address":null} or {}{"ribbon.cartridge":null} <br />
-            eg: {}{"capture.channel1.port":"usb"} <br />
-            Full logtable <a target="_blank" href="logtable.html">here</a><br />
-        </div>
-        <div id="live-log-table" class="left-div-margin"></div>
-        <div id="caption-div2" class="left-div">
-            <p>
-                <b>Repricing app (priceTag):</b>
-                <br />Printer captures BT data and forwards on to weblink endpoint
-                <br /><img src="img/enter.png" alt="barcode">
-                <ol type="1">
-                    <li> Read barcode above so that CR-LF is added to barcode.</li>
-                    <li> Use 123Scan to print pairing barcodes (Scanner as MASTER - Serial Port Profile)</li>
-                    <li> Connect BT scanner to printer by scanning barcode</li>
-                    <li> Scan product barcode, label gets printed.</li>
-                    <li> Change product price <a target="_blank" href="pricetag.html">here</a> and scan again</li>
-                </ol>
-            </p>
-            <p>
-                <b>Label convertion (ifadLabelConvertion):</b>
-                <br />Printer captures USB data and forwards on to endpoint
-                <ol type="1">
-                    <li>Send label via USB. See <a target="_blank" href="https://github.com/mastracu/weblinkendpoint">https://github.com/mastracu/weblinkendpoint</a>.</li>
-                    <li>Converted label for 200 dpi printer with same data gets printed.</li>
-                </ol>
-            </p>
-            <p>
-                <b>Label to go (labelToGo):</b>
-                <br />Printer gets template id and var data via BT scanner - endpoint sends label down to printer
-                <ol type="1">
-                    <li>Configure and pair BT scanner (see 1-3 in Repricing app)
-                    <li>Generate return barcode <a target="_blank" href="mobiletest.html">here</a></li>
-                    <li>Scan with BT scanner; label gets printed.</li>
-                </ol>
-            </p>
-        </div>
+    <div id="query-div">
+        <input type="text" list="commands" placeholder="Json Command" id="jsoncmd" size="50" />
+        <datalist id="commands">
+            <option value="{}{&#34bluetooth.short_address&#34:null}">
+            <option value="{}{&#34ribbon.cartridge&#34:null}">
+            <option value="{}{&#34capture.channel1.port&#34:&#34usb&#34}">
+            <option value="{}{&#34weblink.ip.conn1.location&#34:null}">
+            <option value="{}{&#34interface.network.active.ip_addr&#34:null}">
+            <option value="{}{&#34odometer.total_label_count&#34:null}">
+            <option value="{}{&#34odometer.label_dot_length&#34:null}">
+            <option value="{}{&#34print.tone&#34:null}">
+            <option value="{}{&#34device.reset&#34:&#34&#34}">
+            <option value="{}{&#34power.shutdown&#34:&#34&#34}">
+        </datalist>
+        <button id="sendcmd-button" class="button">
+            <span class="glyphicon glyphicon-play"></span>
+        </button>
+        <div id="printers-table" class="ugo"></div>
+        <button id="refresh-button" class="button">
+            <span class="glyphicon glyphicon-refresh"></span>
+        </button>
+    </div>
+
+    <div id="live-log-table" class="left-div-margin"></div>
+
+    <div id="caption-div" class="left-div">
+        Full logtable <a target="_blank" href="logtable.html">here</a><br />
+    </div>
+
+    <div id="caption-div2" class="left-div">
+        <p>
+            <b>Repricing app (priceTag):</b>
+            <br />Printer captures BT data and forwards on to weblink endpoint
+            <br /><img src="img/enter.png" alt="barcode">
+            <ol type="1">
+                <li> Read barcode above so that CR-LF is added to barcode.</li>
+                <li> Use 123Scan to print pairing barcodes (Scanner as MASTER - Serial Port Profile)</li>
+                <li> Connect BT scanner to printer by scanning barcode</li>
+                <li> Scan product barcode, label gets printed.</li>
+                <li> Change product price <a target="_blank" href="pricetag.html">here</a> and scan again</li>
+            </ol>
+        </p>
+        <p>
+            <b>Label convertion (ifadLabelConvertion):</b>
+            <br />Printer captures USB data and forwards on to endpoint
+            <ol type="1">
+                <li>Send label via USB. See <a target="_blank" href="https://github.com/mastracu/weblinkendpoint">https://github.com/mastracu/weblinkendpoint</a>.</li>
+                <li>Converted label for 200 dpi printer with same data gets printed.</li>
+            </ol>
+        </p>
+        <p>
+            <b>Label to go (labelToGo):</b>
+            <br />Printer gets template id and var data via BT scanner - endpoint sends label down to printer
+            <ol type="1">
+                <li>Configure and pair BT scanner (see 1-3 in Repricing app)
+                <li>Generate return barcode <a target="_blank" href="mobiletest.html">here</a></li>
+                <li>Scan with BT scanner; label gets printed.</li>
+            </ol>
+        </p>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
@@ -107,9 +131,9 @@
         $("#live-log-table").tabulator({
             selectable: 1,
             layout: "fitColumns", //fit columns to width of table (optional)
-            height: 300,
+            height: 290,
             columns: [ //Define Table Columns
-                { title: "Live Log", field: "liveLog", width: 1000, sorter: "string", align: "left", },
+                { title: "Live Log", field: "liveLog", width: 1400, sorter: "string", align: "left", },
             ],
             rowSelectionChanged: function (data, rows) {
                 //update selected row counter on selection change
@@ -121,8 +145,8 @@
             layout: "fitColumns",
             columns: [ //Define Table Columns
                 { title: "Printer Serial Number", field: "uniqueID", formatter: "link", width: 200, sorter: "string", align: "left", },
-                { title: "Product Name", field: "productName", width: 200, sorter: "string", align: "left", },
-                { title: "FW Version", field: "appVersion", width: 150, sorter: "string", align: "left", },
+                { title: "Product Name", field: "productName", width: 180, sorter: "string", align: "left", },
+                { title: "FW Version", field: "appVersion", width: 200, sorter: "string", align: "left", },
                 {
                     title: "Application", field: "sgdSetAlertFeedback", width: 200, sorter: "string", align: "left", editor: "select", editorParams: {
                         "ifadLabelConversion": "ifadLabelConversion",
