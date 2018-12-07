@@ -114,6 +114,8 @@ Send file IFAAM004_2289143IFAAM004.txt via USB
 
 and it gets converted to a quasi-equivalent 200 dpi label.
 
+Render label with http://labelary.com/viewer.html
+
 Minimum label width: 5cms 
 Minimum label height: 3cms
 
