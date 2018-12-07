@@ -22,7 +22,7 @@ I typically use Wifi printers and connect to ZGuest wireless network in Zebra of
 You then specify the address of the weblink endpoint by issuing 
 
 ```
-! U1 setvar "weblink.ip.conn1.location" "https://weblinkendpoint.mastracu.it/websocketWithSubprotocol"
+! U1 setvar "weblink.ip.conn1.location" "https://ifad.mastracu.it/websocketWithSubprotocol"
 ```
 You then re-start / power-cycle the printer by issuing
 
@@ -64,7 +64,7 @@ on a ZD420 cartridge TT printer and
 on a mobile printer.
 
 
-### Repricing application
+### Repricing application - ``` priceTag ```
 
 Minimum label width: 5cms or 2 inches
 Minimum label height: 3cms
@@ -96,25 +96,47 @@ I can then change the price of the item in the table on http://weblinkendpoint.m
 
 See https://devcenter.heroku.com/articles/dynos#restarting and https://devcenter.heroku.com/articles/dynos#ephemeral-filesystem
 
-### Label conversion
+### Label conversion - ``` ifadLabelConvertion ```
 
-For the label conversion demo, from http://weblinkendpoint.mastracu.it/appselector.html
-I change the application associated with any 200dpi printer to ifadlabelconvertion. 
+
+For the label conversion demo, from http://ifad.mastracu.it/appselector.html
+I change the application associated with a 200dpi printer to ifadlabelconvertion. 
 Now everything I send to the printer via USB gets forwarded onto the cloud.
 
-Send file IFAAM004_2289143IFAAM004.txt via USB and it gets converted to a quasi-equivalent 200 dpi label.
+Send file IFAAM004_2289143IFAAM004.txt via USB 
+
+```
+^XA^LH30,30^FO20,10^ADN80,50^FDIFAD INVENTORY^FS^FO20,80
+^ADN60,30^FDNOTEBOOK^FS^FO20,120^ADN30,10^FDS/N:^FS^FO80,120
+^ADN30,35^FD026442374753^FS^FO80,160^B3N,N,130,N,N^FD000000054986
+^FS^FO150,305^ADN30,35^FD000000054986^FS^XZ                              
+```
+
+and it gets converted to a quasi-equivalent 200 dpi label.
 
 Minimum label width: 5cms 
 Minimum label height: 3cms
 
+### Shipment Label - ``` labelToGo ```
+
+Printer gets template id and var data via BT scanner - endpoint sends label down to printer
+
+1. Configure and pair BT scanner (see 1-3 in Repricing app)
+2. Generate return barcode from http://ifad.mastracu.it/mobiletest.html
+3. Scan with BT scanner; label gets printed.
+
+
 ## Versioning
 
+0.1 Dec 2018
 
 ## Authors
 
+mastracu && ndz
 
 ## License
 
+MIT 
 
 ## Acknowledgments
 
