@@ -43,8 +43,8 @@
         }
 
         .left-div-margin {
-            width: 1300px;
-            margin-left: 4px;
+            width: 1290px;
+            margin-left: 0px;
             margin-bottom: 10px;
         }
 
@@ -58,17 +58,16 @@
 </head>
 <body>
     <h1 style="text-align: center; font-family:Arial;">Weblink Multi-App Endpoint </h1>
-    <h5 style="text-align: center;">
+    <p style="text-align: center;">
         <span style="font-family:Arial; color:red">! U1 setvar "weblink.ip.conn1.location" "https://ifad.mastracu.it/websocketWithSubprotocol"</span> and power-cycle the printer.
-    </h5>
-    <h5 style="text-align: center;">
+        <br />
         Select app you want to run on each printer.
         Appropiate redirection commands will be pushed and data from printer will be accordingly processed.
         Code and apps description <a target="_blank" href="https://github.com/mastracu/weblinkendpoint">here</a>
-    </h5>
-    <h5 style="text-align: center;">
-        Send JSON commands over Weblink channel to printer and receive back printer response.
-    </h5>
+        <br />
+        Push JSON commands down the Weblink channel to printer and check printer response on Live Log.
+        Click printer serial number to access odometer-type live info.
+    </p>
 
     <div id="query-div">
         <input type="text" list="commands" placeholder="Json cmd" id="jsoncmd" size="50" spellcheck="false" />
@@ -93,11 +92,17 @@
         </button>
     </div>
 
-    <div id="live-log-table" class="left-div-margin"></div>
+    <div id="query-div">
+        <div id="live-log-table" class="left-div-margin"></div>
+        <button id="logclear-button" class="button">
+            <span class="glyphicon glyphicon-trash"></span>
+        </button>
+    </div>
 
     <div id="caption-div" class="left-div">
-        Full weblinkendpoint logtable <a target="_blank" href="logtable.html">here</a><br />
-        Print price labels from cloud <a target="_blank" href="pricetag.html">here</a>
+        To access full weblinkendpoint logtable <a target="_blank" href="logtable.html">logtable.html</a><br />
+        To print price labels from cloud (any app) <a target="_blank" href="pricetag.html">pricetag.html</a><br />
+        To generate barcode for goods return (labelToGo app) <a target="_blank" href="mobiletest.html">mobiletest.html</a><br />
     </div>
 
 
@@ -152,6 +157,10 @@
 
         $("#refresh-button").click(function () {
             $("#printers-table").tabulator("setData", "printerslist.json");
+        });
+
+        $("#logclear-button").click(function () {
+            $("#live-log-table").tabulator("clearData");
         });
 
         $("#sendcmd-button").click(function () {
