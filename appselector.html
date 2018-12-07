@@ -8,7 +8,7 @@
             background-color: #4CAF50;
             border: none;
             color: white;
-            padding: 10px 20px;
+            padding: 11px 15px;
             text-align: center;
             font-size: 15px;
             cursor: pointer;
@@ -31,7 +31,7 @@
         }
 
         #jsoncmd {
-            height: 40px;
+            height: 42px;
             font-size: 12pt;
             vertical-align : top;
         }
@@ -62,19 +62,19 @@
     <h5 style="text-align: center;">Code and readme file <a target="_blank" href="https://github.com/mastracu/weblinkendpoint">here</a></h5>
 
     <div id="query-div">
-        <input type="text" list="commands" placeholder="Json Command" id="jsoncmd" size="50" />
+        <input type="text" list="commands" placeholder="Json cmd" id="jsoncmd" size="50" spellcheck="false"/>
         <datalist id="commands">
             <option value="{}{&#34bluetooth.short_address&#34:null}">
             <option value="{}{&#34ribbon.cartridge&#34:null}">
             <option value="{}{&#34capture.channel1.port&#34:&#34usb&#34}">
-            <option value="{}{&#34weblink.ip.conn1.location&#34:null}">
             <option value="{}{&#34interface.network.active.ip_addr&#34:null}">
             <option value="{}{&#34odometer.total_label_count&#34:null}">
             <option value="{}{&#34odometer.label_dot_length&#34:null}">
             <option value="{}{&#34print.tone&#34:null}">
             <option value="{}{&#34device.reset&#34:&#34&#34}">
-            <option value="{}{&#34power.shutdown&#34:&#34&#34}">
-        </datalist>
+            <option value="{}{&#34device.uptime&#34:null}">
+            <option value="{}{&#34weblink.ip.conn1.location&#34:null}">
+        </datalist> 
         <button id="sendcmd-button" class="button">
             <span class="glyphicon glyphicon-play"></span>
         </button>
@@ -133,7 +133,7 @@
             layout: "fitColumns", //fit columns to width of table (optional)
             height: 290,
             columns: [ //Define Table Columns
-                { title: "Live Log", field: "liveLog", width: 1400, sorter: "string", align: "left", },
+                { title: "Live Log - SSE feed", field: "liveLog", width: 1298, sorter: "string", align: "left", },
             ],
             rowSelectionChanged: function (data, rows) {
                 //update selected row counter on selection change
@@ -146,7 +146,7 @@
             columns: [ //Define Table Columns
                 { title: "Printer Serial Number", field: "uniqueID", formatter: "link", width: 200, sorter: "string", align: "left", },
                 { title: "Product Name", field: "productName", width: 180, sorter: "string", align: "left", },
-                { title: "FW Version", field: "appVersion", width: 200, sorter: "string", align: "left", },
+                { title: "FW Version", field: "appVersion", width: 218, sorter: "string", align: "left", },
                 {
                     title: "Application", field: "sgdSetAlertFeedback", width: 200, sorter: "string", align: "left", editor: "select", editorParams: {
                         "ifadLabelConversion": "ifadLabelConversion",
