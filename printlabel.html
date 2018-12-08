@@ -146,7 +146,7 @@
                 alert("No printer selected !")
             }
             else {
-                var PrinterLabelObj = { printerId: selectedPrinter[0].uniqueID, msg: $('#labelformat').val() }
+                var PrinterLabelObj = { printerID: selectedPrinter[0].uniqueID, msg: $('#labelformat').val() }
                 var myJSON = JSON.stringify(PrinterLabelObj);
                 var xhr = new XMLHttpRequest();
                 var url = "printraw";
