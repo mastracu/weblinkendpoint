@@ -23,11 +23,9 @@
             margin-left: 4px;
         }
 
-        #live-log-div {
-            width: 1500px;
-            margin-left: 4px;
-            margin-bottom: 20px;
-            margin-top: 20px;
+        #live-log-table {
+            margin-left: 0px;
+            margin-bottom: 5px;
         }
 
         #jsoncmd {
@@ -38,14 +36,17 @@
 
         .left-div {
             width: 1300px;
-            margin-bottom: 10px;
-            margin-left: 4px;
+            margin-left: 0px;
+            margin-top: 5px;
+            margin-bottom: 5px;
         }
 
         .left-div-margin {
-            width: 1290px;
-            margin-left: 0px;
+            width: 99%;
+            margin-left: 4px;
             margin-bottom: 10px;
+            position: fixed;
+            bottom: 0;
         }
 
         #printers-table {
@@ -60,7 +61,7 @@
             border: 1px solid #ccc;
             background-color: #f1f1f1;
             margin-left: 4px;
-            width: 100%;
+            width: 99%;
         }
 
         /* Style the buttons that are used to open the tab content */
@@ -90,7 +91,7 @@
             padding: 6px 12px;
             border: 1px solid #ccc;
             border-top: none;
-            width: 100%;
+            width: 99%;
             margin-left: 4px;
             margin-bottom: 20px;
         }
@@ -99,26 +100,15 @@
     </style>
 </head>
 <body>
-    <h1 style="text-align: center; font-family:Arial;">Weblink Multi-App Endpoint </h1>
-    <p style="text-align: center;">
-        <span style="font-family:Arial; color:red">! U1 setvar "weblink.ip.conn1.location" "https://ifad.mastracu.it/websocketWithSubprotocol"</span> 
-        and power-cycle the printer.
-        <br />
-        Select app you want to run on each printer.
-        Appropiate redirection commands will be pushed and data from printer will be accordingly processed.
-        Code and apps description <a target="_blank" href="https://github.com/mastracu/weblinkendpoint">here</a>
-        <br />
-        Push JSON commands down the Weblink channel to printer and check printer response on Live Log.
-        Click printer serial number to access key printer settings.
-    </p>
 
     <div class="tab">
         <button class="tablinks" onclick="openTab(event, 'JSON cmd')">JSON cmd</button>
         <button class="tablinks" onclick="openTab(event, 'Custom label')">Custom label</button>
         <button class="tablinks" onclick="openTab(event, 'Price label')">Price label</button>
+        <button class="tablinks" onclick="openTab(event, 'Info')">Info</button>
     </div>
     <div id="JSON cmd" class="tabcontent">
-        <input type="text" list="commands" placeholder="Json cmd" id="jsoncmd" size="50" spellcheck="false" />
+        <input type="text" list="commands" placeholder="Json cmd" id="jsoncmd" size="65" spellcheck="false" />
         <datalist id="commands">
             <option value="{}{&#34apl.enable&#34:null}">
             <option value="{}{&#34bluetooth.short_address&#34:null}">
@@ -151,19 +141,46 @@
         </button>
     </div>
 
-    <div id="live-log-div">
-        <div id="live-log-table" class="left-div-margin"></div>
-        <button id="logclear-button" class="button">
-            <span class="glyphicon glyphicon-trash"></span>
+    <div id="Custom label" class="tabcontent">
+        <textarea name="label" id="labelformat" cols="80" rows="10" spellcheck="false"></textarea>
+        <button id="sendcmd-button" class="button" style="vertical-align: top">
+            <span class="glyphicon glyphicon-play"></span>
+        </button>
+        <div id="printers-table-custom"></div>
+        <button id="refresh-button-custom" class="button" style="vertical-align: top">
+            <span class="glyphicon glyphicon-refresh"></span>
         </button>
     </div>
 
-    <div id="caption-div" class="left-div">
-        To access full weblinkendpoint logtable <a target="_blank" href="logtable.html">logtable.html</a><br />
-        To print price labels from cloud (any app) <a target="_blank" href="pricetag.html">pricetag.html</a><br />
-        To print a custom label from ZPL code (any app) <a target="_blank" href="printlabel.html">printlabel.html</a><br />
-        To generate barcode for goods return (labelToGo app) <a target="_blank" href="mobiletest.html">mobiletest.html</a><br />
+    <div id="Info" class="tabcontent">
+        <p style="text-align: center;">
+            Weblink Multi-App Endpoint
+            <br />
+            <span style="font-family:Arial; color:red">! U1 setvar "weblink.ip.conn1.location" "https://ifad.mastracu.it/websocketWithSubprotocol"</span>
+            and power-cycle the printer.
+            <br />
+            Select app you want to run on each printer.
+            Appropiate redirection commands will be pushed and data from printer will be accordingly processed.
+            Code and apps description <a target="_blank" href="https://github.com/mastracu/weblinkendpoint">here</a>
+            <br />
+            Push JSON commands down the Weblink channel to printer and check printer response on Live Log.
+            Click printer serial number to access key printer settings.
+            <br />
+            Print price labels from cloud or custom label from ZPL code (any app)
+        </p>
     </div>
+
+    <div class="left-div-margin">
+        <div id="live-log-table" ></div>
+        <button id="logclear-button" class="button">
+            <span class="glyphicon glyphicon-trash"></span>
+        </button>
+        <div id="caption-div" class="left-div">
+            To access full weblinkendpoint logtable <a target="_blank" href="logtable.html">logtable.html</a><br />
+            To generate barcode for goods return (labelToGo app) <a target="_blank" href="mobiletest.html">mobiletest.html</a><br />
+        </div>
+    </div>
+
 
 
     <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
