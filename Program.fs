@@ -247,7 +247,6 @@ type ProductPrinterObj =
       id : String;
    }
 
-
 type LogEntryOrTimeout = Timeout | LogEntry of String
 
 let app  : WebPart = 
@@ -319,8 +318,13 @@ let app  : WebPart =
           path "/productupdate" >=> objectDo (fun prod -> storeAgent.UpdateWith prod)
           path "/json2printer" >=> objectDo (fun pm -> jsonRequest.TriggerEvent pm) 
           path "/productremove" >=> objectDo (fun prod -> storeAgent.RemoveSku prod.sku)
-          path "/printproduct" >=> objectDo (fun (prodprint:ProductPrinterObj) ->  do mLogAgent.AppendToLog (sprintf "printproduct. id: %s prod: %A" prodprint.id prodprint.ProductObj)
-                                                                                   do printJob.TriggerEvent {printerID=prodprint.id; msg =(buildpricetag prodprint.ProductObj)} )         ]
+          path "/printproduct" >=> objectDo (fun (prodprint:ProductPrinterObj) ->  
+                                               do mLogAgent.AppendToLog (sprintf "POST /printproduct - id: %s prod: %A" prodprint.id prodprint.ProductObj)
+                                               do printJob.TriggerEvent {printerID=prodprint.id; msg =(buildpricetag prodprint.ProductObj)} )
+          path "/printraw" >=> objectDo (fun (lblpr:Msg2Printer) ->  
+                                               do mLogAgent.AppendToLog (sprintf "POST /printraw - %A" lblpr)
+                                               do printJob.TriggerEvent lblpr )
+        ]
     NOT_FOUND "Found no handlers." ]
 
 //https://help.heroku.com/tickets/560930

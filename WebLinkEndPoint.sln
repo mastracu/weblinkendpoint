@@ -13,6 +13,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		logtable.html = logtable.html
 		mobiletest.html = mobiletest.html
 		pricetag.html = pricetag.html
+		printlabel.html = printlabel.html
 		Procfile = Procfile
 		readme.md = readme.md
 		reverseshipment.html = reverseshipment.html
