@@ -230,7 +230,7 @@
             selectable: 1,
             layout: "fitColumns",
             columns: [ //Define Table Columns
-                { title: "Printer Serial Number", field: "uniqueID", formatter: "link", width: 200, sorter: "string", align: "left", },
+                { title: "Printer Serial Number", field: "uniqueID", formatter: "link", formatterParams: { url: "ifad.mastracu.it/cicio", target: "_blank", }, width: 200, sorter: "string", align: "left", },
                 { title: "Product Name", field: "productName", width: 150, sorter: "string", align: "left", },
                 { title: "FW Version", field: "appVersion", width: 208, sorter: "string", align: "left", },
                 {
@@ -347,7 +347,6 @@
 
             switch (tabName) {
                 case "JSON cmd":
-                    console.log("in case JSON cmd");
                     $("#sendcmd-button").off('click').on('click', function () {
                         var selectedPrinter = $("#printers-table").tabulator("getSelectedData");
 
@@ -367,7 +366,6 @@
                     break;
 
                 case "Custom label":
-                    console.log("in case Custom label");
                     $("#sendcmd-button").off('click').on('click', function () {
                         var selectedPrinter = $("#printers-table").tabulator("getSelectedData");
 
@@ -388,7 +386,6 @@
 
                     break;
                 case "Price label":
-                    console.log("in case Price label");
                     $("#sendcmd-button").off('click').on('click', function () {
                         var selectedData = $("#price-lookup-table").tabulator("getSelectedData");
                         var selectedPrinter = $("#printers-table").tabulator("getSelectedData");
