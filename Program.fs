@@ -316,10 +316,13 @@ let app  : WebPart =
                                     do jsonRequest.TriggerEvent {printerID=prt.uniqueID; msg= """{}{"capture.channel1.max_length":"512"} """ }
                     )
           path "/productupdate" >=> objectDo (fun prod -> storeAgent.UpdateWith prod)
-          path "/json2printer" >=> objectDo (fun pm -> jsonRequest.TriggerEvent pm) 
           path "/productremove" >=> objectDo (fun prod -> storeAgent.RemoveSku prod.sku)
+
+          path "/json2printer" >=> objectDo (fun pm -> 
+                                               do mLogAgent.AppendToLog (sprintf "POST /json2printer - %A" pm)
+                                               do jsonRequest.TriggerEvent pm) 
           path "/printproduct" >=> objectDo (fun (prodprint:ProductPrinterObj) ->  
-                                               do mLogAgent.AppendToLog (sprintf "POST /printproduct - id: %s prod: %A" prodprint.id prodprint.ProductObj)
+                                               do mLogAgent.AppendToLog (sprintf "POST /printproduct - %A" prodprint)
                                                do printJob.TriggerEvent {printerID=prodprint.id; msg =(buildpricetag prodprint.ProductObj)} )
           path "/printraw" >=> objectDo (fun (lblpr:Msg2Printer) ->  
                                                do mLogAgent.AppendToLog (sprintf "POST /printraw - %A" lblpr)

@@ -114,7 +114,6 @@
         <button class="tablinks" onclick="openTab(event, 'JSON cmd')" id="defaultOpen">JSON cmd</button>
         <button class="tablinks" onclick="openTab(event, 'Custom label')">Custom label</button>
         <button class="tablinks" onclick="openTab(event, 'Price label')">Price label</button>
-        <button class="tablinks" onclick="openTab(event, 'Info')">Info</button>
     </div>
     <div id="mainblock">
         <div id="JSON cmd" class="tabcontent">
@@ -263,7 +262,7 @@
             columns: [ //Define Table Columns
                 { title: "SKU", field: "sku", sorter: "number", width: 150, align: "right", },
                 { title: "Description", field: "description", sorter: "string", align: "left", width: 200 },
-                { title: "Unit Price", field: "unitPrice", width: 100, sorter: "number", editor: "input", validator: ["float", "required"], align: "right", sortable: false },
+                { title: "Unit Price", field: "unitPrice", width: 105, sorter: "number", editor: "input", validator: ["float", "required"], align: "right", sortable: false },
                 { title: "EAN 13 code", field: "eanCode", width: 150, sorter: "number", align: "right" },
             ],
             //index:"sku",
