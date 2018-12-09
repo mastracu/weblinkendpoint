@@ -344,8 +344,10 @@
                 tablinks[i].className = tablinks[i].className.replace(" active", "");
             }
 
+            console.log(tabName);
+
             switch (tabName) {
-                case 'JSON cmd':
+                case "JSON cmd":
                     $("#sendcmd-button").click(function () {
                         var selectedPrinter = $("#printers-table").tabulator("getSelectedData");
 
@@ -364,7 +366,7 @@
                     });
                     break;
 
-                case 'Custom label':
+                case "Custom label":
                     $("#sendcmd-button").click(function () {
                         var selectedPrinter = $("#printers-table").tabulator("getSelectedData");
 
@@ -384,7 +386,7 @@
                     });
 
                     break;
-                case 'Price label':
+                case "Price label":
                     $("#sendcmd-button").click(function () {
                         var selectedData = $("#price-lookup-table").tabulator("getSelectedData");
                         var selectedPrinter = $("#printers-table").tabulator("getSelectedData");
@@ -414,12 +416,12 @@
                     $("#sendcmd-button").click(function () {
                     });
 
-            }
+            };
 
             // Show the current tab, and add an "active" class to the button that opened the tab
             document.getElementById(tabName).style.display = "inline-block";
             evt.currentTarget.className += " active";
-        }
+        };
 
         document.getElementById("defaultOpen").click();
 
