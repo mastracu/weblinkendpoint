@@ -65,13 +65,14 @@ let config =
 let ws allAgents (printJob:Msg2PrinterFeed) (jsonRequest:Msg2PrinterFeed) (webSocket : WebSocket) (context: HttpContext) =
 
   let (storeAgent:StoreAgent, printersAgent:PrintersAgent, logAgent:LogAgent) = allAgents
+  let mutable channelUniqueId = ""
 
   let inbox = MailboxProcessor.Start (fun inbox -> async {
             let close = ref false
             while not !close do
                 let! op, data, fi = inbox.Receive()
                 if op=Binary then
-                    do logAgent.AppendToLog (sprintf "Sending message: %s" (UTF8.toString data))
+                    do logAgent.AppendToLog (sprintf "-> %s : %s" channelUniqueId (UTF8.toString data))
                 else
                     ()
                 let! _ = webSocket.send op (data|> ByteSegment) fi
@@ -89,7 +90,6 @@ let ws allAgents (printJob:Msg2PrinterFeed) (jsonRequest:Msg2PrinterFeed) (webSo
     do pongTimeoutEvent |> Observable.subscribe (fun _ -> do inbox.Post (Pong, [||] , true)) |> ignore
     do pongTimer.Start()
 
-    let mutable channelUniqueId = ""
 
     // if `loop` is set to false, the server will stop receiving messages
     let mutable loop = true
@@ -123,7 +123,7 @@ let ws allAgents (printJob:Msg2PrinterFeed) (jsonRequest:Msg2PrinterFeed) (webSo
       | (Binary, data, true) ->
         // the message can be converted to a string
         let str = UTF8.toString data
-        let response = sprintf "Binary message from CHANID %s: %s" channelUniqueId str
+        let response = sprintf "<- %s: %s" channelUniqueId str
         do logAgent.AppendToLog response
         let jval = JsonValue.Parse str
 
@@ -132,9 +132,9 @@ let ws allAgents (printJob:Msg2PrinterFeed) (jsonRequest:Msg2PrinterFeed) (webSo
                             let zebraDiscoveryPacket = JsonExtensions.AsString jsonval |> decode64
                             let uniqueID = List.rev (snd (List.fold (fun (pos,acclist) byte -> (pos+1, if (pos > 187 && pos < 202 ) then byte::acclist else acclist))  (0,[]) zebraDiscoveryPacket))
                             do channelUniqueId <- uniqueID |> intListToString
-                            do logAgent.AppendToLog (sprintf "discovery_b64 property received on main channel unique_id: %s"  channelUniqueId)
+                            do logAgent.AppendToLog (sprintf "discovery_b64 property printerID: %s"  channelUniqueId)
                             do channelUniqueId <- channelUniqueId.Substring (0, (channelUniqueId.IndexOf 'J' + 10))
-                            do logAgent.AppendToLog (sprintf "adjusted unique_id: %s"  channelUniqueId)
+                            do logAgent.AppendToLog (sprintf "adjusted printerID: %s"  channelUniqueId)
                             do printersAgent.AddPrinter {uniqueID = channelUniqueId; productName = ""; appVersion = ""; friendlyName = ""; sgdSetAlertFeedback = "ifadLabelConversion"}
                             // inbox.Post(Binary, UTF8.bytes """ { "configure_alert" : "ALL MESSAGES,SDK,Y,Y,,,N,|SGD SET,SDK,Y,Y,,,N,capture.channel1.data.raw" } """, true)
                             // inbox.Post(Binary, UTF8.bytes """ { "configure_alert" : "ALL MESSAGES,SDK,Y,Y,WEBLINK.IP.CONN1,0,N,|SGD SET,SDK,Y,Y,WEBLINK.IP.CONN1,0,N,capture.channel1.data.raw" } """, true)
@@ -180,7 +180,7 @@ let ws allAgents (printJob:Msg2PrinterFeed) (jsonRequest:Msg2PrinterFeed) (webSo
         | Some jsonval ->   let channelName = JsonExtensions.AsString (jsonval)
                             match jval.TryGetProperty "unique_id" with
                             | Some jsonval ->   do channelUniqueId <- JsonExtensions.AsString (jsonval)
-                                                do logAgent.AppendToLog (sprintf "CHAN: %s UNIQUE_ID %s" channelName channelUniqueId)
+                                                do logAgent.AppendToLog (sprintf "chan: %s printerID %s" channelName channelUniqueId)
                             | None -> ()
                             match channelName with
                             | "v1.raw.zebra.com" ->
