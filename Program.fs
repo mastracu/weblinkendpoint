@@ -72,6 +72,7 @@ let ws allAgents (printJob:Msg2PrinterFeed) (jsonRequest:Msg2PrinterFeed) (webSo
             while not !close do
                 let! op, data, fi = inbox.Receive()
                 if op=Binary then
+                    // TODO AGGIUNGI QUALE CANALE C> M> R>
                     do logAgent.AppendToLog (sprintf "%s > %s" (UTF8.toString data) channelUniqueId)
                 else
                     ()
