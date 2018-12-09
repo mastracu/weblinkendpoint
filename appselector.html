@@ -230,7 +230,7 @@
             selectable: 1,
             layout: "fitColumns",
             columns: [ //Define Table Columns
-                { title: "Printer Serial Number", field: "uniqueID", formatter: "link", formatterParams: { url: function(uniqueID) { return "/printerSettings?printerId=".concat(uniqueID) }, target: "_blank", }, width: 200, sorter: "string", align: "left", },
+                { title: "Printer Serial Number", field: "uniqueID", formatter: "link", formatterParams: { url: function (cell) { return "/printerSettings?printerId=" + cell.getValue(); }, target: "_blank", }, width: 200, sorter: "string", align: "left", },
                 { title: "Product Name", field: "productName", width: 150, sorter: "string", align: "left", },
                 { title: "FW Version", field: "appVersion", width: 208, sorter: "string", align: "left", },
                 {
