@@ -136,8 +136,6 @@ let ws allAgents (printJob:Msg2PrinterFeed) (jsonRequest:Msg2PrinterFeed) (webSo
                             do channelUniqueId <- channelUniqueId.Substring (0, (channelUniqueId.IndexOf 'J' + 10))
                             do logAgent.AppendToLog (sprintf "adjusted printerID: %s"  channelUniqueId)
                             do printersAgent.AddPrinter {uniqueID = channelUniqueId; productName = ""; appVersion = ""; friendlyName = ""; sgdSetAlertFeedback = "ifadLabelConversion"}
-                            // inbox.Post(Binary, UTF8.bytes """ { "configure_alert" : "ALL MESSAGES,SDK,Y,Y,,,N,|SGD SET,SDK,Y,Y,,,N,capture.channel1.data.raw" } """, true)
-                            // inbox.Post(Binary, UTF8.bytes """ { "configure_alert" : "ALL MESSAGES,SDK,Y,Y,WEBLINK.IP.CONN1,0,N,|SGD SET,SDK,Y,Y,WEBLINK.IP.CONN1,0,N,capture.channel1.data.raw" } """, true)
                             inbox.Post(Binary, UTF8.bytes """ { "open" : "v1.raw.zebra.com" } """, true)
                             inbox.Post(Binary, UTF8.bytes """ { "open" : "v1.config.zebra.com" } """, true)
         | None -> () 
@@ -177,27 +175,28 @@ let ws allAgents (printJob:Msg2PrinterFeed) (jsonRequest:Msg2PrinterFeed) (webSo
         | None -> ()
 
         match jval.TryGetProperty "channel_name" with
-        | Some jsonval ->   let channelName = JsonExtensions.AsString (jsonval)
-                            match jval.TryGetProperty "unique_id" with
-                            | Some jsonval ->   do channelUniqueId <- JsonExtensions.AsString (jsonval)
-                                                do logAgent.AppendToLog (sprintf "chan: %s printerID %s" channelName channelUniqueId)
-                            | None -> ()
-                            match channelName with
-                            | "v1.raw.zebra.com" ->
-                                    let eventForThisChannel = Event.filter (fun pm -> pm.printerID=channelUniqueId) printJob.Event1
-                                    do eventForThisChannel |> Observable.subscribe (fun pm -> do inbox.Post(Binary, UTF8.bytes pm.msg , true)) |> ignore
-                                    // do printJob.TriggerEvent {printerID = channelUniqueId; msg = helloLabel() }
-                            | "v1.config.zebra.com" -> 
-                                    let eventForThisChannel = Event.filter (fun pm -> pm.printerID=channelUniqueId) jsonRequest.Event1
-                                    do eventForThisChannel |> Observable.subscribe (fun pm -> do inbox.Post(Binary, UTF8.bytes pm.msg , true)) |> ignore
-                                    // do jsonRequest.TriggerEvent {printerID= channelUniqueId; msg= """{}{"device.configuration_number":null} """ }
-                                    do jsonRequest.TriggerEvent {printerID=channelUniqueId; msg= """{}{"alerts.configured":"ALL MESSAGES,SDK,Y,Y,WEBLINK.IP.CONN1,0,N,|SGD SET,SDK,Y,Y,WEBLINK.IP.CONN1,0,N,capture.channel1.data.raw"} """}
-                                    do jsonRequest.TriggerEvent {printerID=channelUniqueId; msg= """{}{"device.product_name":null} """ }
-                                    do jsonRequest.TriggerEvent {printerID=channelUniqueId; msg= """{}{"appl.name":null} """ }
-                                    do jsonRequest.TriggerEvent {printerID=channelUniqueId; msg= """{}{"capture.channel1.port":"usb"} """ }
-                                    do jsonRequest.TriggerEvent {printerID=channelUniqueId; msg= """{}{"capture.channel1.delimiter":"^XZ"} """ }
-                                    do jsonRequest.TriggerEvent {printerID=channelUniqueId; msg= """{}{"capture.channel1.max_length":"512"} """ }                                                        
-                            | _ -> ()
+        | Some jsonval ->   
+            let channelName = JsonExtensions.AsString (jsonval)
+            match jval.TryGetProperty "unique_id" with
+            | Some jsonval ->   do channelUniqueId <- JsonExtensions.AsString (jsonval)
+                                do logAgent.AppendToLog (sprintf "chan: %s printerID %s" channelName channelUniqueId)
+            | None -> ()
+            match channelName with
+            | "v1.raw.zebra.com" ->
+                    let eventForThisChannel = Event.filter (fun pm -> pm.printerID=channelUniqueId) printJob.Event1
+                    do eventForThisChannel |> Observable.subscribe (fun pm -> do inbox.Post(Binary, UTF8.bytes pm.msg , true)) |> ignore
+                    // do printJob.TriggerEvent {printerID = channelUniqueId; msg = helloLabel() }
+            | "v1.config.zebra.com" -> 
+                    let eventForThisChannel = Event.filter (fun pm -> pm.printerID=channelUniqueId) jsonRequest.Event1
+                    do eventForThisChannel |> Observable.subscribe (fun pm -> do inbox.Post(Binary, UTF8.bytes pm.msg , true)) |> ignore
+                    // do jsonRequest.TriggerEvent {printerID= channelUniqueId; msg= """{}{"device.configuration_number":null} """ }
+                    do jsonRequest.TriggerEvent {printerID=channelUniqueId; msg= """{}{"alerts.configured":"ALL MESSAGES,SDK,Y,Y,WEBLINK.IP.CONN1,0,N,|SGD SET,SDK,Y,Y,WEBLINK.IP.CONN1,0,N,capture.channel1.data.raw"} """}
+                    do jsonRequest.TriggerEvent {printerID=channelUniqueId; msg= """{}{"device.product_name":null} """ }
+                    do jsonRequest.TriggerEvent {printerID=channelUniqueId; msg= """{}{"appl.name":null} """ }
+                    do jsonRequest.TriggerEvent {printerID=channelUniqueId; msg= """{}{"capture.channel1.port":"usb"} """ }
+                    do jsonRequest.TriggerEvent {printerID=channelUniqueId; msg= """{}{"capture.channel1.delimiter":"^XZ"} """ }
+                    do jsonRequest.TriggerEvent {printerID=channelUniqueId; msg= """{}{"capture.channel1.max_length":"512"} """ }                                                        
+            | _ -> ()
         | None -> ()
 
         match jval.TryGetProperty "device.product_name" with
@@ -278,7 +277,7 @@ let app  : WebPart =
           let newEvent = (logEvent.Publish |> Event.map (fun str -> LogEntry str) , timeoutEvent |> Event.map (fun _ -> Timeout)) ||> Event.merge
           socket {   
              // https://stackoverflow.com/questions/21064524/merge-two-events-detect-which-is-raised
-             for i in [1..1000] do
+             for i in [1..10000] do
                 let! newLogEntry = Control.Async.AwaitEvent(newEvent) |> Suave.Sockets.SocketOp.ofAsync
                 match newLogEntry with
                 | LogEntry str -> 

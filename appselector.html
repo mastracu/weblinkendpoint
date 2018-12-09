@@ -319,6 +319,9 @@
         var es = new EventSource("sseLog");
         var listener = function (event) {
             var type = event.type;
+
+            console.log(event.type + event.data);
+
             if (type == "message") {
                 $("#live-log-table").tabulator("addRow", { liveLog: event.data }, true);
             }
