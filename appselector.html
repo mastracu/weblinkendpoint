@@ -348,7 +348,8 @@
 
             switch (tabName) {
                 case "JSON cmd":
-                    $("#sendcmd-button").click(function () {
+                    console.log("in case JSON cmd");
+                    $("#sendcmd-button").off('click').on('click', function () {
                         var selectedPrinter = $("#printers-table").tabulator("getSelectedData");
 
                         if (selectedPrinter.length == 0) {
@@ -367,7 +368,8 @@
                     break;
 
                 case "Custom label":
-                    $("#sendcmd-button").click(function () {
+                    console.log("in case Custom label");
+                    $("#sendcmd-button").off('click').on('click', function () {
                         var selectedPrinter = $("#printers-table").tabulator("getSelectedData");
 
                         if (selectedPrinter.length == 0) {
@@ -387,7 +389,8 @@
 
                     break;
                 case "Price label":
-                    $("#sendcmd-button").click(function () {
+                    console.log("in case Price label");
+                    $("#sendcmd-button").off('click').on('click', function () {
                         var selectedData = $("#price-lookup-table").tabulator("getSelectedData");
                         var selectedPrinter = $("#printers-table").tabulator("getSelectedData");
 
