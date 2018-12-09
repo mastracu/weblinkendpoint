@@ -72,7 +72,7 @@ let ws allAgents (printJob:Msg2PrinterFeed) (jsonRequest:Msg2PrinterFeed) (webSo
             while not !close do
                 let! op, data, fi = inbox.Receive()
                 if op=Binary then
-                    do logAgent.AppendToLog (sprintf "-> %s : %s" channelUniqueId (UTF8.toString data))
+                    do logAgent.AppendToLog (sprintf "%s > %s" (UTF8.toString data) channelUniqueId)
                 else
                     ()
                 let! _ = webSocket.send op (data|> ByteSegment) fi
@@ -123,7 +123,7 @@ let ws allAgents (printJob:Msg2PrinterFeed) (jsonRequest:Msg2PrinterFeed) (webSo
       | (Binary, data, true) ->
         // the message can be converted to a string
         let str = UTF8.toString data
-        let response = sprintf "<- %s: %s" channelUniqueId str
+        let response = sprintf "%s < %s" str channelUniqueId
         do logAgent.AppendToLog response
         let jval = JsonValue.Parse str
 
