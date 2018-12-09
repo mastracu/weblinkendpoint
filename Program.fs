@@ -181,17 +181,19 @@ let ws allAgents (printJob:Msg2PrinterFeed) (jsonRequest:Msg2PrinterFeed) (webSo
                             match jval.TryGetProperty "unique_id" with
                             | Some jsonval ->   do channelUniqueId <- JsonExtensions.AsString (jsonval)
                                                 do logAgent.AppendToLog (sprintf "CHAN: %s UNIQUE_ID %s" channelName channelUniqueId)
-                                                let eventForThisChannel = Event.filter (fun pm -> pm.printerID=channelUniqueId) printJob.Event1
-                                                do eventForThisChannel |> Observable.subscribe (fun pm -> do inbox.Post(Binary, UTF8.bytes pm.msg , true)) |> ignore
                             | None -> ()
                             match channelName with
-                            | "v1.raw.zebra.com" -> ()
+                            | "v1.raw.zebra.com" ->
+                                    let eventForThisChannel = Event.filter (fun pm -> pm.printerID=channelUniqueId) printJob.Event1
+                                    do eventForThisChannel |> Observable.subscribe (fun pm -> do inbox.Post(Binary, UTF8.bytes pm.msg , true)) |> ignore
                                     // do printJob.TriggerEvent {printerID = channelUniqueId; msg = helloLabel() }
                             | "v1.config.zebra.com" -> 
+                                    let eventForThisChannel = Event.filter (fun pm -> pm.printerID=channelUniqueId) jsonRequest.Event1
+                                    do eventForThisChannel |> Observable.subscribe (fun pm -> do inbox.Post(Binary, UTF8.bytes pm.msg , true)) |> ignore
                                     // do jsonRequest.TriggerEvent {printerID= channelUniqueId; msg= """{}{"device.configuration_number":null} """ }
-                                    do jsonRequest.TriggerEvent {printerID= channelUniqueId; msg= """{}{"alerts.configured":"ALL MESSAGES,SDK,Y,Y,WEBLINK.IP.CONN1,0,N,|SGD SET,SDK,Y,Y,WEBLINK.IP.CONN1,0,N,capture.channel1.data.raw"} """}
-                                    do jsonRequest.TriggerEvent {printerID= channelUniqueId; msg= """{}{"device.product_name":null} """ }
-                                    do jsonRequest.TriggerEvent {printerID= channelUniqueId; msg= """{}{"appl.name":null} """ }
+                                    do jsonRequest.TriggerEvent {printerID=channelUniqueId; msg= """{}{"alerts.configured":"ALL MESSAGES,SDK,Y,Y,WEBLINK.IP.CONN1,0,N,|SGD SET,SDK,Y,Y,WEBLINK.IP.CONN1,0,N,capture.channel1.data.raw"} """}
+                                    do jsonRequest.TriggerEvent {printerID=channelUniqueId; msg= """{}{"device.product_name":null} """ }
+                                    do jsonRequest.TriggerEvent {printerID=channelUniqueId; msg= """{}{"appl.name":null} """ }
                                     do jsonRequest.TriggerEvent {printerID=channelUniqueId; msg= """{}{"capture.channel1.port":"usb"} """ }
                                     do jsonRequest.TriggerEvent {printerID=channelUniqueId; msg= """{}{"capture.channel1.delimiter":"^XZ"} """ }
                                     do jsonRequest.TriggerEvent {printerID=channelUniqueId; msg= """{}{"capture.channel1.max_length":"512"} """ }                                                        
