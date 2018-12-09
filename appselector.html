@@ -308,12 +308,12 @@
         });
 
         $("#newrow-button").click(function () {
-            $("#example-table").tabulator("addData", [{ sku: $('#code').val(), description: $('#description').val(), eanCode: $('#ean').val(), unitPrice: $('#price').val() }], true);
+            $("#price-lookup-table").tabulator("addData", [{ sku: $('#code').val(), description: $('#description').val(), eanCode: $('#ean').val(), unitPrice: $('#price').val() }], true);
             document.getElementById("newrowform").reset();
         });
 
         $("#deleterow-button").click(function () {
-            var selectedRows = $("#example-table").tabulator("getSelectedRows");
+            var selectedRows = $("#price-lookup-table").tabulator("getSelectedRows");
             selectedRows[0].delete();
         });
 
@@ -386,7 +386,7 @@
                     break;
                 case 'Price label':
                     $("#sendcmd-button").click(function () {
-                        var selectedData = $("#example-table").tabulator("getSelectedData");
+                        var selectedData = $("#price-lookup-table").tabulator("getSelectedData");
                         var selectedPrinter = $("#printers-table").tabulator("getSelectedData");
 
                         if (selectedData.length == 0) {
