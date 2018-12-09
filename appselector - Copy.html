@@ -14,9 +14,9 @@
             cursor: pointer;
         }
 
-        .button:hover {
-            background: green;
-        }
+            .button:hover {
+                background: green;
+            }
 
         .form {
             margin-bottom: 5px;
@@ -50,24 +50,9 @@
         }
 
         #printers-table {
-            width: 760px;
+            width: 800px;
             display: inline-block;
             vertical-align: top;
-        }
-
-        #mainblock {
-            padding: 6px 12px;
-            border: 1px solid #ccc;
-            border-top: none;
-            width: 99%;
-            margin-left: 4px;
-            margin-bottom: 20px;
-        }
-
-        .form {
-            margin-bottom: 5px;
-            margin-top: 5px;
-            margin-left: 0px;
         }
 
         /* Style the tab */
@@ -102,7 +87,13 @@
 
         /* Style the tab content */
         .tabcontent {
-            display: none;            
+            display: none;
+            padding: 6px 12px;
+            border: 1px solid #ccc;
+            border-top: none;
+            width: 99%;
+            margin-left: 4px;
+            margin-bottom: 20px;
         }
 
 
@@ -116,72 +107,55 @@
         <button class="tablinks" onclick="openTab(event, 'Price label')">Price label</button>
         <button class="tablinks" onclick="openTab(event, 'Info')">Info</button>
     </div>
-    <div id="mainblock">
-        <div id="JSON cmd" class="tabcontent">
-            <input type="text" list="commands" placeholder="Json cmd" id="jsoncmd" size="65" spellcheck="false" />
-            <datalist id="commands">
-                <option value="{}{&#34apl.enable&#34:null}">
-                <option value="{}{&#34bluetooth.short_address&#34:null}">
-                <option value="{}{&#34capture.channel1.port&#34:null}">
-                <option value="{}{&#34device.languages&#34:null}">
-                <option value="{}{&#34device.reset&#34:&#34&#34}">
-                <option value="{}{&#34device.restore_defaults&#34:&#34all&#34}">
-                <option value="{}{&#34device.uptime&#34:null}">
-                <option value="{}{&#34ezpl.manual_calibration&#34:&#34&#34}">
-                <option value="{}{&#34ezpl.media_type&#34:null}">
-                <option value="{}{&#34ezpl.print_method&#34:null}">
-                <option value="{}{&#34ezpl.print_width&#34:null}">
-                <option value="{}{&#34file.dir&#34:&#34E:&#34}">
-                <option value="{}{&#34head.resolution.in_dpi&#34:null}">
-                <option value="{}{&#34interface.network.active.ip_addr&#34:null}">
-                <option value="{}{&#34interface.network.active.cable_type&#34:null}">
-                <option value="{}{&#34odometer.total_label_count&#34:null}">
-                <option value="{}{&#34odometer.label_dot_length&#34:null}">
-                <option value="{}{&#34power&#34:null}">
-                <option value="{}{&#34power.health&#34:null}">
-                <option value="{}{&#34power.sleep.enable&#34:null}">
-                <option value="{}{&#34print.tone&#34:null}">
-                <option value="{}{&#34ribbon.cartridge&#34:null}">
-                <option value="{}{&#34weblink.ip.conn1.location&#34:null}">
-                <option value="{}{&#34zpl.calibrate&#34:&#34&#34}">
-                <option value="{}{&#34zpl.label_length&#34:null}">
-            </datalist>
-        </div>
-
-        <div id="Custom label" class="tabcontent">
-            <textarea name="label" id="labelformat" cols="75" rows="10" spellcheck="false"></textarea>
-        </div>
-
-        <div id="Price label" class="tabcontent">
-            <div id="price-lookup-table"></div>
-
-            <form id="newrowform" class="form">
-                <input type="text" placeholder="SKU" id="code" size="16" />
-                <input type="text" id="description" placeholder="Description" size="22">
-                <input type="text" id="price" placeholder="Price" size="10">
-                <input type="text" id="ean" placeholder="Ean-13" size="15">
-                <br /><span style="color:red">Please note only EAN-13 barcodes are currently supported.</span>
-            </form>
-            <button id="newrow-button" class="button">
-                <span class="glyphicon glyphicon-plus"></span>
-            </button>
-            <button id="deleterow-button" class="button">
-                <span class="glyphicon glyphicon-minus"></span>
-            </button>
-
-        </div>
-
-        <button id="sendcmd-button" class="button" style="vertical-align: top" >
+    <div id="JSON cmd" class="tabcontent">
+        <input type="text" list="commands" placeholder="Json cmd" id="jsoncmd" size="65" spellcheck="false" />
+        <datalist id="commands">
+            <option value="{}{&#34apl.enable&#34:null}">
+            <option value="{}{&#34bluetooth.short_address&#34:null}">
+            <option value="{}{&#34capture.channel1.port&#34:null}">
+            <option value="{}{&#34device.languages&#34:null}">
+            <option value="{}{&#34device.reset&#34:&#34&#34}">
+            <option value="{}{&#34device.restore_defaults&#34:&#34all&#34}">
+            <option value="{}{&#34device.uptime&#34:null}">
+            <option value="{}{&#34ezpl.manual_calibration&#34:&#34&#34}">
+            <option value="{}{&#34ezpl.media_type&#34:null}">
+            <option value="{}{&#34ezpl.print_method&#34:null}">
+            <option value="{}{&#34ezpl.print_width&#34:null}">
+            <option value="{}{&#34file.dir&#34:&#34E:&#34}">
+            <option value="{}{&#34head.resolution.in_dpi&#34:null}">
+            <option value="{}{&#34interface.network.active.ip_addr&#34:null}">
+            <option value="{}{&#34interface.network.active.cable_type&#34:null}">
+            <option value="{}{&#34odometer.total_label_count&#34:null}">
+            <option value="{}{&#34odometer.label_dot_length&#34:null}">
+            <option value="{}{&#34power&#34:null}">
+            <option value="{}{&#34power.sleep.enable&#34:null}">
+            <option value="{}{&#34print.tone&#34:null}">
+            <option value="{}{&#34ribbon.cartridge&#34:null}">
+            <option value="{}{&#34weblink.ip.conn1.location&#34:null}">
+            <option value="{}{&#34zpl.calibrate&#34:&#34&#34}">
+            <option value="{}{&#34zpl.label_length&#34:null}">
+        </datalist>
+        <button id="sendcmd-button" class="button">
             <span class="glyphicon glyphicon-play"></span>
         </button>
         <div id="printers-table"></div>
-        <button id="refresh-button" class="button" style="vertical-align: top">
+        <button id="refresh-button" class="button">
             <span class="glyphicon glyphicon-refresh"></span>
         </button>
     </div>
 
+    <div id="Custom label" class="tabcontent">
+        <textarea name="label" id="labelformat" cols="80" rows="10" spellcheck="false"></textarea>
+        <button id="sendcmd-button" class="button" style="vertical-align: top">
+            <span class="glyphicon glyphicon-play"></span>
+        </button>
+        <div id="printers-table-custom"></div>
+        <button id="refresh-button-custom" class="button" style="vertical-align: top">
+            <span class="glyphicon glyphicon-refresh"></span>
+        </button>
+    </div>
 
-    <!--<div id="Info" class="tabcontent">
+    <div id="Info" class="tabcontent">
         <p style="text-align: center;">
             Weblink Multi-App Endpoint
             <br />
@@ -197,7 +171,7 @@
             <br />
             Print price labels from cloud or custom label from ZPL code (any app)
         </p>
-    </div>-->
+    </div>
 
     <div class="left-div-margin">
         <div id="live-log-table" ></div>
@@ -235,8 +209,8 @@
             layout: "fitColumns",
             columns: [ //Define Table Columns
                 { title: "Printer Serial Number", field: "uniqueID", formatter: "link", width: 200, sorter: "string", align: "left", },
-                { title: "Product Name", field: "productName", width: 150, sorter: "string", align: "left", },
-                { title: "FW Version", field: "appVersion", width: 208, sorter: "string", align: "left", },
+                { title: "Product Name", field: "productName", width: 180, sorter: "string", align: "left", },
+                { title: "FW Version", field: "appVersion", width: 218, sorter: "string", align: "left", },
                 {
                     title: "Application", field: "sgdSetAlertFeedback", width: 200, sorter: "string", align: "left", editor: "select", editorParams: {
                         "ifadLabelConversion": "ifadLabelConversion",
@@ -259,47 +233,7 @@
             },
         });
 
-        $("#price-lookup-table").tabulator({
-            selectable: 1,
-            layout: "fitColumns", //fit columns to width of table (optional)
-            columns: [ //Define Table Columns
-                { title: "SKU", field: "sku", sorter: "number", width: 150, align: "right", },
-                { title: "Description", field: "description", sorter: "string", align: "left", width: 200 },
-                { title: "Unit Price", field: "unitPrice", width: 100, sorter: "number", editor: "input", validator: ["float", "required"], align: "right", sortable: false },
-                { title: "EAN 13 code", field: "eanCode", width: 150, sorter: "number", align: "right" },
-            ],
-            //index:"sku",
-            cellEdited: function (cell) {
-                var data = cell.getRow().getData();
-                var myJSON = JSON.stringify(data);
-                var xhr = new XMLHttpRequest();
-                var url = "productupdate";
-                xhr.open("POST", url, true);
-                xhr.setRequestHeader("Content-type", "application/json");
-                xhr.send(myJSON);
-            },
-            rowAdded: function (row) {
-                var data = row.getData();
-                var myJSON = JSON.stringify(data);
-                var xhr = new XMLHttpRequest();
-                var url = "productupdate";
-                xhr.open("POST", url, true);
-                xhr.setRequestHeader("Content-type", "application/json");
-                xhr.send(myJSON);
-            },
-            rowDeleted: function (row) {
-                var data = row.getData();
-                var myJSON = JSON.stringify(data);
-                var xhr = new XMLHttpRequest();
-                var url = "productremove";
-                xhr.open("POST", url, true);
-                xhr.setRequestHeader("Content-type", "application/json");
-                xhr.send(myJSON);
-            },
-        });
-
         $("#printers-table").tabulator("setData", "printerslist.json");
-        $("#price-lookup-table").tabulator("setData", "storepricelist.json");
 
         $("#refresh-button").click(function () {
             $("#printers-table").tabulator("setData", "printerslist.json");
@@ -324,40 +258,6 @@
                 xhr.setRequestHeader("Content-type", "application/json");
                 xhr.send(myJSON);
             }
-        });
-
-        $("#printlabel-button").click(function () {
-            var selectedData = $("#example-table").tabulator("getSelectedData");
-            var selectedPrinter = $("#printers-table").tabulator("getSelectedData");
-
-            if (selectedData.length == 0) {
-                alert("No products selected to print !")
-            }
-            else {
-                if (selectedPrinter.length == 0) {
-                    alert("No printer selected !")
-                }
-                else {
-                    var ProductPrinterObj = { id: selectedPrinter[0].uniqueID, ProductObj: selectedData[0] }
-                    var myJSON = JSON.stringify(ProductPrinterObj);
-                    var xhr = new XMLHttpRequest();
-                    var url = "printproduct";
-                    xhr.open("POST", url, true);
-                    xhr.setRequestHeader("Content-type", "application/json");
-                    xhr.send(myJSON);
-                    // console.log("JSON output: " + myJSON);
-                }
-            }
-        });
-
-        $("#newrow-button").click(function () {
-            $("#example-table").tabulator("addData", [{ sku: $('#code').val(), description: $('#description').val(), eanCode: $('#ean').val(), unitPrice: $('#price').val() }], true);
-            document.getElementById("newrowform").reset();
-        });
-
-        $("#deleterow-button").click(function () {
-            var selectedRows = $("#example-table").tabulator("getSelectedRows");
-            selectedRows[0].delete();
         });
 
         var es = new EventSource("sseLog");
@@ -388,7 +288,7 @@
             }
 
             // Show the current tab, and add an "active" class to the button that opened the tab
-            document.getElementById(tabName).style.display = "inline-block";
+            document.getElementById(tabName).style.display = "block";
             evt.currentTarget.className += " active";
         }
 
