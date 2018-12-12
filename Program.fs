@@ -268,7 +268,8 @@ let app  : WebPart =
   //let releaseVersion = System.Environment.GetEnvironmentVariable("HEROKU_RELEASE_VERSION")
 
   choose [
-    path "/websocketWithSubprotocol" >=> WebSocketUM.handShakeWithSubprotocol (chooseSubprotocol "v1.weblink.zebra.com") (ws allAgents printJob jsonRequest)
+    path "/websocketWithSubprotocol" >=> 
+          WebSocketUM.handShakeWithSubprotocol (chooseSubprotocol "v1.weblink.zebra.com") (ws allAgents printJob jsonRequest)
 
     path "/sseLog" >=> request (fun _ -> EventSource.handShake (fun out ->
           let emptyEvent = new Event<Unit>()
@@ -279,8 +280,8 @@ let app  : WebPart =
           let newEvent = (logEvent.Publish |> Event.map (fun str -> LogEntry str) , 
                           timeoutEvent |> Event.map (fun _ -> Timeout)) ||> Event.merge
 
-          let inbox = MailboxProcessor.Start (fun (inbox:MailboxProcessor<LogEntryOrTimeout>) -> 
-              async {
+          let inbox = MailboxProcessor.Start (fun inbox -> 
+             async {   
                     for i in [1..10000] do
                         let! newEvent = inbox.Receive()
                         match newEvent with
@@ -294,15 +295,26 @@ let app  : WebPart =
                             let! _ = "keepAlive" |> comment out
                             ()
                         let! _ = dispatch out
-                        ()
-              }
+                        return ()
+             }
           )
 
-          do newEvent |> Observable.subscribe (fun arg -> do inbox.Post(arg)) |> ignore
+          let disposableResource = newEvent |> Observable.subscribe (fun arg -> do inbox.Post(arg)) 
 
-          socket {
-                  let! never=Control.Async.AwaitEvent(emptyEvent.Publish) |>  Suave.Sockets.SocketOp.ofAsync
-                  return out
+          // https://github.com/SuaveIO/suave/issues/463
+          async {
+                let! successOrError = socket {
+                      let! never=Control.Async.AwaitEvent(emptyEvent.Publish) |>  Suave.Sockets.SocketOp.ofAsync
+                      return out
+                }
+                match successOrError with
+                | Choice1Of2(con) -> ()
+                | Choice2Of2(error) -> 
+                    disposableResource.Dispose()
+                    Timer15sec.Stop()
+                    Timer15sec.Dispose()
+                    do mLogAgent.AppendToLog ("Forced SSE disconnect - disposed resources in sse handshake continuation function")
+                return successOrError
           }
     ))
 
