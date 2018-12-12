@@ -271,26 +271,40 @@ let app  : WebPart =
     path "/websocketWithSubprotocol" >=> WebSocketUM.handShakeWithSubprotocol (chooseSubprotocol "v1.weblink.zebra.com") (ws allAgents printJob jsonRequest)
 
     path "/sseLog" >=> request (fun _ -> EventSource.handShake (fun out ->
+          let emptyEvent = new Event<Unit>()
           let Timer15sec = new System.Timers.Timer(float 15000)
           do Timer15sec.AutoReset <- true
           let timeoutEvent = Timer15sec.Elapsed
           do Timer15sec.Start()
-          let newEvent = (logEvent.Publish |> Event.map (fun str -> LogEntry str) , timeoutEvent |> Event.map (fun _ -> Timeout)) ||> Event.merge
-          socket {   
-             // https://stackoverflow.com/questions/21064524/merge-two-events-detect-which-is-raised
-             for i in [1..10000] do
-                let! newLogEntry = Control.Async.AwaitEvent(newEvent) |> Suave.Sockets.SocketOp.ofAsync
-                match newLogEntry with
-                | LogEntry str -> 
-                    do! string i |> esId out 
-                    let newLogEntryLines = str.Split '\n'
-                    for line in newLogEntryLines do
-                       do! line |> data out
-                | Timeout ->
-                    do! "keepAlive" |> comment out
-                return! dispatch out
-             return out
-          }))
+          let newEvent = (logEvent.Publish |> Event.map (fun str -> LogEntry str) , 
+                          timeoutEvent |> Event.map (fun _ -> Timeout)) ||> Event.merge
+
+          let inbox = MailboxProcessor.Start (fun (inbox:MailboxProcessor<LogEntryOrTimeout>) -> 
+              async {
+                    for i in [1..10000] do
+                        let! newEvent = inbox.Receive()
+                        match newEvent with
+                        | LogEntry str -> 
+                            let! _ = string i |> esId out
+                            let newLogEntryLines = str.Split '\n'
+                            for line in newLogEntryLines do
+                                let! _ = line |> data out
+                                ()
+                        | Timeout ->
+                            let! _ = "keepAlive" |> comment out
+                            ()
+                        let! _ = dispatch out
+                        ()
+              }
+          )
+
+          do newEvent |> Observable.subscribe (fun arg -> do inbox.Post(arg)) |> ignore
+
+          socket {
+                  let! never=Control.Async.AwaitEvent(emptyEvent.Publish) |>  Suave.Sockets.SocketOp.ofAsync
+                  return out
+          }
+    ))
 
     GET >=> choose 
         [ path "/hello" >=> OK "Hello GET"
