@@ -279,25 +279,6 @@ let app  : WebPart =
           let newEvent = (logEvent.Publish |> Event.map (fun str -> LogEntry str) , 
                           timeoutEvent |> Event.map (fun _ -> Timeout)) ||> Event.merge
 
-          //let inbox = MailboxProcessor.Start (fun inbox -> 
-          //   async {   
-          //          for i in [1..10000] do
-          //              let! newEvent = inbox.Receive()
-          //              match newEvent with
-          //              | LogEntry str -> 
-          //                  let! _ = string i |> esId out
-          //                  let newLogEntryLines = str.Split '\n'
-          //                  for line in newLogEntryLines do
-          //                      let! _ = line |> data out
-          //                      ()
-          //              | Timeout ->
-          //                  let! _ = "keepAlive" |> comment out
-          //                  ()
-          //              let! _ = dispatch out
-          //              return ()
-          //   }
-          //)
-
           let inbox = MailboxProcessor.Start (fun inbox -> 
                 let rec loop n = async {   
                         let! newEvent = inbox.Receive()
