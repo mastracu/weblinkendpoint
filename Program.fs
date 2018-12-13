@@ -270,7 +270,6 @@ let app  : WebPart =
   choose [
     path "/websocketWithSubprotocol" >=> 
           WebSocketUM.handShakeWithSubprotocol (chooseSubprotocol "v1.weblink.zebra.com") (ws allAgents printJob jsonRequest)
-
     path "/sseLog" >=> request (fun _ -> EventSource.handShake (fun out ->
           let emptyEvent = new Event<Unit>()
           let Timer15sec = new System.Timers.Timer(float 15000)
@@ -280,13 +279,31 @@ let app  : WebPart =
           let newEvent = (logEvent.Publish |> Event.map (fun str -> LogEntry str) , 
                           timeoutEvent |> Event.map (fun _ -> Timeout)) ||> Event.merge
 
+          //let inbox = MailboxProcessor.Start (fun inbox -> 
+          //   async {   
+          //          for i in [1..10000] do
+          //              let! newEvent = inbox.Receive()
+          //              match newEvent with
+          //              | LogEntry str -> 
+          //                  let! _ = string i |> esId out
+          //                  let newLogEntryLines = str.Split '\n'
+          //                  for line in newLogEntryLines do
+          //                      let! _ = line |> data out
+          //                      ()
+          //              | Timeout ->
+          //                  let! _ = "keepAlive" |> comment out
+          //                  ()
+          //              let! _ = dispatch out
+          //              return ()
+          //   }
+          //)
+
           let inbox = MailboxProcessor.Start (fun inbox -> 
-             async {   
-                    for i in [1..10000] do
+                let rec loop n = async {   
                         let! newEvent = inbox.Receive()
                         match newEvent with
                         | LogEntry str -> 
-                            let! _ = string i |> esId out
+                            let! _ = string n |> esId out
                             let newLogEntryLines = str.Split '\n'
                             for line in newLogEntryLines do
                                 let! _ = line |> data out
@@ -295,9 +312,8 @@ let app  : WebPart =
                             let! _ = "keepAlive" |> comment out
                             ()
                         let! _ = dispatch out
-                        return ()
-             }
-          )
+                        return! loop (n+1) }
+                loop 0)
 
           let disposableResource = newEvent |> Observable.subscribe (fun arg -> do inbox.Post(arg)) 
 
