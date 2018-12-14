@@ -254,7 +254,9 @@
             rowAdded: function (row) {
             },
         });
+        $("#printers-table").tabulator("setData", "printerslist.json");
 
+        document.getElementById("Price label").style.display = "inline-block";
         $("#price-lookup-table").tabulator({
             selectable: true,
             height: 200,
@@ -294,9 +296,6 @@
                 xhr.send(myJSON);
             },
         });
-
-        $("#printers-table").tabulator("setData", "printerslist.json");
-
         $("#price-lookup-table").tabulator("setData", "storepricelist.json");
         document.getElementById("Price label").style.display = "none";
 
@@ -427,7 +426,7 @@
             evt.currentTarget.className += " active";
         };
 
-        document.getElementById("priceTab").click();
+        document.getElementById("defaultOpen").click();
 
     </script>
 </body>
