@@ -155,8 +155,8 @@
             <div id="price-lookup-table" style=" overflow:hidden"></div>
 
             <form id="newrowform" class="form">
-                <input type="text" placeholder="SKU" id="code" size="16" />
-                <input type="text" id="description" placeholder="Description" size="22">
+                <input type="text" placeholder="SKU" id="code" size="12" />
+                <input type="text" id="description" placeholder="Description" size="17">
                 <input type="text" id="price" placeholder="Price" size="10">
                 <input type="text" id="ean" placeholder="Ean-13" size="15">
             </form>
@@ -255,10 +255,10 @@
             },
         });
 
-        document.getElementById("Price label").style.display = "inline-block";
         $("#price-lookup-table").tabulator({
             selectable: true,
             height: 200,
+            layout: "fitColumns",
             columns: [ //Define Table Columns
                 { title: "SKU", field: "sku", sorter: "number", width: 120, align: "right", },
                 { title: "Description", field: "description", sorter: "string", align: "left", width: 160 },
