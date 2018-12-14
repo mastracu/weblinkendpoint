@@ -113,7 +113,7 @@
     <div class="tab">
         <button class="tablinks" onclick="openTab(event, 'JSON cmd')" id="defaultOpen">JSON cmd</button>
         <button class="tablinks" onclick="openTab(event, 'Custom label')">Custom label</button>
-        <button class="tablinks" onclick="openTab(event, 'Price label')">Price label</button>
+        <button class="tablinks" onclick="openTab(event, 'Price label')" id="priceTab">Price label</button>
     </div>
     <div id="mainblock">
         <div id="JSON cmd" class="tabcontent">
@@ -256,7 +256,8 @@
         });
 
         $("#price-lookup-table").tabulator({
-            height: 150,
+            selectable: true,
+            height: 200,
             columns: [ //Define Table Columns
                 { title: "SKU", field: "sku", sorter: "number", width: 120, align: "right", },
                 { title: "Description", field: "description", sorter: "string", align: "left", width: 160 },
@@ -423,7 +424,7 @@
             evt.currentTarget.className += " active";
         };
 
-        document.getElementById("defaultOpen").click();
+        document.getElementById("priceTab").click();
 
     </script>
 </body>
