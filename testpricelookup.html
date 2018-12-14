@@ -110,6 +110,11 @@
 </head>
 <body>
 
+    <div class="tab">
+        <button class="tablinks" onclick="openTab(event, 'JSON cmd')" id="defaultOpen">JSON cmd</button>
+        <button class="tablinks" onclick="openTab(event, 'Custom label')">Custom label</button>
+        <button class="tablinks" onclick="openTab(event, 'Price label')">Price label</button>
+    </div>
     <div id="mainblock">
         <div id="Price label" class="tabcontent">
             <div id="price-lookup-table" style=" overflow:hidden"></div>
@@ -143,6 +148,10 @@
         <button id="logclear-button" class="button">
             <span class="glyphicon glyphicon-trash"></span>
         </button>
+        <div id="caption-div" class="left-div">
+            To access full weblinkendpoint logtable <a target="_blank" href="logtable.html">logtable.html</a>
+            To generate barcode for goods return (labelToGo app) <a target="_blank" href="mobiletest.html">mobiletest.html</a><br />
+        </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
@@ -194,7 +203,7 @@
 
 
         $("#price-lookup-table").tabulator({
-            height: 150,
+            height: 200,
             layout: "fitColumns",
             columns: [ //Define Table Columns
                 { title: "SKU", field: "sku", sorter: "number", width: 120, align: "right", },
@@ -232,7 +241,16 @@
             },
         });
 
+        $("#printers-table").tabulator("setData", "printerslist.json");
         $("#price-lookup-table").tabulator("setData", "storepricelist.json");
+
+        $("#refresh-button").click(function () {
+            $("#printers-table").tabulator("setData", "printerslist.json");
+        });
+
+        $("#logclear-button").click(function () {
+            $("#live-log-table").tabulator("clearData");
+        });
 
 
         $("#logclear-button").click(function () {
