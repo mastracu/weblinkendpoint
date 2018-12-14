@@ -28,5 +28,17 @@
     "eanCode": "5601007425638",
     "sku": "1212121218",
     "unitPrice": 1221.80
+  },
+  {
+    "description": "Svelto Lemon100",
+    "eanCode": "8000630720066",
+    "sku": "30720066",
+    "unitPrice": 4.80
+  },
+  {
+    "description": "Auchan Multiuso",
+    "eanCode": "8005476013419",
+    "sku": "76013419",
+    "unitPrice": 3.95
   }
 ]
