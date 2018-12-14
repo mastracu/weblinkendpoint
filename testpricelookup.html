@@ -268,6 +268,117 @@
             selectedRows[0].delete();
         });
 
+        var es = new EventSource("sseLog");
+        var listener = function (event) {
+            var type = event.type;
+
+            console.log(event.type + event.data);
+
+            if (type == "message") {
+                $("#live-log-table").tabulator("addRow", { liveLog: event.data }, true);
+            }
+        };
+        es.addEventListener("open", listener);
+        es.addEventListener("message", listener);
+        es.addEventListener("error", listener);
+
+        function openTab(evt, tabName) {
+            // Declare all variables
+            var i, tabcontent, tablinks;
+
+            // Get all elements with class="tabcontent" and hide them
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+
+            // Get all elements with class="tablinks" and remove the class "active"
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+
+            console.log(tabName);
+
+            switch (tabName) {
+                case "JSON cmd":
+                    $("#sendcmd-button").off('click').on('click', function () {
+                        var selectedPrinter = $("#printers-table").tabulator("getSelectedData");
+
+                        if (selectedPrinter.length == 0) {
+                            alert("No printer selected !")
+                        }
+                        else {
+                            var ProductJsonCmdObj = { printerID: selectedPrinter[0].uniqueID, msg: $('#jsoncmd').val() }
+                            var myJSON = JSON.stringify(ProductJsonCmdObj);
+                            var xhr = new XMLHttpRequest();
+                            var url = "json2printer";
+                            xhr.open("POST", url, true);
+                            xhr.setRequestHeader("Content-type", "application/json");
+                            xhr.send(myJSON);
+                        }
+                    });
+                    break;
+
+                case "Custom label":
+                    $("#sendcmd-button").off('click').on('click', function () {
+                        var selectedPrinter = $("#printers-table").tabulator("getSelectedData");
+
+                        if (selectedPrinter.length == 0) {
+                            alert("No printer selected !")
+                        }
+                        else {
+                            var PrinterLabelObj = { printerID: selectedPrinter[0].uniqueID, msg: $('#labelformat').val() }
+                            var myJSON = JSON.stringify(PrinterLabelObj);
+                            var xhr = new XMLHttpRequest();
+                            var url = "printraw";
+                            xhr.open("POST", url, true);
+                            xhr.setRequestHeader("Content-type", "application/json");
+                            xhr.send(myJSON);
+                            // console.log("JSON output: " + myJSON);
+                        }
+                    });
+
+                    break;
+                case "Price label":
+                    $("#sendcmd-button").off('click').on('click', function () {
+                        var selectedData = $("#price-lookup-table").tabulator("getSelectedData");
+                        var selectedPrinter = $("#printers-table").tabulator("getSelectedData");
+
+                        if (selectedData.length == 0) {
+                            alert("No products selected to print !")
+                        }
+                        else {
+                            if (selectedPrinter.length == 0) {
+                                alert("No printer selected !")
+                            }
+                            else {
+                                var ProductPrinterObj = { id: selectedPrinter[0].uniqueID, ProductObj: selectedData[0] }
+                                var myJSON = JSON.stringify(ProductPrinterObj);
+                                var xhr = new XMLHttpRequest();
+                                var url = "printproduct";
+                                xhr.open("POST", url, true);
+                                xhr.setRequestHeader("Content-type", "application/json");
+                                xhr.send(myJSON);
+                                // console.log("JSON output: " + myJSON);
+                            }
+                        }
+                    });
+
+                    break;
+                default:
+                    $("#sendcmd-button").click(function () {
+                    });
+
+            };
+
+            // Show the current tab, and add an "active" class to the button that opened the tab
+            document.getElementById(tabName).style.display = "inline-block";
+            evt.currentTarget.className += " active";
+        };
+
+        document.getElementById("priceTab").click();
+
     </script>
 </body>
 </html>
