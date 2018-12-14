@@ -256,10 +256,10 @@
         });
 
         $("#price-lookup-table").tabulator({
-            height: 100,
+            height: 150,
             columns: [ //Define Table Columns
-                { title: "SKU", field: "sku", sorter: "number", width: 150, align: "right", },
-                { title: "Description", field: "description", sorter: "string", align: "left", width: 200 },
+                { title: "SKU", field: "sku", sorter: "number", width: 120, align: "right", },
+                { title: "Description", field: "description", sorter: "string", align: "left", width: 160 },
                 { title: "Unit Price", field: "unitPrice", width: 105, sorter: "number", editor: "input", validator: ["float", "required"], align: "right", sortable: false },
                 { title: "EAN 13 code", field: "eanCode", width: 150, sorter: "number", align: "right" },
             ],
