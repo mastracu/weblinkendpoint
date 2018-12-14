@@ -295,7 +295,10 @@
         });
 
         $("#printers-table").tabulator("setData", "printerslist.json");
+
+        document.getElementById("Price label").style.display = "inline-block";
         $("#price-lookup-table").tabulator("setData", "storepricelist.json");
+        document.getElementById("Price label").style.display = "none";
 
         $("#refresh-button").click(function () {
             $("#printers-table").tabulator("setData", "printerslist.json");
