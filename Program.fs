@@ -128,7 +128,7 @@ let ws allAgents (printJob:Msg2PrinterFeed) (jsonRequest:Msg2PrinterFeed) (webSo
                 // the message can be converted to a string
                 let str = UTF8.toString data
                 let msglen = data.Length
-                let response = sprintf "%s < %s (bytes = %d)" str channelUniqueId msglen
+                let response = sprintf "%s <(%s) %s (bytes = %d)" str channelName channelUniqueId msglen
                 do logAgent.AppendToLog response
                 if (not (channelName="v1.raw.zebra.com")) then                 
                     let jval = JsonValue.Parse str
@@ -143,7 +143,7 @@ let ws allAgents (printJob:Msg2PrinterFeed) (jsonRequest:Msg2PrinterFeed) (webSo
                                         do printersAgent.AddPrinter {uniqueID = channelUniqueId; productName = ""; appVersion = ""; friendlyName = ""; sgdSetAlertFeedback = "ifadLabelConversion"}
                                         inbox.Post(Binary, UTF8.bytes """ { "open" : "v1.raw.zebra.com" } """, true)
                                         inbox.Post(Binary, UTF8.bytes """ { "open" : "v1.config.zebra.com" } """, true)
-                    | None -> do logAgent.AppendToLog "no discovery_b64"
+                    | None -> ()
 
                     match jval.TryGetProperty "alert" with
                     | Some jsonalertval ->   
