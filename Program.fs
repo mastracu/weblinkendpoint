@@ -96,6 +96,7 @@ let ws allAgents (printJob:Msg2PrinterFeed) (jsonRequest:Msg2PrinterFeed) (webSo
     let mutable loop = true
     while loop do
       // the server will wait for a message to be received without blocking the thread
+      do logAgent.AppendToLog "webSocket.read()"
       let! msg = webSocket.read()
 
       match msg with
@@ -124,7 +125,8 @@ let ws allAgents (printJob:Msg2PrinterFeed) (jsonRequest:Msg2PrinterFeed) (webSo
       | (Binary, data, true) ->
         // the message can be converted to a string
         let str = UTF8.toString data
-        let response = sprintf "%s < %s" str channelUniqueId
+        let msglen = data.Length
+        let response = sprintf "%s < %s (bytes = %d)" str channelUniqueId msglen
         do logAgent.AppendToLog response
         let jval = JsonValue.Parse str
 
