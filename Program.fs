@@ -143,7 +143,7 @@ let ws allAgents (printJob:Msg2PrinterFeed) (jsonRequest:Msg2PrinterFeed) (webSo
                                     do printersAgent.AddPrinter {uniqueID = channelUniqueId; productName = ""; appVersion = ""; friendlyName = ""; sgdSetAlertFeedback = "ifadLabelConversion"}
                                     inbox.Post(Binary, UTF8.bytes """ { "open" : "v1.raw.zebra.com" } """, true)
                                     inbox.Post(Binary, UTF8.bytes """ { "open" : "v1.config.zebra.com" } """, true)
-                | None -> () 
+                | None -> do logAgent.AppendToLog "no discovery_b64"
 
                 match jval.TryGetProperty "alert" with
                 | Some jsonalertval ->   
@@ -237,6 +237,7 @@ let ws allAgents (printJob:Msg2PrinterFeed) (jsonRequest:Msg2PrinterFeed) (webSo
               | (_,_,fi) -> 
                 do logAgent.AppendToLog (sprintf "Unexpected message from printer of type %A" fi)
         }
+        do logAgent.AppendToLog ("### Left SOCKET MONAD ###")
         match successOrError with
         | Choice1Of2(con) -> ()
         | Choice2Of2(error) -> 
