@@ -78,164 +78,171 @@ let ws allAgents (printJob:Msg2PrinterFeed) (jsonRequest:Msg2PrinterFeed) (webSo
                     ()
                 let! _ = webSocket.send op (data|> ByteSegment) fi
                 close := op = Close                    
-        })
+  })
 
-  socket {
+    // https://github.com/SuaveIO/suave/issues/463
+  async {
+        let! successOrError = socket {
 
-    // H15 error Heroku - https://devcenter.heroku.com/articles/error-codes#h15-idle-connection
-    // A Pong frame MAY be sent unsolicited.  This serves as a unidirectional heartbeat.  
-    // A response to an unsolicited Pong frame is not expected.
-    let pongTimer = new System.Timers.Timer(float 20000)
-    do pongTimer.AutoReset <- true
-    let pongTimeoutEvent = pongTimer.Elapsed
-    do pongTimeoutEvent |> Observable.subscribe (fun _ -> do inbox.Post (Pong, [||] , true)) |> ignore
-    do pongTimer.Start()
+            // H15 error Heroku - https://devcenter.heroku.com/articles/error-codes#h15-idle-connection
+            // A Pong frame MAY be sent unsolicited.  This serves as a unidirectional heartbeat.  
+            // A response to an unsolicited Pong frame is not expected.
+            let pongTimer = new System.Timers.Timer(float 20000)
+            do pongTimer.AutoReset <- true
+            let pongTimeoutEvent = pongTimer.Elapsed
+            do pongTimeoutEvent |> Observable.subscribe (fun _ -> do inbox.Post (Pong, [||] , true)) |> ignore
+            do pongTimer.Start()
 
 
-    // if `loop` is set to false, the server will stop receiving messages
-    let mutable loop = true
-    while loop do
-      // the server will wait for a message to be received without blocking the thread
-      do logAgent.AppendToLog "webSocket.read()"
-      let! msg = webSocket.read()
+            // if `loop` is set to false, the server will stop receiving messages
+            let mutable loop = true
+            while loop do
+              // the server will wait for a message to be received without blocking the thread
+              do logAgent.AppendToLog "webSocket.read()"
+              let! msg = webSocket.read()
 
-      match msg with
-      // the message has type (Opcode * byte [] * bool)
-      //
-      // Opcode type:
-      //   type Opcode = Continuation | Text | Binary | Reserved | Close | Ping | Pong
-      //
-      // byte [] contains the actual message
-      //
-      // the last element is the FIN byte, explained later
-      //
-      // The FIN byte:
-      //
-      // A single message can be sent separated by fragments. The FIN byte indicates the final fragment. Fragments
-      //
-      // As an example, this is valid code, and will send only one message to the client:
-      //
-      // do! webSocket.send Text firstPart false
-      // do! webSocket.send Continuation secondPart false
-      // do! webSocket.send Continuation thirdPart true
-      //
-      // More information on the WebSocket protocol can be found at: https://tools.ietf.org/html/rfc6455#page-34
-      //
+              match msg with
+              // the message has type (Opcode * byte [] * bool)
+              //
+              // Opcode type:
+              //   type Opcode = Continuation | Text | Binary | Reserved | Close | Ping | Pong
+              //
+              // byte [] contains the actual message
+              //
+              // the last element is the FIN byte, explained later
+              //
+              // The FIN byte:
+              //
+              // A single message can be sent separated by fragments. The FIN byte indicates the final fragment. Fragments
+              //
+              // As an example, this is valid code, and will send only one message to the client:
+              //
+              // do! webSocket.send Text firstPart false
+              // do! webSocket.send Continuation secondPart false
+              // do! webSocket.send Continuation thirdPart true
+              //
+              // More information on the WebSocket protocol can be found at: https://tools.ietf.org/html/rfc6455#page-34
+              //
 
-      | (Binary, data, true) ->
-        // the message can be converted to a string
-        let str = UTF8.toString data
-        let msglen = data.Length
-        let response = sprintf "%s < %s (bytes = %d)" str channelUniqueId msglen
-        do logAgent.AppendToLog response
-        let jval = JsonValue.Parse str
+              | (Binary, data, true) ->
+                // the message can be converted to a string
+                let str = UTF8.toString data
+                let msglen = data.Length
+                let response = sprintf "%s < %s (bytes = %d)" str channelUniqueId msglen
+                do logAgent.AppendToLog response
+                let jval = JsonValue.Parse str
 
-        match jval.TryGetProperty "discovery_b64" with
-        | Some jsonval ->   
-                            let zebraDiscoveryPacket = JsonExtensions.AsString jsonval |> decode64
-                            let uniqueID = List.rev (snd (List.fold (fun (pos,acclist) byte -> (pos+1, if (pos > 187 && pos < 202 ) then byte::acclist else acclist))  (0,[]) zebraDiscoveryPacket))
-                            do channelUniqueId <- uniqueID |> intListToString
-                            do logAgent.AppendToLog (sprintf "discovery_b64 property printerID: %s"  channelUniqueId)
-                            do channelUniqueId <- channelUniqueId.Substring (0, (channelUniqueId.IndexOf 'J' + 10))
-                            do logAgent.AppendToLog (sprintf "adjusted printerID: %s"  channelUniqueId)
-                            do printersAgent.AddPrinter {uniqueID = channelUniqueId; productName = ""; appVersion = ""; friendlyName = ""; sgdSetAlertFeedback = "ifadLabelConversion"}
-                            inbox.Post(Binary, UTF8.bytes """ { "open" : "v1.raw.zebra.com" } """, true)
-                            inbox.Post(Binary, UTF8.bytes """ { "open" : "v1.config.zebra.com" } """, true)
-        | None -> () 
+                match jval.TryGetProperty "discovery_b64" with
+                | Some jsonval ->   
+                                    let zebraDiscoveryPacket = JsonExtensions.AsString jsonval |> decode64
+                                    let uniqueID = List.rev (snd (List.fold (fun (pos,acclist) byte -> (pos+1, if (pos > 187 && pos < 202 ) then byte::acclist else acclist))  (0,[]) zebraDiscoveryPacket))
+                                    do channelUniqueId <- uniqueID |> intListToString
+                                    do logAgent.AppendToLog (sprintf "discovery_b64 property printerID: %s"  channelUniqueId)
+                                    do channelUniqueId <- channelUniqueId.Substring (0, (channelUniqueId.IndexOf 'J' + 10))
+                                    do logAgent.AppendToLog (sprintf "adjusted printerID: %s"  channelUniqueId)
+                                    do printersAgent.AddPrinter {uniqueID = channelUniqueId; productName = ""; appVersion = ""; friendlyName = ""; sgdSetAlertFeedback = "ifadLabelConversion"}
+                                    inbox.Post(Binary, UTF8.bytes """ { "open" : "v1.raw.zebra.com" } """, true)
+                                    inbox.Post(Binary, UTF8.bytes """ { "open" : "v1.config.zebra.com" } """, true)
+                | None -> () 
 
-        match jval.TryGetProperty "alert" with
-        | Some jsonalertval ->   
-            match (jsonalertval.GetProperty "condition_id").AsString() with
-            | "SGD SET" -> 
-                let sgdFeedback = printersAgent.FetchPrinterInfo channelUniqueId
-                match sgdFeedback with 
-                | Some feedback -> 
-                    do logAgent.AppendToLog (sprintf "Printer application: %s" feedback.sgdSetAlertFeedback )
-                    match feedback.sgdSetAlertFeedback with
-                    | "priceTag" -> 
-                        let barcode = (jsonalertval.GetProperty "setting_value").AsString()
-                        let maybeProd = storeAgent.EanLookup barcode
-                        match maybeProd with
-                        | Some prod -> 
-                            let priceString = prod.unitPrice.ToString()
-                            do logAgent.AppendToLog (sprintf "Barcode: %s Price: %s Description: %s" barcode priceString prod.description)       
-                            {printerID = channelUniqueId; msg= (buildpricetag prod)} |> printJob.TriggerEvent
-                        | None ->
-                            do logAgent.AppendToLog (sprintf "Barcode: %s not found in store" barcode)
-                    | "ifadLabelConversion" ->  
-                        let label300dpi = (jsonalertval.GetProperty "setting_value").AsString()
-                        do logAgent.AppendToLog (sprintf "Original label: %s" label300dpi)    
-                        do logAgent.AppendToLog (sprintf "Converted label: %s" (convertIfadLabel label300dpi))       
-                        {printerID = channelUniqueId; msg = (convertIfadLabel label300dpi)} |> printJob.TriggerEvent
-                    | "wikipediaConversion" ->  
-                        let demolabel = (jsonalertval.GetProperty "setting_value").AsString()
-                        do logAgent.AppendToLog (sprintf "Original label: %s" demolabel)    
-                        do logAgent.AppendToLog (sprintf "Converted label: %s" (convertWikipediaLabel demolabel))       
-                        {printerID = channelUniqueId; msg = (convertWikipediaLabel demolabel)} |> printJob.TriggerEvent
+                match jval.TryGetProperty "alert" with
+                | Some jsonalertval ->   
+                    match (jsonalertval.GetProperty "condition_id").AsString() with
+                    | "SGD SET" -> 
+                        let sgdFeedback = printersAgent.FetchPrinterInfo channelUniqueId
+                        match sgdFeedback with 
+                        | Some feedback -> 
+                            do logAgent.AppendToLog (sprintf "Printer application: %s" feedback.sgdSetAlertFeedback )
+                            match feedback.sgdSetAlertFeedback with
+                            | "priceTag" -> 
+                                let barcode = (jsonalertval.GetProperty "setting_value").AsString()
+                                let maybeProd = storeAgent.EanLookup barcode
+                                match maybeProd with
+                                | Some prod -> 
+                                    let priceString = prod.unitPrice.ToString()
+                                    do logAgent.AppendToLog (sprintf "Barcode: %s Price: %s Description: %s" barcode priceString prod.description)       
+                                    {printerID = channelUniqueId; msg= (buildpricetag prod)} |> printJob.TriggerEvent
+                                | None ->
+                                    do logAgent.AppendToLog (sprintf "Barcode: %s not found in store" barcode)
+                            | "ifadLabelConversion" ->  
+                                let label300dpi = (jsonalertval.GetProperty "setting_value").AsString()
+                                do logAgent.AppendToLog (sprintf "Original label: %s" label300dpi)    
+                                do logAgent.AppendToLog (sprintf "Converted label: %s" (convertIfadLabel label300dpi))       
+                                {printerID = channelUniqueId; msg = (convertIfadLabel label300dpi)} |> printJob.TriggerEvent
+                            | "wikipediaConversion" ->  
+                                let demolabel = (jsonalertval.GetProperty "setting_value").AsString()
+                                do logAgent.AppendToLog (sprintf "Original label: %s" demolabel)    
+                                do logAgent.AppendToLog (sprintf "Converted label: %s" (convertWikipediaLabel demolabel))       
+                                {printerID = channelUniqueId; msg = (convertWikipediaLabel demolabel)} |> printJob.TriggerEvent
+                            | _ -> ()
+                        | None -> ()
                     | _ -> ()
                 | None -> ()
-            | _ -> ()
-        | None -> ()
 
-        match jval.TryGetProperty "channel_name" with
-        | Some jsonval ->   
-            let channelName = JsonExtensions.AsString (jsonval)
-            match jval.TryGetProperty "unique_id" with
-            | Some jsonval ->   do channelUniqueId <- JsonExtensions.AsString (jsonval)
-                                do logAgent.AppendToLog (sprintf "chan: %s printerID %s" channelName channelUniqueId)
-            | None -> ()
-            match channelName with
-            | "v1.raw.zebra.com" ->
-                    let eventForThisChannel = Event.filter (fun pm -> pm.printerID=channelUniqueId) printJob.Event1
-                    do eventForThisChannel |> Observable.subscribe (fun pm -> do inbox.Post(Binary, UTF8.bytes pm.msg , true)) |> ignore
-                    // do printJob.TriggerEvent {printerID = channelUniqueId; msg = helloLabel() }
-            | "v1.config.zebra.com" -> 
-                    let eventForThisChannel = Event.filter (fun pm -> pm.printerID=channelUniqueId) jsonRequest.Event1
-                    do eventForThisChannel |> Observable.subscribe (fun pm -> do inbox.Post(Binary, UTF8.bytes pm.msg , true)) |> ignore
-                    // do jsonRequest.TriggerEvent {printerID= channelUniqueId; msg= """{}{"device.configuration_number":null} """ }
-                    do jsonRequest.TriggerEvent {printerID=channelUniqueId; msg= """{}{"alerts.configured":"ALL MESSAGES,SDK,Y,Y,WEBLINK.IP.CONN1,0,N,|SGD SET,SDK,Y,Y,WEBLINK.IP.CONN1,0,N,capture.channel1.data.raw"} """}
-                    do jsonRequest.TriggerEvent {printerID=channelUniqueId; msg= """{}{"device.product_name":null} """ }
-                    do jsonRequest.TriggerEvent {printerID=channelUniqueId; msg= """{}{"appl.name":null} """ }
-                    do jsonRequest.TriggerEvent {printerID=channelUniqueId; msg= """{}{"capture.channel1.port":"usb"} """ }
-                    do jsonRequest.TriggerEvent {printerID=channelUniqueId; msg= """{}{"capture.channel1.delimiter":"^XZ"} """ }
-                    do jsonRequest.TriggerEvent {printerID=channelUniqueId; msg= """{}{"capture.channel1.max_length":"512"} """ }                                                        
-            | _ -> ()
-        | None -> ()
+                match jval.TryGetProperty "channel_name" with
+                | Some jsonval ->   
+                    let channelName = JsonExtensions.AsString (jsonval)
+                    match jval.TryGetProperty "unique_id" with
+                    | Some jsonval ->   do channelUniqueId <- JsonExtensions.AsString (jsonval)
+                                        do logAgent.AppendToLog (sprintf "chan: %s printerID %s" channelName channelUniqueId)
+                    | None -> ()
+                    match channelName with
+                    | "v1.raw.zebra.com" ->
+                            let eventForThisChannel = Event.filter (fun pm -> pm.printerID=channelUniqueId) printJob.Event1
+                            do eventForThisChannel |> Observable.subscribe (fun pm -> do inbox.Post(Binary, UTF8.bytes pm.msg , true)) |> ignore
+                            // do printJob.TriggerEvent {printerID = channelUniqueId; msg = helloLabel() }
+                    | "v1.config.zebra.com" -> 
+                            let eventForThisChannel = Event.filter (fun pm -> pm.printerID=channelUniqueId) jsonRequest.Event1
+                            do eventForThisChannel |> Observable.subscribe (fun pm -> do inbox.Post(Binary, UTF8.bytes pm.msg , true)) |> ignore
+                            // do jsonRequest.TriggerEvent {printerID= channelUniqueId; msg= """{}{"device.configuration_number":null} """ }
+                            do jsonRequest.TriggerEvent {printerID=channelUniqueId; msg= """{}{"alerts.configured":"ALL MESSAGES,SDK,Y,Y,WEBLINK.IP.CONN1,0,N,|SGD SET,SDK,Y,Y,WEBLINK.IP.CONN1,0,N,capture.channel1.data.raw"} """}
+                            do jsonRequest.TriggerEvent {printerID=channelUniqueId; msg= """{}{"device.product_name":null} """ }
+                            do jsonRequest.TriggerEvent {printerID=channelUniqueId; msg= """{}{"appl.name":null} """ }
+                            do jsonRequest.TriggerEvent {printerID=channelUniqueId; msg= """{}{"capture.channel1.port":"usb"} """ }
+                            do jsonRequest.TriggerEvent {printerID=channelUniqueId; msg= """{}{"capture.channel1.delimiter":"^XZ"} """ }
+                            do jsonRequest.TriggerEvent {printerID=channelUniqueId; msg= """{}{"capture.channel1.max_length":"512"} """ }                                                        
+                    | _ -> ()
+                | None -> ()
 
-        match jval.TryGetProperty "device.product_name" with
-        // match jval.TryGetProperty "device.configuration_number" with
-        | Some jsonval ->   let devConfigNumber = JsonExtensions.AsString (jsonval)
-                            do printersAgent.UpdatePartNumber channelUniqueId devConfigNumber
-        | None -> ()
+                match jval.TryGetProperty "device.product_name" with
+                // match jval.TryGetProperty "device.configuration_number" with
+                | Some jsonval ->   let devConfigNumber = JsonExtensions.AsString (jsonval)
+                                    do printersAgent.UpdatePartNumber channelUniqueId devConfigNumber
+                | None -> ()
 
-        match jval.TryGetProperty "appl.name" with
-        | Some jsonval ->   let applName = JsonExtensions.AsString (jsonval)
-                            do printersAgent.UpdateAppVersion channelUniqueId applName
-        | None -> ()
+                match jval.TryGetProperty "appl.name" with
+                | Some jsonval ->   let applName = JsonExtensions.AsString (jsonval)
+                                    do printersAgent.UpdateAppVersion channelUniqueId applName
+                | None -> ()
 
-      | (Ping, data, true) ->
-        // Ping message received. Responding with Pong
-        // The printer sends a PING message roughly ever 60 seconds. The server needs to respond with a PONG, per RFC6455
-        // After three failed PING attempts, the printer disconnects and attempts to reconnect
+              | (Ping, data, true) ->
+                // Ping message received. Responding with Pong
+                // The printer sends a PING message roughly ever 60 seconds. The server needs to respond with a PONG, per RFC6455
+                // After three failed PING attempts, the printer disconnects and attempts to reconnect
 
-        do logAgent.AppendToLog "Ping message from printer. Responding with Pong message"
-        // A Pong frame sent in response to a Ping frame must have identical "Application data" as found in the message body of the Ping frame being replied to.
-        // the `send` function sends a message back to the client
-        do inbox.Post (Pong, data, true)
+                do logAgent.AppendToLog "Ping message from printer. Responding with Pong message"
+                // A Pong frame sent in response to a Ping frame must have identical "Application data" as found in the message body of the Ping frame being replied to.
+                // the `send` function sends a message back to the client
+                do inbox.Post (Pong, data, true)
 
-      | (Close, _, _) ->
-        do logAgent.AppendToLog "Got Close message from printer!"
-        do inbox.Post (Close, [||], true)
+              | (Close, _, _) ->
+                do logAgent.AppendToLog "Got Close message from printer!"
+                do inbox.Post (Close, [||], true)
         
-        if channelUniqueId <> null then do (printersAgent.RemovePrinter channelUniqueId) else ()
-        // after sending a Close message, stop the loop
-        loop <- false
-        do pongTimer.Stop()
+                if channelUniqueId <> null then do (printersAgent.RemovePrinter channelUniqueId) else ()
+                // after sending a Close message, stop the loop
+                loop <- false
+                do pongTimer.Stop()
 
-      | (_,_,fi) -> 
-        do logAgent.AppendToLog (sprintf "Unexpected message from printer of type %A" fi)
-    
- }
+              | (_,_,fi) -> 
+                do logAgent.AppendToLog (sprintf "Unexpected message from printer of type %A" fi)
+        }
+        match successOrError with
+        | Choice1Of2(con) -> ()
+        | Choice2Of2(error) -> 
+            do logAgent.AppendToLog ("### ERROR in websocket monad ###")
+        return successOrError
+  }
 
 [<DataContract>]
 type ProductPrinterObj =
