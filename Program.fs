@@ -90,7 +90,6 @@ let ws allAgents (printJob:Msg2PrinterFeed) (jsonRequest:Msg2PrinterFeed) (webSo
         do inbox.Post (Close, [||], true)
         
         if printerUniqueId <> null then do (printersAgent.RemovePrinter printerUniqueId) else ()
-        // after sending a Close message, stop the loop
         do pongTimer.Stop()
         if (cbTimeoutEvent <> null) then
             cbTimeoutEvent.Dispose()
@@ -113,7 +112,6 @@ let ws allAgents (printJob:Msg2PrinterFeed) (jsonRequest:Msg2PrinterFeed) (webSo
             do pongTimer.Start()
 
             let releaseResources() = 
-                do logAgent.AppendToLog "Got Close message from printer!"
                 do inbox.Post (Close, [||], true)
         
                 if printerUniqueId <> null then do (printersAgent.RemovePrinter printerUniqueId) else ()
@@ -261,7 +259,7 @@ let ws allAgents (printJob:Msg2PrinterFeed) (jsonRequest:Msg2PrinterFeed) (webSo
                 do inbox.Post (Pong, data, true)
 
               | (Close, _, _) ->
-                do logAgent.AppendToLog "Got Close message from printer!"
+                do logAgent.AppendToLog "Got Close message from printer, releasing resources"
                 do releaseResources()
                 loop <- false
         
@@ -271,7 +269,7 @@ let ws allAgents (printJob:Msg2PrinterFeed) (jsonRequest:Msg2PrinterFeed) (webSo
         match successOrError with
         | Choice1Of2(con) -> ()
         | Choice2Of2(error) -> 
-            do logAgent.AppendToLog ("### ERROR in websocket monad ###")
+            do logAgent.AppendToLog ("### ERROR in websocket monad, releasing resources ###")
             do releaseResources()
         return successOrError
   }
