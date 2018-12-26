@@ -432,6 +432,7 @@
                             var reader = new FileReader();
                             // Closure to capture the file information.
                             reader.onload = (function (theFile) { });
+                            alert(window.file);
                             reader.readAsText(window.file);
                             var PrinterLabelObj = { printerID: selectedPrinter[0].uniqueID, msg: reader.result }
                             var myJSON = JSON.stringify(PrinterLabelObj);
@@ -462,7 +463,6 @@
 
             var files = evt.dataTransfer.files; // FileList object.
             window.file = files[0];
-
             // files is a FileList of File objects. List some properties.
             var output = [];
             for (var i = 0, f; f = files[i]; i++) {
