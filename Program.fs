@@ -259,7 +259,7 @@ let ws allAgents (printJob:Msg2PrinterFeed) (jsonRequest:Msg2PrinterFeed) (webSo
                 do inbox.Post (Pong, data, true)
 
               | (Close, _, _) ->
-                do logAgent.AppendToLog "Got Close message from printer, releasing resources"
+                do logAgent.AppendToLog (sprintf "(%s, %s) Got Close message from printer, releasing resources" printerUniqueId channelName)
                 do releaseResources()
                 loop <- false
         
@@ -269,7 +269,7 @@ let ws allAgents (printJob:Msg2PrinterFeed) (jsonRequest:Msg2PrinterFeed) (webSo
         match successOrError with
         | Choice1Of2(con) -> ()
         | Choice2Of2(error) -> 
-            do logAgent.AppendToLog ("### ERROR in websocket monad, releasing resources ###")
+            do logAgent.AppendToLog (sprintf "### (%s, %s) ERROR in websocket monad, releasing resources ###" printerUniqueId channelName)
             do releaseResources()
         return successOrError
   }
