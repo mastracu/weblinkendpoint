@@ -431,7 +431,6 @@
                         else {
                             var reader = new FileReader();
                             // Closure to capture the file information.
-                            reader.onload = (function (theFile) { alert(theFile. });
                             reader.onload = function (event) {
                                 window.testo = event.target.result;
                             };
