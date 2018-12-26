@@ -433,16 +433,16 @@
                             // Closure to capture the file information.
                             reader.onload = function (event) {
                                 window.testo = event.target.result;
+                                var PrinterLabelObj = { printerID: selectedPrinter[0].uniqueID, msg: window.testo };
+                                var myJSON = JSON.stringify(PrinterLabelObj);
+                                var xhr = new XMLHttpRequest();
+                                var url = "printraw";
+                                xhr.open("POST", url, true);
+                                xhr.setRequestHeader("Content-type", "application/json");
+                                xhr.send(myJSON);
+                                // console.log("JSON output: " + myJSON);
                             };
                             reader.readAsText(window.file);
-                            var PrinterLabelObj = { printerID: selectedPrinter[0].uniqueID, msg: window.testo };
-                            var myJSON = JSON.stringify(PrinterLabelObj);
-                            var xhr = new XMLHttpRequest();
-                            var url = "printraw";
-                            xhr.open("POST", url, true);
-                            xhr.setRequestHeader("Content-type", "application/json");
-                            xhr.send(myJSON);
-                            // console.log("JSON output: " + myJSON);
                         }
                     });
 
