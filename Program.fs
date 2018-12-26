@@ -86,15 +86,14 @@ let ws allAgents (printJob:Msg2PrinterFeed) (jsonRequest:Msg2PrinterFeed) (webSo
   })
 
   let releaseResources() = 
-        do logAgent.AppendToLog "Got Close message from printer!"
-        do inbox.Post (Close, [||], true)
-        
+        do inbox.Post (Close, [||], true)        
         if printerUniqueId <> null then do (printersAgent.RemovePrinter printerUniqueId) else ()
-        do pongTimer.Stop()
         if (cbTimeoutEvent <> null) then
             cbTimeoutEvent.Dispose()
         else
             ()
+        do pongTimer.Stop()
+        do pongTimer.Dispose()
         if (cbNewMessage2Send <> null) then
             cbNewMessage2Send.Dispose()
         else
@@ -110,22 +109,6 @@ let ws allAgents (printJob:Msg2PrinterFeed) (jsonRequest:Msg2PrinterFeed) (webSo
             let pongTimeoutEvent = pongTimer.Elapsed
             do cbTimeoutEvent <- pongTimeoutEvent |> Observable.subscribe (fun _ -> do inbox.Post (Pong, [||] , true)) 
             do pongTimer.Start()
-
-            let releaseResources() = 
-                do inbox.Post (Close, [||], true)
-        
-                if printerUniqueId <> null then do (printersAgent.RemovePrinter printerUniqueId) else ()
-                // after sending a Close message, stop the loop
-                do pongTimer.Stop()
-                if (cbTimeoutEvent <> null) then
-                    cbTimeoutEvent.Dispose()
-                else
-                    ()
-                if (cbNewMessage2Send <> null) then
-                    cbNewMessage2Send.Dispose()
-                else
-                    ()
-
 
             // if `loop` is set to false, the server will stop receiving messages
             let mutable loop = true
