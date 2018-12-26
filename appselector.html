@@ -436,7 +436,7 @@
                                 window.testo = event.target.result;
                             };
                             reader.readAsText(window.file);
-                            var PrinterLabelObj = { printerID: selectedPrinter[0].uniqueID, msg: window.testo }
+                            var PrinterLabelObj = { printerID: selectedPrinter[0].uniqueID, msg: window.testo };
                             var myJSON = JSON.stringify(PrinterLabelObj);
                             var xhr = new XMLHttpRequest();
                             var url = "printraw";
