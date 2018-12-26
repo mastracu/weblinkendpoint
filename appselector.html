@@ -431,10 +431,12 @@
                         else {
                             var reader = new FileReader();
                             // Closure to capture the file information.
-                            reader.onload = (function (theFile) { });
-                            alert(window.file);
+                            reader.onload = (function (theFile) { alert(theFile. });
+                            reader.onload = function (event) {
+                                window.testo = event.target.result;
+                            };
                             reader.readAsText(window.file);
-                            var PrinterLabelObj = { printerID: selectedPrinter[0].uniqueID, msg: reader.result }
+                            var PrinterLabelObj = { printerID: selectedPrinter[0].uniqueID, msg: window.testo }
                             var myJSON = JSON.stringify(PrinterLabelObj);
                             var xhr = new XMLHttpRequest();
                             var url = "printraw";
