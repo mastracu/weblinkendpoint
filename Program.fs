@@ -67,6 +67,11 @@ let ws allAgents (printJob:Msg2PrinterFeed) (jsonRequest:Msg2PrinterFeed) (webSo
   let (storeAgent:StoreAgent, printersAgent:PrintersAgent, logAgent:LogAgent) = allAgents
   let mutable printerUniqueId = ""
   let mutable channelName = ""
+  let mutable cbTimeoutEvent:IDisposable = null
+  let mutable cbNewMessage2Send:IDisposable = null
+
+  let pongTimer = new System.Timers.Timer(float 20000)
+  do pongTimer.AutoReset <- true
 
   let inbox = MailboxProcessor.Start (fun inbox -> async {
             let close = ref false
@@ -80,6 +85,22 @@ let ws allAgents (printJob:Msg2PrinterFeed) (jsonRequest:Msg2PrinterFeed) (webSo
                 close := op = Close                    
   })
 
+  let releaseResources() = 
+        do logAgent.AppendToLog "Got Close message from printer!"
+        do inbox.Post (Close, [||], true)
+        
+        if printerUniqueId <> null then do (printersAgent.RemovePrinter printerUniqueId) else ()
+        // after sending a Close message, stop the loop
+        do pongTimer.Stop()
+        if (cbTimeoutEvent <> null) then
+            cbTimeoutEvent.Dispose()
+        else
+            ()
+        if (cbNewMessage2Send <> null) then
+            cbNewMessage2Send.Dispose()
+        else
+            ()
+
     // https://github.com/SuaveIO/suave/issues/463
   async {
         let! successOrError = socket {
@@ -87,11 +108,25 @@ let ws allAgents (printJob:Msg2PrinterFeed) (jsonRequest:Msg2PrinterFeed) (webSo
             // H15 error Heroku - https://devcenter.heroku.com/articles/error-codes#h15-idle-connection
             // A Pong frame MAY be sent unsolicited.  This serves as a unidirectional heartbeat.  
             // A response to an unsolicited Pong frame is not expected.
-            let pongTimer = new System.Timers.Timer(float 20000)
-            do pongTimer.AutoReset <- true
             let pongTimeoutEvent = pongTimer.Elapsed
-            do pongTimeoutEvent |> Observable.subscribe (fun _ -> do inbox.Post (Pong, [||] , true)) |> ignore
+            do cbTimeoutEvent <- pongTimeoutEvent |> Observable.subscribe (fun _ -> do inbox.Post (Pong, [||] , true)) 
             do pongTimer.Start()
+
+            let releaseResources() = 
+                do logAgent.AppendToLog "Got Close message from printer!"
+                do inbox.Post (Close, [||], true)
+        
+                if printerUniqueId <> null then do (printersAgent.RemovePrinter printerUniqueId) else ()
+                // after sending a Close message, stop the loop
+                do pongTimer.Stop()
+                if (cbTimeoutEvent <> null) then
+                    cbTimeoutEvent.Dispose()
+                else
+                    ()
+                if (cbNewMessage2Send <> null) then
+                    cbNewMessage2Send.Dispose()
+                else
+                    ()
 
 
             // if `loop` is set to false, the server will stop receiving messages
@@ -189,11 +224,11 @@ let ws allAgents (printJob:Msg2PrinterFeed) (jsonRequest:Msg2PrinterFeed) (webSo
                         match channelName with
                         | "v1.raw.zebra.com" ->
                                 let eventForThisChannel = Event.filter (fun pm -> pm.printerID=printerUniqueId) printJob.Event1
-                                do eventForThisChannel |> Observable.subscribe (fun pm -> do inbox.Post(Binary, UTF8.bytes pm.msg , true)) |> ignore
+                                cbNewMessage2Send <- eventForThisChannel |> Observable.subscribe (fun pm -> do inbox.Post(Binary, UTF8.bytes pm.msg , true))
                                 // do printJob.TriggerEvent {printerID = channelUniqueId; msg = helloLabel() }
                         | "v1.config.zebra.com" ->     
                                 let eventForThisChannel = Event.filter (fun pm -> pm.printerID=printerUniqueId) jsonRequest.Event1
-                                do eventForThisChannel |> Observable.subscribe (fun pm -> do inbox.Post(Binary, UTF8.bytes pm.msg , true)) |> ignore
+                                cbNewMessage2Send <- eventForThisChannel |> Observable.subscribe (fun pm -> do inbox.Post(Binary, UTF8.bytes pm.msg , true))
                                 // do jsonRequest.TriggerEvent {printerID= channelUniqueId; msg= """{}{"device.configuration_number":null} """ }
                                 do jsonRequest.TriggerEvent {printerID=printerUniqueId; msg= """{}{"alerts.configured":"ALL MESSAGES,SDK,Y,Y,WEBLINK.IP.CONN1,0,N,|SGD SET,SDK,Y,Y,WEBLINK.IP.CONN1,0,N,capture.channel1.data.raw"} """}
                                 do jsonRequest.TriggerEvent {printerID=printerUniqueId; msg= """{}{"device.product_name":null} """ }
@@ -227,19 +262,17 @@ let ws allAgents (printJob:Msg2PrinterFeed) (jsonRequest:Msg2PrinterFeed) (webSo
 
               | (Close, _, _) ->
                 do logAgent.AppendToLog "Got Close message from printer!"
-                do inbox.Post (Close, [||], true)
-        
-                if printerUniqueId <> null then do (printersAgent.RemovePrinter printerUniqueId) else ()
-                // after sending a Close message, stop the loop
+                do releaseResources()
                 loop <- false
-                do pongTimer.Stop()
-
+        
               | (_,_,fi) -> 
                 do logAgent.AppendToLog (sprintf "Unexpected message from printer of type %A" fi)
         }
         match successOrError with
         | Choice1Of2(con) -> ()
-        | Choice2Of2(error) -> do logAgent.AppendToLog ("### ERROR in websocket monad ###")
+        | Choice2Of2(error) -> 
+            do logAgent.AppendToLog ("### ERROR in websocket monad ###")
+            do releaseResources()
         return successOrError
   }
 
