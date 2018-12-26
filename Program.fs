@@ -74,15 +74,15 @@ let ws allAgents (printJob:Msg2PrinterFeed) (jsonRequest:Msg2PrinterFeed) (webSo
   do pongTimer.AutoReset <- true
 
   let inbox = MailboxProcessor.Start (fun inbox -> async {
-            let close = ref false
-            while not !close do
-                let! op, data, fi = inbox.Receive()
-                if op=Binary then
-                    do logAgent.AppendToLog (sprintf "%s (%s)> %s" (UTF8.toString data) channelName printerUniqueId)
-                else
-                    ()
-                let! _ = webSocket.send op (data|> ByteSegment) fi
-                close := op = Close                    
+        let close = ref false
+        while not !close do
+            let! op, data, fi = inbox.Receive()
+            if op=Binary then
+                do logAgent.AppendToLog (sprintf "%s (%s)> %s" (UTF8.toString data) channelName printerUniqueId)
+            else
+                ()
+            let! _ = webSocket.send op (data|> ByteSegment) fi
+            close := op = Close                    
   })
 
   let releaseResources() = 

@@ -114,6 +114,7 @@
         <button class="tablinks" onclick="openTab(event, 'JSON cmd')" id="defaultOpen">JSON cmd</button>
         <button class="tablinks" onclick="openTab(event, 'Custom label')">Custom label</button>
         <button class="tablinks" onclick="openTab(event, 'Price label')" id="priceTab">Price label</button>
+        <button class="tablinks" onclick="openTab(event, 'CISDFCRC16')">! CISDFCRC16</button>        
     </div>
     <div id="mainblock">
         <div id="JSON cmd" class="tabcontent">
@@ -169,7 +170,12 @@
 
         </div>
 
-        <button id="sendcmd-button" class="button" style="vertical-align: top" >
+        <div id="CISDFCRC16" class="tabcontent">
+            <div id="drop_zone" style="border:dotted; width:500px; height:50px; text-align:center ">Drop files to send here<br />CISDFCRC16 header will be added automatically</div>
+            <output id="files2send"></output>
+        </div>
+
+        <button id="sendcmd-button" class="button" style="vertical-align: top">
             <span class="glyphicon glyphicon-play"></span>
         </button>
         <div id="printers-table"></div>
@@ -415,6 +421,30 @@
                     });
 
                     break;
+                case "CISDFCRC16":
+                    $("#sendcmd-button").off('click').on('click', function () {
+                        var selectedPrinter = $("#printers-table").tabulator("getSelectedData");
+
+                        if (selectedPrinter.length == 0) {
+                            alert("No printer selected !")
+                        }
+                        else {
+                            var reader = new FileReader();
+                            // Closure to capture the file information.
+                            reader.onload = (function (theFile) { });
+                            reader.readAsText(window.file);
+                            var PrinterLabelObj = { printerID: selectedPrinter[0].uniqueID, msg: reader.result }
+                            var myJSON = JSON.stringify(PrinterLabelObj);
+                            var xhr = new XMLHttpRequest();
+                            var url = "printraw";
+                            xhr.open("POST", url, true);
+                            xhr.setRequestHeader("Content-type", "application/json");
+                            xhr.send(myJSON);
+                            // console.log("JSON output: " + myJSON);
+                        }
+                    });
+
+                    break;
                 default:
                     $("#sendcmd-button").click(function () {
                     });
@@ -425,6 +455,36 @@
             document.getElementById(tabName).style.display = "inline-block";
             evt.currentTarget.className += " active";
         };
+
+        function handleFileSelect(evt) {
+            evt.stopPropagation();
+            evt.preventDefault();
+
+            var files = evt.dataTransfer.files; // FileList object.
+            window.file = files[0];
+
+            // files is a FileList of File objects. List some properties.
+            var output = [];
+            for (var i = 0, f; f = files[i]; i++) {
+                output.push('<li><strong>', escape(f.name), '</strong> - ',
+//              output.push('<li><strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ',
+                    f.size, ' bytes, last modified: ',
+                    f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a',
+                    '</li>');
+            }
+            document.getElementById('files2send').innerHTML = '<ul>' + output.join('') + '</ul>';
+        }
+
+        function handleDragOver(evt) {
+            evt.stopPropagation();
+            evt.preventDefault();
+            evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+        }
+
+        // Setup the dnd listeners.
+        var dropZone = document.getElementById('drop_zone');
+        dropZone.addEventListener('dragover', handleDragOver, false);
+        dropZone.addEventListener('drop', handleFileSelect, false);
 
         document.getElementById("defaultOpen").click();
 
