@@ -434,8 +434,8 @@
                             reader.onload = function (event) {
                                 window.testo = event.target.result;
                                 var lunghezza = window.testo.length.toString(16).padStart(8, '0');
-                                var messaggio = "CISDFCRC16\n0000\n" + window.file.name + "\n" + lunghezza + "\n0000\n" + window.testo;
-                                alert(messaggio);
+                                var messaggio = "! CISDFCRC16\n0000\n" + window.file.name + "\n" + lunghezza + "\n0000\n" + window.testo;
+                                // alert(messaggio);
                                 var PrinterLabelObj = { printerID: selectedPrinter[0].uniqueID, msg: messaggio };
                                 var myJSON = JSON.stringify(PrinterLabelObj);
                                 var xhr = new XMLHttpRequest();
