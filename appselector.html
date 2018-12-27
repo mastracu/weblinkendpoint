@@ -114,13 +114,15 @@
         <button class="tablinks" onclick="openTab(event, 'JSON cmd')" id="defaultOpen">JSON cmd</button>
         <button class="tablinks" onclick="openTab(event, 'Custom label')">Custom label</button>
         <button class="tablinks" onclick="openTab(event, 'Price label')" id="priceTab">Price label</button>
-        <button class="tablinks" onclick="openTab(event, 'CISDFCRC16')">! CISDFCRC16</button>        
+        <button class="tablinks" onclick="openTab(event, 'CISDFCRC16')">! CISDFCRC16</button>
+        <button class="tablinks" onclick="openTab(event, 'PROGRAM')">! PROGRAM</button>
     </div>
     <div id="mainblock">
         <div id="JSON cmd" class="tabcontent">
             <input type="text" list="commands" placeholder="Json cmd" id="jsoncmd" size="65" spellcheck="false" />
             <datalist id="commands">
                 <option value="{}{&#34apl.enable&#34:null}">
+                <option value="{}{&#34appl&#34:null}">
                 <option value="{}{&#34bluetooth.short_address&#34:null}">
                 <option value="{}{&#34capture.channel1.port&#34:null}">
                 <option value="{}{&#34device.languages&#34:null}">
@@ -133,6 +135,8 @@
                 <option value="{}{&#34ezpl.print_width&#34:null}">
                 <option value="{}{&#34file.dir&#34:&#34E:&#34}">
                 <option value="{}{&#34head.resolution.in_dpi&#34:null}">
+                <option value="{}{&#34ip.mirror&#34:null}">
+                <option value="{}{&#34ip.mirror.fetch&#34:&#34&#34}">
                 <option value="{}{&#34interface.network.active.ip_addr&#34:null}">
                 <option value="{}{&#34interface.network.active.cable_type&#34:null}">
                 <option value="{}{&#34odometer.total_label_count&#34:null}">
@@ -175,14 +179,21 @@
             <output id="files2send"></output>
         </div>
 
-        <button id="sendcmd-button" class="button" style="vertical-align: top">
-            <span class="glyphicon glyphicon-play"></span>
-        </button>
-        <div id="printers-table"></div>
-        <button id="refresh-button" class="button" style="vertical-align: top">
-            <span class="glyphicon glyphicon-refresh"></span>
-        </button>
+        <div id="PROGRAM" class="tabcontent">
+            <div id="drop_fw" style="border:dotted; width:500px; height:50px; text-align:center ">Drop new firmware here for upgrade</div>
+            <output id="fw2send"></output>
+        </div>
+
+    <button id="sendcmd-button" class="button" style="vertical-align: top">
+        <span class="glyphicon glyphicon-play"></span>
+    </button>
+    <div id="printers-table"></div>
+    <button id="refresh-button" class="button" style="vertical-align: top">
+        <span class="glyphicon glyphicon-refresh"></span>
+    </button>
+
     </div>
+
 
 
     <!--<div id="Info" class="tabcontent">
@@ -204,7 +215,7 @@
     </div>-->
 
     <div class="left-div-margin">
-        <div id="live-log-table" ></div>
+        <div id="live-log-table"></div>
         <button id="logclear-button" class="button">
             <span class="glyphicon glyphicon-trash"></span>
         </button>
@@ -429,23 +440,26 @@
                             alert("No printer selected !")
                         }
                         else {
-                            var reader = new FileReader();
-                            // Closure to capture the file information.
-                            reader.onload = function (event) {
-                                window.testo = event.target.result;
-                                var lunghezza = window.testo.length.toString(16).padStart(8, '0');
-                                var messaggio = "! CISDFCRC16\n0000\n" + window.file.name + "\n" + lunghezza + "\n0000\n" + window.testo;
-                                // alert(messaggio);
-                                var PrinterLabelObj = { printerID: selectedPrinter[0].uniqueID, msg: messaggio };
-                                var myJSON = JSON.stringify(PrinterLabelObj);
-                                var xhr = new XMLHttpRequest();
-                                var url = "printraw";
-                                xhr.open("POST", url, true);
-                                xhr.setRequestHeader("Content-type", "application/json");
-                                xhr.send(myJSON);
-                                // console.log("JSON output: " + myJSON);
-                            };
-                            reader.readAsText(window.file);
+                            // Loop through the FileList and render image files as thumbnails.
+                            for (var i = 0, f; f = window.files[i]; i++) {
+                                var reader = new FileReader();
+                                // Closure to capture the file information.
+                                reader.onload = function (event) {
+                                    window.testo = event.target.result;
+                                    var lunghezza = window.testo.length.toString(16).padStart(8, '0');
+                                    var messaggio = "! CISDFCRC16\n0000\n" + f.name + "\n" + lunghezza + "\n0000\n" + window.testo;
+                                    // alert(messaggio);
+                                    var PrinterLabelObj = { printerID: selectedPrinter[0].uniqueID, msg: messaggio };
+                                    var myJSON = JSON.stringify(PrinterLabelObj);
+                                    var xhr = new XMLHttpRequest();
+                                    var url = "printraw";
+                                    xhr.open("POST", url, true);
+                                    xhr.setRequestHeader("Content-type", "application/json");
+                                    xhr.send(myJSON);
+                                    // console.log("JSON output: " + myJSON);
+                                };
+                                reader.readAsText(f);
+                            }
                         }
                     });
 
@@ -465,14 +479,13 @@
             evt.stopPropagation();
             evt.preventDefault();
 
-            var files = evt.dataTransfer.files; // FileList object.
-            window.file = files[0];
+            window.files = evt.dataTransfer.files;
             // files is a FileList of File objects. List some properties.
             var output = [];
-            for (var i = 0, f; f = files[i]; i++) {
+            for (var i = 0, f; f = window.files[i]; i++) {
                 output.push('<li><strong>', escape(f.name), '</strong> - ',
-//              output.push('<li><strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ',
-                    f.size, '(', f.size.toString(16).padStart(8,'0'), ') bytes, last modified: ',
+                    //              output.push('<li><strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ',
+                    f.size, '(', f.size.toString(16).padStart(8, '0'), ') bytes, last modified: ',
                     f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a',
                     '</li>');
             }
