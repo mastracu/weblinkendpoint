@@ -171,7 +171,7 @@
         </div>
 
         <div id="CISDFCRC16" class="tabcontent">
-            <div id="drop_zone" style="border:dotted; width:500px; height:50px; text-align:center ">Drop files to send here<br />CISDFCRC16 header will be added automatically</div>
+            <div id="drop_zone" style="border:dotted; width:500px; height:50px; text-align:center ">Drop file here<br />CISDFCRC16 header will be added automatically</div>
             <output id="files2send"></output>
         </div>
 
@@ -433,7 +433,10 @@
                             // Closure to capture the file information.
                             reader.onload = function (event) {
                                 window.testo = event.target.result;
-                                var PrinterLabelObj = { printerID: selectedPrinter[0].uniqueID, msg: window.testo };
+                                var lunghezza = window.testo.length.toString(16).padStart(8, '0');
+                                var messaggio = "CISDFCRC16\n0000\n" + window.file.name + "\n" + lunghezza + "\n0000\n" + window.testo;
+                                alert(messaggio);
+                                var PrinterLabelObj = { printerID: selectedPrinter[0].uniqueID, msg: messaggio };
                                 var myJSON = JSON.stringify(PrinterLabelObj);
                                 var xhr = new XMLHttpRequest();
                                 var url = "printraw";
@@ -469,7 +472,7 @@
             for (var i = 0, f; f = files[i]; i++) {
                 output.push('<li><strong>', escape(f.name), '</strong> - ',
 //              output.push('<li><strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ',
-                    f.size, ' bytes, last modified: ',
+                    f.size, '(', f.size.toString(16).padStart(8,'0'), ') bytes, last modified: ',
                     f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a',
                     '</li>');
             }
