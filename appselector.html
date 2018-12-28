@@ -338,7 +338,7 @@
         var listener = function (event) {
             var type = event.type;
 
-            console.log(event.type + event.data);
+//          console.log(event.type + event.data);
 
             if (type == "message") {
                 $("#live-log-table").tabulator("addRow", { liveLog: event.data }, true);
@@ -364,7 +364,7 @@
                 tablinks[i].className = tablinks[i].className.replace(" active", "");
             }
 
-            console.log(tabName);
+//          console.log(tabName);
 
             switch (tabName) {
                 case "JSON cmd":
@@ -443,7 +443,6 @@
                             for (var i = 0, f; f = window.files2store[i]; i++) {
                                 var reader = new FileReader();
                                 // Closure to capture the file information.
-                                alert("file selezionato: " + f.name);
                                 reader.onload = (function (thefile) {
                                     return function (event) {
                                         var testo = event.target.result;
@@ -457,7 +456,6 @@
                                         xhr.open("POST", url, true);
                                         xhr.setRequestHeader("Content-type", "application/json");
                                         xhr.send(myJSON);
-                                        // console.log("JSON output: " + myJSON);
                                     };
                                 })(f);
                                 reader.readAsText(f);
@@ -485,7 +483,6 @@
             // files is a FileList of File objects. List some properties.
             var output = [];
             for (var i = 0, f; f = window.files2store[i]; i++) {
-                alert(f.name);
                 output.push('<li><strong>', escape(f.name), '</strong> - ',
                     //              output.push('<li><strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ',
                     f.size, '(', f.size.toString(16).padStart(8, '0'), ') bytes, last modified: ',
