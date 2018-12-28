@@ -440,11 +440,11 @@
                             alert("No printer selected !")
                         }
                         else {
-                            for (var i = 0, f=window.files[0]; f = window.files[i]; i++) {
+                            for (var i = 0, f; f = window.files2store[i]; i++) {
                                 var reader = new FileReader();
                                 // Closure to capture the file information.
                                 reader.onload = function (event) {
-                                    alert("file letto: " + f.name);
+                                    alert("file selezionato: " + f.name);
                                     window.testo = event.target.result;
                                     var lunghezza = window.testo.length.toString(16).padStart(8, '0');
                                     var messaggio = "! CISDFCRC16\n0000\n" + f.name + "\n" + lunghezza + "\n0000\n" + window.testo;
@@ -479,10 +479,11 @@
             evt.stopPropagation();
             evt.preventDefault();
 
-            window.files = evt.dataTransfer.files;
+            window.files2store = evt.dataTransfer.files;
             // files is a FileList of File objects. List some properties.
             var output = [];
-            for (var i = 0, f; f = window.files[i]; i++) {
+            for (var i = 0, f; f = window.files2store[i]; i++) {
+                alert(f.name);
                 output.push('<li><strong>', escape(f.name), '</strong> - ',
                     //              output.push('<li><strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ',
                     f.size, '(', f.size.toString(16).padStart(8, '0'), ') bytes, last modified: ',
