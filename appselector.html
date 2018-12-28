@@ -444,7 +444,7 @@
                                 var reader = new FileReader();
                                 // Closure to capture the file information.
                                 reader.onload = function (event) {
-                                    alert("file letto": f.name)
+                                    alert("file letto: " + f.name);
                                     window.testo = event.target.result;
                                     var lunghezza = window.testo.length.toString(16).padStart(8, '0');
                                     var messaggio = "! CISDFCRC16\n0000\n" + f.name + "\n" + lunghezza + "\n0000\n" + window.testo;
