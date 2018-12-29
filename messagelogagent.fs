@@ -1,5 +1,4 @@
-﻿
-module MessageLogAgent
+﻿module MessageLogAgent
 
 open System
 open System.Runtime.Serialization.Json

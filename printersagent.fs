@@ -11,7 +11,55 @@ open System.Text
 open FSharp.Data
 
 open JsonHelper
+open MessageLogAgent
 
+[<DataContract>]
+type Msg2Printer =
+   { 
+      [<field: DataMember(Name = "printerID")>]
+      printerID : string;
+      [<field: DataMember(Name = "msg")>]
+      msg : string;
+   }
+
+type Msg2PrinterFeed() =
+   let event1 = new Event<Msg2Printer*bool>()
+   
+   member this.Event1 = event1.Publish
+   member this.TriggerEvent printerMsgPair = event1.Trigger (printerMsgPair, true)
+   member this.TriggerEventNoLog printerMsgPair = event1.Trigger (printerMsgPair, false)
+
+
+[<DataContract>]
+type FwJobObj =
+   { 
+      [<field: DataMember(Name = "fwFile")>]
+      fwFile : String;
+      [<field: DataMember(Name = "id")>]
+      id : String;
+   }
+
+let doFwUpgrade (fwJob:FwJobObj) (printJob: Msg2PrinterFeed) (mLogAgent:LogAgent) =
+    // I don't use websocket continuation frames for firmware download
+    async {
+        let chunckSize = 2048
+        let buffer = Array.zeroCreate chunckSize
+        let finished = ref false
+
+        let stream = new FileStream ("./" + fwJob.fwFile + ".zpl", FileMode.Open)
+        do mLogAgent.AppendToLog (sprintf "Starting fw upgrade %s > %s " fwJob.fwFile fwJob.id )
+
+        while not finished.Value do
+           // Download one (at most) 1kb chunk and copy it
+           let! count = stream.AsyncRead(buffer, 0, chunckSize)
+           let str = Encoding.ASCII.GetString(buffer)
+           do printJob.TriggerEventNoLog {printerID=fwJob.id; msg =str} 
+           finished := count <= 0
+
+        do mLogAgent.AppendToLog (sprintf "FW Download queued-up %s > %s" fwJob.fwFile fwJob.id )
+        do mLogAgent.AppendToLog (sprintf "Printer %s will not respond until fw upgrade process is complete  (it takes about 5 mins)" fwJob.id )
+
+    } |> Async.Start
 
 [<DataContract>]
 type Printer =

@@ -91,8 +91,8 @@
     <Compile Include="jsonhelper.fs" />
     <Compile Include="storeagent.fs" />
     <Compile Include="fw.fs" />
+    <Compile Include="messageLogAgent.fs" />
     <Compile Include="printersagent.fs" />
-    <Compile Include="messagelogagent.fs" />
     <Compile Include="websocketum.fs" />
     <Compile Include="labelbuilder.fs" />
     <Compile Include="Program.fs" />
