@@ -488,7 +488,7 @@
                                 alert("No printer selected to upgrade !")
                             }
                             else {
-                                var PrinterFwObj = { id: selectedPrinter[0].uniqueID, fwFile: selectedFw[0] }
+                                var PrinterFwObj = { fwFile: selectedFw[0].fwFileName, id: selectedPrinter[0].uniqueID }
                                 var myJSON = JSON.stringify(PrinterFwObj);
                                 var xhr = new XMLHttpRequest();
                                 var url = "upgradeprinter";
