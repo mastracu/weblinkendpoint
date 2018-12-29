@@ -33,6 +33,7 @@ open LabelBuilder
 open System
 open fw
 open System.Linq.Expressions
+open System.Linq.Expressions
 
 
 //TODO: https://github.com/SuaveIO/suave/issues/307
@@ -78,11 +79,12 @@ let doFwUpgrade (fwJob:FwJobObj) (printJob: Msg2PrinterFeed) (mLogAgent:LogAgent
            do printJob.TriggerEventNoLog {printerID=fwJob.id; msg =str} 
            finished := count <= 0
 
-        do mLogAgent.AppendToLog (sprintf "Finish fw upgrade %s > %s " fwJob.fwFile fwJob.id )
+        do mLogAgent.AppendToLog (sprintf "FW Download queued-up %s > %s" fwJob.fwFile fwJob.id )
+        do mLogAgent.AppendToLog (sprintf "Printer %s will not respond until fw upgrade process is complete  (it takes about 5 mins)" fwJob.id )
 
     } |> Async.Start
 
-         
+        
 let config = 
     let port = System.Environment.GetEnvironmentVariable("PORT")
     let ip127  = IPAddress.Parse("127.0.0.1")
@@ -117,7 +119,7 @@ let ws allAgents (printJob:Msg2PrinterFeed) (jsonRequest:Msg2PrinterFeed) (webSo
   })
 
   let releaseResources() = 
-        do inbox.Post (Close, [||], true, true)        
+        do inbox.Post (Close, [||], true, false)        
         if printerUniqueId <> null then do (printersAgent.RemovePrinter printerUniqueId) else ()
         if (cbTimeoutEvent <> null) then
             cbTimeoutEvent.Dispose()
