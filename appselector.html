@@ -180,7 +180,7 @@
         </div>
 
         <div id="PROGRAM" class="tabcontent">
-            <div id="fw_table" style=" overflow:hidden"></div>
+            <div id="fw-table" style=" overflow:hidden"></div>
         </div>
 
     <button id="sendcmd-button" class="button" style="vertical-align: top">
@@ -317,7 +317,7 @@
         document.getElementById("Price label").style.display = "none";
 
         document.getElementById("PROGRAM").style.display = "inline-block";
-        $("#fw_table").tabulator({
+        $("#fw-table").tabulator({
             selectable: 1,
             height: 200,
             layout: "fitColumns",
@@ -325,7 +325,7 @@
                 { title: "Fw File", field: "fwFileName", sorter: "string", width: 160, align: "left", },
             ],
         });
-        $("#fw_table").tabulator("setData", "fwlist.json");
+        $("#fw-table").tabulator("setData", "fwlist.json");
         document.getElementById("PROGRAM").style.display = "none";
         
         $("#refresh-button").click(function () {
