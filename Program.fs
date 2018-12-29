@@ -66,7 +66,7 @@ let doFwUpgrade (fwJob:FwJobObj) (printJob: Msg2PrinterFeed) (mLogAgent:LogAgent
         let buffer = Array.zeroCreate 1024
         let finished = ref false
 
-        let stream = new FileStream ("./" + fwJob.fwFile + ".xml", FileMode.Open)
+        let stream = new FileStream ("./" + fwJob.fwFile + ".zpl", FileMode.Open)
         do mLogAgent.AppendToLog (sprintf "Starting fw upgrade %s > %s " fwJob.fwFile fwJob.id )
 
         while not finished.Value do
