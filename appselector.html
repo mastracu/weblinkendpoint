@@ -180,7 +180,7 @@
         </div>
 
         <div id="PROGRAM" class="tabcontent">
-            <div id="fw-table-div" style=" overflow:hidden"></div>
+            <div id="fw_table" style=" overflow:hidden"></div>
         </div>
 
     <button id="sendcmd-button" class="button" style="vertical-align: top">
@@ -317,15 +317,15 @@
         document.getElementById("Price label").style.display = "none";
 
         document.getElementById("PROGRAM").style.display = "inline-block";
-        $("#fw-table-div").tabulator({
-            selectable: true,
+        $("#fw_table").tabulator({
+            selectable: 1,
             height: 200,
             layout: "fitColumns",
             columns: [ //Define Table Columns
                 { title: "Fw File", field: "fwFileName", sorter: "string", width: 160, align: "left", },
             ],
         });
-        $("#fw-table-div").tabulator("setData", "fwlist.json");
+        $("#fw_table").tabulator("setData", "fwlist.json");
         document.getElementById("PROGRAM").style.display = "none";
         
         $("#refresh-button").click(function () {
@@ -477,31 +477,25 @@
 
                 case "PROGRAM":
                     $("#sendcmd-button").off('click').on('click', function () {
+                        var selectedFw = $("#fw-table").tabulator("getSelectedData");
                         var selectedPrinter = $("#printers-table").tabulator("getSelectedData");
 
-                        if (selectedPrinter.length == 0) {
-                            alert("No printer selected !")
+                        if (selectedFw.length == 0) {
+                            alert("No fw selected to upgrade !")
                         }
                         else {
-                            for (var i = 0, f; f = window.files2store[i]; i++) {
-                                var reader = new FileReader();
-                                // Closure to capture the file information.
-                                reader.onload = (function (thefile) {
-                                    return function (event) {
-                                        var testo = event.target.result;
-                                        var lunghezza = testo.length.toString(16).padStart(8, '0');
-                                        var messaggio = "! CISDFCRC16\n0000\n" + thefile.name + "\n" + lunghezza + "\n0000\n" + testo;
-                                        // alert(messaggio);
-                                        var PrinterLabelObj = { printerID: selectedPrinter[0].uniqueID, msg: messaggio };
-                                        var myJSON = JSON.stringify(PrinterLabelObj);
-                                        var xhr = new XMLHttpRequest();
-                                        var url = "printraw";
-                                        xhr.open("POST", url, true);
-                                        xhr.setRequestHeader("Content-type", "application/json");
-                                        xhr.send(myJSON);
-                                    };
-                                })(f);
-                                reader.readAsText(f);
+                            if (selectedPrinter.length == 0) {
+                                alert("No printer selected to upgrade !")
+                            }
+                            else {
+                                var PrinterFwObj = { id: selectedPrinter[0].uniqueID, fwFile: selectedFw[0] }
+                                var myJSON = JSON.stringify(PrinterFwObj);
+                                var xhr = new XMLHttpRequest();
+                                var url = "upgradeprinter";
+                                xhr.open("POST", url, true);
+                                xhr.setRequestHeader("Content-type", "application/json");
+                                xhr.send(myJSON);
+                                // console.log("JSON output: " + myJSON);
                             }
                         }
                     });
@@ -509,7 +503,6 @@
                 default:
                     $("#sendcmd-button").click(function () {
                     });
-
             };
 
             // Show the current tab, and add an "active" class to the button that opened the tab
