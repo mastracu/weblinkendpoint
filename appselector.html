@@ -492,10 +492,10 @@
                                 var myJSON = JSON.stringify(PrinterFwObj);
                                 var xhr = new XMLHttpRequest();
                                 var url = "upgradeprinter";
+                                console.log("JSON output: " + myJSON);
                                 xhr.open("POST", url, true);
                                 xhr.setRequestHeader("Content-type", "application/json");
                                 xhr.send(myJSON);
-                                // console.log("JSON output: " + myJSON);
                             }
                         }
                     });
