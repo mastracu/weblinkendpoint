@@ -32,6 +32,7 @@ open PrintersAgent
 open LabelBuilder
 open System
 open fw
+open System.Linq.Expressions
 
 
 //TODO: https://github.com/SuaveIO/suave/issues/307
@@ -46,11 +47,12 @@ type Msg2Printer =
    }
 
 type Msg2PrinterFeed() =
-   let event1 = new Event<Msg2Printer>()
+   let event1 = new Event<Msg2Printer*bool>()
    
    member this.Event1 = event1.Publish
-   member this.TriggerEvent printerMsgPair =
-      event1.Trigger printerMsgPair
+   member this.TriggerEvent printerMsgPair = event1.Trigger (printerMsgPair, true)
+   member this.TriggerEventNoLog printerMsgPair = event1.Trigger (printerMsgPair, false)
+
 
 [<DataContract>]
 type FwJobObj =
@@ -73,7 +75,7 @@ let doFwUpgrade (fwJob:FwJobObj) (printJob: Msg2PrinterFeed) (mLogAgent:LogAgent
            // Download one (at most) 1kb chunk and copy it
            let! count = stream.AsyncRead(buffer, 0, 1024)
            let str = Encoding.ASCII.GetString(buffer)
-           do printJob.TriggerEvent {printerID=fwJob.id; msg =str} 
+           do printJob.TriggerEventNoLog {printerID=fwJob.id; msg =str} 
            finished := count <= 0
 
         do mLogAgent.AppendToLog (sprintf "Finish fw upgrade %s > %s " fwJob.fwFile fwJob.id )
@@ -105,8 +107,8 @@ let ws allAgents (printJob:Msg2PrinterFeed) (jsonRequest:Msg2PrinterFeed) (webSo
   let inbox = MailboxProcessor.Start (fun inbox -> async {
         let close = ref false
         while not !close do
-            let! op, data, fi = inbox.Receive()
-            if op=Binary then
+            let! op, data, fi, isLogged = inbox.Receive()
+            if isLogged then
                 do logAgent.AppendToLog (sprintf "%s (%s)> %s" (UTF8.toString data) channelName printerUniqueId)
             else
                 ()
@@ -115,7 +117,7 @@ let ws allAgents (printJob:Msg2PrinterFeed) (jsonRequest:Msg2PrinterFeed) (webSo
   })
 
   let releaseResources() = 
-        do inbox.Post (Close, [||], true)        
+        do inbox.Post (Close, [||], true, true)        
         if printerUniqueId <> null then do (printersAgent.RemovePrinter printerUniqueId) else ()
         if (cbTimeoutEvent <> null) then
             cbTimeoutEvent.Dispose()
@@ -136,7 +138,7 @@ let ws allAgents (printJob:Msg2PrinterFeed) (jsonRequest:Msg2PrinterFeed) (webSo
             // A Pong frame MAY be sent unsolicited.  This serves as a unidirectional heartbeat.  
             // A response to an unsolicited Pong frame is not expected.
             let pongTimeoutEvent = pongTimer.Elapsed
-            do cbTimeoutEvent <- pongTimeoutEvent |> Observable.subscribe (fun _ -> do inbox.Post (Pong, [||] , true)) 
+            do cbTimeoutEvent <- pongTimeoutEvent |> Observable.subscribe (fun _ -> do inbox.Post (Pong, [||] , true, false)) 
             do pongTimer.Start()
 
             // if `loop` is set to false, the server will stop receiving messages
@@ -186,8 +188,8 @@ let ws allAgents (printJob:Msg2PrinterFeed) (jsonRequest:Msg2PrinterFeed) (webSo
                         do printerUniqueId <- printerUniqueId.Substring (0, (printerUniqueId.IndexOf 'J' + 10))
                         do logAgent.AppendToLog (sprintf "adjusted printerID: %s"  printerUniqueId)
                         do printersAgent.AddPrinter {uniqueID = printerUniqueId; productName = ""; appVersion = ""; friendlyName = ""; sgdSetAlertFeedback = "ifadLabelConversion"}
-                        inbox.Post(Binary, UTF8.bytes """ { "open" : "v1.raw.zebra.com" } """, true)
-                        inbox.Post(Binary, UTF8.bytes """ { "open" : "v1.config.zebra.com" } """, true)
+                        inbox.Post(Binary, UTF8.bytes """ { "open" : "v1.raw.zebra.com" } """, true, true)
+                        inbox.Post(Binary, UTF8.bytes """ { "open" : "v1.config.zebra.com" } """, true, true)
                     | None -> ()
 
                     match jval.TryGetProperty "alert" with
@@ -233,12 +235,12 @@ let ws allAgents (printJob:Msg2PrinterFeed) (jsonRequest:Msg2PrinterFeed) (webSo
                         | None -> ()
                         match channelName with
                         | "v1.raw.zebra.com" ->
-                                let eventForThisChannel = Event.filter (fun pm -> pm.printerID=printerUniqueId) printJob.Event1
-                                cbNewMessage2Send <- eventForThisChannel |> Observable.subscribe (fun pm -> do inbox.Post(Binary, UTF8.bytes pm.msg , true))
+                                let eventForThisChannel = Event.filter (fun (pm, isLogged) -> pm.printerID=printerUniqueId) printJob.Event1
+                                cbNewMessage2Send <- eventForThisChannel |> Observable.subscribe (fun (pm, isLogged) -> do inbox.Post(Binary, UTF8.bytes pm.msg , true, isLogged))
                                 // do printJob.TriggerEvent {printerID = channelUniqueId; msg = helloLabel() }
                         | "v1.config.zebra.com" ->     
-                                let eventForThisChannel = Event.filter (fun pm -> pm.printerID=printerUniqueId) jsonRequest.Event1
-                                cbNewMessage2Send <- eventForThisChannel |> Observable.subscribe (fun pm -> do inbox.Post(Binary, UTF8.bytes pm.msg , true))
+                                let eventForThisChannel = Event.filter (fun (pm, isLogged) -> pm.printerID=printerUniqueId) jsonRequest.Event1
+                                cbNewMessage2Send <- eventForThisChannel |> Observable.subscribe (fun (pm, isLogged) -> do inbox.Post(Binary, UTF8.bytes pm.msg , true, isLogged))
                                 // do jsonRequest.TriggerEvent {printerID= channelUniqueId; msg= """{}{"device.configuration_number":null} """ }
                                 do jsonRequest.TriggerEvent {printerID=printerUniqueId; msg= """{}{"alerts.configured":"ALL MESSAGES,SDK,Y,Y,WEBLINK.IP.CONN1,0,N,|SGD SET,SDK,Y,Y,WEBLINK.IP.CONN1,0,N,capture.channel1.data.raw"} """}
                                 do jsonRequest.TriggerEvent {printerID=printerUniqueId; msg= """{}{"device.product_name":null} """ }
@@ -268,7 +270,7 @@ let ws allAgents (printJob:Msg2PrinterFeed) (jsonRequest:Msg2PrinterFeed) (webSo
                 do logAgent.AppendToLog "Ping message from printer. Responding with Pong message"
                 // A Pong frame sent in response to a Ping frame must have identical "Application data" as found in the message body of the Ping frame being replied to.
                 // the `send` function sends a message back to the client
-                do inbox.Post (Pong, data, true)
+                do inbox.Post (Pong, data, true, false)
 
               | (Close, _, _) ->
                 do logAgent.AppendToLog (sprintf "(%s, %s) Got Close message from printer, releasing resources" printerUniqueId channelName)
