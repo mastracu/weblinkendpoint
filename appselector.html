@@ -180,8 +180,7 @@
         </div>
 
         <div id="PROGRAM" class="tabcontent">
-            <div id="drop_fw" style="border:dotted; width:500px; height:50px; text-align:center ">Drop new firmware here for upgrade</div>
-            <output id="fw2send"></output>
+            <div id="fw-table-div" style=" overflow:hidden"></div>
         </div>
 
     <button id="sendcmd-button" class="button" style="vertical-align: top">
@@ -273,6 +272,7 @@
         });
         $("#printers-table").tabulator("setData", "printerslist.json");
 
+
         document.getElementById("Price label").style.display = "inline-block";
         $("#price-lookup-table").tabulator({
             selectable: true,
@@ -316,6 +316,18 @@
         $("#price-lookup-table").tabulator("setData", "storepricelist.json");
         document.getElementById("Price label").style.display = "none";
 
+        document.getElementById("PROGRAM").style.display = "inline-block";
+        $("#fw-table-div").tabulator({
+            selectable: true,
+            height: 200,
+            layout: "fitColumns",
+            columns: [ //Define Table Columns
+                { title: "Fw File", field: "fwFileName", sorter: "string", width: 160, align: "left", },
+            ],
+        });
+        $("#fw-table-div").tabulator("setData", "fwlist.json");
+        document.getElementById("PROGRAM").style.display = "none";
+        
         $("#refresh-button").click(function () {
             $("#printers-table").tabulator("setData", "printerslist.json");
         });
@@ -463,6 +475,36 @@
                         }
                     });
 
+                case "PROGRAM":
+                    $("#sendcmd-button").off('click').on('click', function () {
+                        var selectedPrinter = $("#printers-table").tabulator("getSelectedData");
+
+                        if (selectedPrinter.length == 0) {
+                            alert("No printer selected !")
+                        }
+                        else {
+                            for (var i = 0, f; f = window.files2store[i]; i++) {
+                                var reader = new FileReader();
+                                // Closure to capture the file information.
+                                reader.onload = (function (thefile) {
+                                    return function (event) {
+                                        var testo = event.target.result;
+                                        var lunghezza = testo.length.toString(16).padStart(8, '0');
+                                        var messaggio = "! CISDFCRC16\n0000\n" + thefile.name + "\n" + lunghezza + "\n0000\n" + testo;
+                                        // alert(messaggio);
+                                        var PrinterLabelObj = { printerID: selectedPrinter[0].uniqueID, msg: messaggio };
+                                        var myJSON = JSON.stringify(PrinterLabelObj);
+                                        var xhr = new XMLHttpRequest();
+                                        var url = "printraw";
+                                        xhr.open("POST", url, true);
+                                        xhr.setRequestHeader("Content-type", "application/json");
+                                        xhr.send(myJSON);
+                                    };
+                                })(f);
+                                reader.readAsText(f);
+                            }
+                        }
+                    });
                     break;
                 default:
                     $("#sendcmd-button").click(function () {

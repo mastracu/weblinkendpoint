@@ -90,6 +90,7 @@
     <Compile Include="b64.fs" />
     <Compile Include="jsonhelper.fs" />
     <Compile Include="storeagent.fs" />
+    <Compile Include="fw.fs" />
     <Compile Include="printersagent.fs" />
     <Compile Include="messagelogagent.fs" />
     <Compile Include="websocketum.fs" />
