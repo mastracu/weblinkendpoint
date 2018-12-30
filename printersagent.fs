@@ -7,59 +7,14 @@ open System.Runtime.Serialization
 open System.IO
 open System.Xml
 open System.Text
-
 open FSharp.Data
 
 open JsonHelper
 open MessageLogAgent
+open Suave.WebSocketUM
 
-[<DataContract>]
-type Msg2Printer =
-   { 
-      [<field: DataMember(Name = "printerID")>]
-      printerID : string;
-      [<field: DataMember(Name = "msg")>]
-      msg : string;
-   }
-
-type Msg2PrinterFeed() =
-   let event1 = new Event<Msg2Printer*bool>()
-   
-   member this.Event1 = event1.Publish
-   member this.TriggerEvent printerMsgPair = event1.Trigger (printerMsgPair, true)
-   member this.TriggerEventNoLog printerMsgPair = event1.Trigger (printerMsgPair, false)
-
-
-[<DataContract>]
-type FwJobObj =
-   { 
-      [<field: DataMember(Name = "fwFile")>]
-      fwFile : String;
-      [<field: DataMember(Name = "id")>]
-      id : String;
-   }
-
-let doFwUpgrade (fwJob:FwJobObj) (printJob: Msg2PrinterFeed) (mLogAgent:LogAgent) =
-    // I don't use websocket continuation frames for firmware download
-    async {
-        let chunckSize = 2048
-        let buffer = Array.zeroCreate chunckSize
-        let finished = ref false
-
-        let stream = new FileStream ("./" + fwJob.fwFile + ".zpl", FileMode.Open)
-        do mLogAgent.AppendToLog (sprintf "Starting fw upgrade %s > %s " fwJob.fwFile fwJob.id )
-
-        while not finished.Value do
-           // Download one (at most) 1kb chunk and copy it
-           let! count = stream.AsyncRead(buffer, 0, chunckSize)
-           let str = Encoding.ASCII.GetString(buffer)
-           do printJob.TriggerEventNoLog {printerID=fwJob.id; msg =str} 
-           finished := count <= 0
-
-        do mLogAgent.AppendToLog (sprintf "FW Download queued-up %s > %s" fwJob.fwFile fwJob.id )
-        do mLogAgent.AppendToLog (sprintf "Printer %s will not respond until fw upgrade process is complete  (it takes about 5 mins)" fwJob.id )
-
-    } |> Async.Start
+type ChannelFrame = Opcode*byte[]*bool
+type ChannelAgent = MailboxProcessor<ChannelFrame*bool>
 
 [<DataContract>]
 type Printer =
@@ -75,62 +30,142 @@ type Printer =
       [<field: DataMember(Name = "sgdSetAlertFeedback")>]
       sgdSetAlertFeedback : string;
       // PriceTag | IfadLabelConversion
+      [<field: DataMember(Name = "mainChannelAgent")>]
+      mainChannelAgent : ChannelAgent;
+      [<field: DataMember(Name = "rawChannelAgent")>]
+      rawChannelAgent : ChannelAgent option;
+      [<field: DataMember(Name = "configChannelAgent")>]
+      configChannelAgent : ChannelAgent option;
+      // only one entry per uniqueID - mainChannelFeed cannot be empty 
    }
 
-let rec addPrinter prod list =
+let rec addPrinter id agent list =
       match list with
-      | [] -> []
-      | prodHead :: xs -> if prodHead.uniqueID = prod.uniqueID then prod :: xs else (prodHead :: addPrinter prod xs)
+      | [] -> [{uniqueID = id;
+               mainChannelAgent = agent; 
+               productName = ""; 
+               appVersion = ""; 
+               friendlyName = ""; 
+               sgdSetAlertFeedback = "ifadLabelConversion";
+               rawChannelAgent = None;
+               configChannelAgent = None}]
+      | printHead :: xs -> if (printHead.uniqueID = id) 
+                           then {printHead with mainChannelAgent = agent; 
+                                                rawChannelAgent = None; 
+                                                configChannelAgent = None;
+                                                productName = ""; 
+                                                appVersion = ""; 
+                                                friendlyName = ""} :: xs 
+                           else (printHead :: addPrinter id agent xs)
 
-let rec removePrinter id list =
+let rec removePrinter id channel list  =
       match list with
       | [] -> []
-      | prodHead :: xs -> if prodHead.uniqueID = id then xs else (prodHead :: removePrinter id xs)
+      | printer :: xs -> if (printer.uniqueID = id && printer.mainChannelAgent = channel) 
+                           then xs 
+                           else (printer :: removePrinter id channel xs)
 
 let rec updatePartNumber id pn list =
       match list with
       | [] -> []
-      | prodHead :: xs -> if prodHead.uniqueID = id then {prodHead with productName = pn} :: xs else (prodHead :: updatePartNumber id pn xs)
+      | printer :: xs -> if printer.uniqueID = id 
+                          then {printer with productName = pn} :: xs 
+                          else (printer :: updatePartNumber id pn xs)
 
 let rec updateAppVersion id ver list =
       match list with
       | [] -> []
-      | prodHead :: xs -> if prodHead.uniqueID = id then {prodHead with appVersion = ver} :: xs else (prodHead :: updateAppVersion id ver xs)
+      | printer :: xs -> if printer.uniqueID = id 
+                          then {printer with appVersion = ver} :: xs 
+                          else (printer :: updateAppVersion id ver xs)
 
-let rec fetchPrinterInfo id list = 
+let rec updateApp id appname list =
       match list with
-      | [] -> None
-      | prodHead :: xs -> if prodHead.uniqueID = id then Some prodHead else (fetchPrinterInfo id xs)
+      | [] -> []
+      | printer :: xs -> if printer.uniqueID = id 
+                          then {printer with sgdSetAlertFeedback = appname} :: xs 
+                          else (printer :: updateAppVersion id appname xs)
+
+
+let rec updateRawChannel id agent list =
+      match list with
+      | [] -> []
+      | printer :: xs -> if printer.uniqueID = id 
+                          then {printer with rawChannelAgent = agent} :: xs 
+                          else (printer :: updateRawChannel id agent xs)
+
+let rec clearRawChannel id agent list =
+      match list with
+      | [] -> []
+      | printer :: xs -> if (printer.uniqueID = id && printer.rawChannelAgent = agent)
+                          then {printer with rawChannelAgent = None} :: xs 
+                          else (printer :: clearRawChannel id agent xs)
+
+let rec updateConfigChannel id agent list =
+      match list with
+      | [] -> []
+      | printer :: xs -> if printer.uniqueID = id 
+                          then {printer with configChannelAgent = agent} :: xs 
+                          else (printer :: updateConfigChannel id agent xs)
+
+let rec clearConfigChannel id agent list =
+      match list with
+      | [] -> []
+      | printer :: xs -> if (printer.uniqueID = id && printer.configChannelAgent = agent)
+                          then {printer with configChannelAgent = None} :: xs 
+                          else (printer :: clearConfigChannel id agent xs)
+
+let rec sendMsgOverMainChannel id frame ifLog list = 
+      match list with
+      | [] -> ()
+      | printer :: xs -> if printer.uniqueID = id 
+                         then printer.mainChannelAgent.Post (frame, ifLog)
+                         else sendMsgOverMainChannel id frame ifLog xs
+
+let rec sendMsgOverRawChannel id frame ifLog list = 
+      match list with
+      | [] -> ()
+      | printer :: xs -> if printer.uniqueID = id 
+                         then match printer.rawChannelAgent with
+                              | None -> ()
+                              | Some chan -> chan.Post (frame, ifLog)
+                         else sendMsgOverRawChannel id frame ifLog xs
+
+let rec sendMsgOverConfigChannel id frame ifLog list = 
+      match list with
+      | [] -> ()
+      | printer :: xs -> if printer.uniqueID = id 
+                         then match printer.configChannelAgent with
+                              | None -> ()
+                              | Some chan -> chan.Post (frame, ifLog)
+                         else sendMsgOverConfigChannel id frame ifLog xs
+
+let isKnownID id list = List.exists (fun printer -> printer.uniqueID = id) list
+let tryFindPrinter id list = List.tryFind (fun (prt:Printer) -> prt.uniqueID = id) list
 
 type PrintersAgentMsg = 
     | Exit
     | Clear
-    | AddPrinter of Printer
-    | IsKnownID of string * AsyncReplyChannel<Boolean>
-    | RemovePrinter of string 
-    | PrintersInventory  of AsyncReplyChannel<String>
+    | AddPrinter of string * ChannelAgent
+    | UpdateRawChannel of string * (ChannelAgent option)
+    | UpdateConfigChannel of string * (ChannelAgent option)
+    | RemovePrinter of string * ChannelAgent 
+    | ClearRawChannel of string * (ChannelAgent option)
+    | ClearConfigChannel of string * (ChannelAgent option)
     | UpdatePartNumber of string * string
     | UpdateAppVersion of string * string
+    | IsKnownID of string * AsyncReplyChannel<Boolean>
+    | PrintersInventory  of AsyncReplyChannel<String>
     | FetchPrinterInfo of string * AsyncReplyChannel<Printer Option>
+    | SendMsgOverMainChannel of string * ChannelFrame * bool
+    | SendMsgOverRawChannel of string * ChannelFrame * bool
+    | SendMsgOverConfigChannel of string * ChannelFrame * bool
+    | UpdateApp of string * string
 
 [<DataContract>]
 type ConnectedPrinters = 
    { [<field: DataMember(Name = "connectedPrinters")>] PrinterList : Printer list } 
    static member Empty = {PrinterList = [] }
-   member x.IsKnownID id = 
-      List.exists (fun printer -> printer.uniqueID = id) x.PrinterList
-   member x.RemovePrinter id = 
-      { PrinterList = (removePrinter id x.PrinterList) }
-   member x.AddPrinter prt =  
-      { PrinterList = 
-          if x.IsKnownID prt.uniqueID then
-              addPrinter prt x.PrinterList
-          else
-              prt :: x.PrinterList}
-   member x.UpdatePartNumber id pn = { PrinterList = updatePartNumber id pn x.PrinterList} 
-   member x.UpdateAppVersion id ver = { PrinterList = updateAppVersion id ver x.PrinterList} 
-   member x.FetchPrinterInfo id = fetchPrinterInfo id x.PrinterList
-
 
 
 type PrintersAgent() =
@@ -138,31 +173,65 @@ type PrintersAgent() =
         MailboxProcessor.Start(fun inbox ->
             let rec printersAgentLoop connPrts =
                 async { let! msg = inbox.Receive()
-                        match msg with
-                        | Exit -> return ()
-                        | Clear -> return! printersAgentLoop ConnectedPrinters.Empty
-                        | AddPrinter prod -> return! printersAgentLoop (connPrts.AddPrinter prod)
-                        | RemovePrinter id -> return! printersAgentLoop (connPrts.RemovePrinter id)
-                        | UpdatePartNumber (id,pn) -> return! printersAgentLoop (connPrts.UpdatePartNumber id pn)
-                        | UpdateAppVersion (id,ver) -> return! printersAgentLoop (connPrts.UpdateAppVersion id ver)
-                        | IsKnownID (id, replyChannel) -> 
-                            replyChannel.Reply (connPrts.IsKnownID id)
-                            return! printersAgentLoop connPrts
-                        | PrintersInventory replyChannel -> 
-                            replyChannel.Reply (json<Printer array> (List.toArray connPrts.PrinterList))
-                            return! printersAgentLoop connPrts
-                        | FetchPrinterInfo (id, replyChannel) -> 
-                            replyChannel.Reply (connPrts.FetchPrinterInfo id)
-                            return! printersAgentLoop connPrts                           
-                      }
+                    match msg with
+                    | Exit -> return ()
+                    | Clear -> return! printersAgentLoop ConnectedPrinters.Empty
+                    | AddPrinter (id,chan) -> return! printersAgentLoop ({ PrinterList = addPrinter id chan connPrts.PrinterList})
+                    | UpdateRawChannel (id,chan) -> return! printersAgentLoop ({ PrinterList = updateRawChannel id chan connPrts.PrinterList})
+                    | UpdateConfigChannel (id,chan) -> return! printersAgentLoop ({ PrinterList = updateConfigChannel id chan connPrts.PrinterList})
+                    | RemovePrinter (id,chan) -> return! printersAgentLoop ({ PrinterList = removePrinter id chan connPrts.PrinterList})
+                    | ClearRawChannel (id,chan) -> return! printersAgentLoop ({ PrinterList = clearRawChannel id chan connPrts.PrinterList})
+                    | ClearConfigChannel (id,chan) -> return! printersAgentLoop ({ PrinterList = clearConfigChannel id chan connPrts.PrinterList})
+                    | UpdatePartNumber (id,pn) -> return! printersAgentLoop ({ PrinterList = updatePartNumber id pn connPrts.PrinterList})
+                    | UpdateAppVersion (id,ver) -> return! printersAgentLoop ({ PrinterList = updateAppVersion id ver connPrts.PrinterList})
+                    | UpdateApp (id,appname) -> return! printersAgentLoop ({ PrinterList = updateAppVersion id appname connPrts.PrinterList})
+                    | PrintersInventory replyChannel -> 
+                        replyChannel.Reply (json<Printer array> (List.toArray connPrts.PrinterList))
+                        return! printersAgentLoop connPrts
+                    | IsKnownID (id, replyChannel) -> 
+                        replyChannel.Reply (isKnownID id connPrts.PrinterList)
+                        return! printersAgentLoop connPrts
+                    | FetchPrinterInfo (id, replyChannel) -> 
+                        replyChannel.Reply (tryFindPrinter id connPrts.PrinterList)
+                        return! printersAgentLoop connPrts
+                    | SendMsgOverMainChannel (id, frame, toLog) ->
+                        match tryFindPrinter id connPrts.PrinterList with
+                        | None -> ()
+                        | Some prt -> prt.mainChannelAgent.Post (frame ,toLog)
+                        return! printersAgentLoop connPrts
+                    | SendMsgOverRawChannel (id, frame, toLog) ->
+                        match tryFindPrinter id connPrts.PrinterList with
+                        | None -> ()
+                        | Some prt -> match prt.rawChannelAgent with
+                                        | None -> ()
+                                        | Some chanAgent -> chanAgent.Post (frame ,toLog)
+                        return! printersAgentLoop connPrts
+                    | SendMsgOverConfigChannel (id, frame, toLog) ->
+                        match tryFindPrinter id connPrts.PrinterList with
+                        | None -> ()
+                        | Some prt -> match prt.configChannelAgent with
+                                        | None -> ()
+                                        | Some chanAgent -> chanAgent.Post (frame ,toLog)
+                        return! printersAgentLoop connPrts
+                }
             printersAgentLoop ConnectedPrinters.Empty
         )
     member this.Exit() = storeAgentMailboxProcessor.Post(Exit)
     member this.Empty() = storeAgentMailboxProcessor.Post(Clear)
-    member this.AddPrinter prod = storeAgentMailboxProcessor.Post(AddPrinter prod)
-    member this.RemovePrinter id = storeAgentMailboxProcessor.Post(RemovePrinter id)
+    member this.AddPrinter id chan = storeAgentMailboxProcessor.Post(AddPrinter (id, chan))
+    member this.UpdateRawChannel id chan = storeAgentMailboxProcessor.Post(UpdateRawChannel (id, chan))
+    member this.UpdateConfigChannel id chan = storeAgentMailboxProcessor.Post(UpdateConfigChannel (id, chan))
+    member this.RemovePrinter id chan = storeAgentMailboxProcessor.Post(RemovePrinter (id, chan))
+    member this.ClearRawChannel id chan = storeAgentMailboxProcessor.Post(ClearRawChannel (id, chan))
+    member this.ClearConfigChannel id chan = storeAgentMailboxProcessor.Post(ClearConfigChannel (id, chan))
     member this.UpdatePartNumber id pn = storeAgentMailboxProcessor.Post(UpdatePartNumber (id,pn))
     member this.UpdateAppVersion id ver = storeAgentMailboxProcessor.Post(UpdateAppVersion (id,ver))
-    member this.IsKnownID sku = storeAgentMailboxProcessor.PostAndReply((fun reply -> IsKnownID(sku,reply)), timeout = 2000)
     member this.PrintersInventory() = storeAgentMailboxProcessor.PostAndReply((fun reply -> PrintersInventory reply), timeout = 2000)
+    member this.IsKnownID sku = storeAgentMailboxProcessor.PostAndReply((fun reply -> IsKnownID(sku,reply)), timeout = 2000)
     member this.FetchPrinterInfo id = storeAgentMailboxProcessor.PostAndReply((fun reply -> FetchPrinterInfo(id,reply)), timeout = 2000)
+    member this.SendMsgOverMainChannel id frame toLog = storeAgentMailboxProcessor.Post(SendMsgOverMainChannel (id,frame,toLog))
+    member this.SendMsgOverRawChannel id frame toLog = storeAgentMailboxProcessor.Post(SendMsgOverRawChannel (id,frame,toLog))
+    member this.SendMsgOverConfigChannel id frame toLog = storeAgentMailboxProcessor.Post(SendMsgOverConfigChannel (id,frame,toLog))
+    member this.UpdateApp id appname = storeAgentMailboxProcessor.Post(UpdateApp (id,appname))
+
+
