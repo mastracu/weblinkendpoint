@@ -76,7 +76,12 @@ let ws allAgents (webSocket : WebSocket) (context: HttpContext) =
                 do logAgent.AppendToLog (sprintf "%s (%s)> %s" (UTF8.toString data) channelName printerUniqueId)
             else
                 ()
-            let! _ = webSocket.send op (data|> ByteSegment) fi
+            let! successOrError = webSocket.send op (data|> ByteSegment) fi
+            match successOrError with
+            | Choice1Of2(con) -> ()
+            | Choice2Of2(error) -> do logAgent.AppendToLog (sprintf "### ERROR %A in websocket send operation ###" error)
+            do! Async.Sleep 100 // seen problem if this sleep is removed
+
             close := op = Close                    
   })
 
