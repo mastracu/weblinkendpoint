@@ -36,26 +36,14 @@ open fw
 
 
 let sendBTCaptureCmds printerID (printersAgent:PrintersAgent) toLog= 
-    do printersAgent.SendMsgOverConfigChannel printerID 
-                                              (Opcode.Binary, Encoding.ASCII.GetBytes """{}{"capture.channel1.port":"bt"} """, true) 
-                                              toLog
-    do printersAgent.SendMsgOverConfigChannel printerID 
-                                              (Opcode.Binary, Encoding.ASCII.GetBytes """{}{"capture.channel1.max_length":"64"} """, true) 
-                                              toLog
-    do printersAgent.SendMsgOverConfigChannel printerID 
-                                              (Opcode.Binary, Encoding.ASCII.GetBytes """{}{"capture.channel1.delimiter":"\\015\\012"} """, true) 
-                                              toLog
+    do printersAgent.SendMsgOverConfigChannel printerID (Opcode.Binary, UTF8.bytes """{}{"capture.channel1.port":"bt"} """, true) toLog
+    do printersAgent.SendMsgOverConfigChannel printerID (Opcode.Binary, UTF8.bytes """{}{"capture.channel1.max_length":"64"} """, true) toLog
+    do printersAgent.SendMsgOverConfigChannel printerID (Opcode.Binary, UTF8.bytes """{}{"capture.channel1.delimiter":"\\015\\012"} """, true) toLog
 
 let sendUSBCaptureCmds printerID (printersAgent:PrintersAgent) toLog= 
-    do printersAgent.SendMsgOverConfigChannel printerID 
-                                              (Opcode.Binary, Encoding.ASCII.GetBytes """{}{"capture.channel1.port":"usb"} """, true) 
-                                              toLog
-    do printersAgent.SendMsgOverConfigChannel printerID 
-                                              (Opcode.Binary, Encoding.ASCII.GetBytes """{}{"capture.channel1.delimiter":"^XZ"} """, true) 
-                                              toLog
-    do printersAgent.SendMsgOverConfigChannel printerID 
-                                              (Opcode.Binary, Encoding.ASCII.GetBytes """{}{"capture.channel1.max_length":"512"} """, true) 
-                                              toLog
+    do printersAgent.SendMsgOverConfigChannel printerID (Opcode.Binary, UTF8.bytes """{}{"capture.channel1.port":"usb"} """, true) toLog
+    do printersAgent.SendMsgOverConfigChannel printerID (Opcode.Binary, UTF8.bytes """{}{"capture.channel1.delimiter":"^XZ"} """, true) toLog
+    do printersAgent.SendMsgOverConfigChannel printerID (Opcode.Binary, UTF8.bytes """{}{"capture.channel1.max_length":"512"} """, true) toLog
 
 //TODO: https://github.com/SuaveIO/suave/issues/307
         
@@ -107,7 +95,8 @@ let ws allAgents (webSocket : WebSocket) (context: HttpContext) =
         match channelName with
         | "v1.raw.zebra.com" -> if printerUniqueId.Length>0 then do printersAgent.ClearRawChannel printerUniqueId (Some inbox) else ()
         | "v1.config.zebra.com" -> if printerUniqueId.Length>0 then do printersAgent.ClearConfigChannel printerUniqueId (Some inbox) else ()
-        | _ -> if printerUniqueId.Length>0 then do printersAgent.RemovePrinter printerUniqueId inbox else ()
+        | "v1.main.zebra.com" -> if printerUniqueId.Length>0 then do printersAgent.RemovePrinter printerUniqueId inbox else ()
+        | _ -> ()
 
   // https://github.com/SuaveIO/suave/issues/463
   async {
@@ -166,9 +155,10 @@ let ws allAgents (webSocket : WebSocket) (context: HttpContext) =
                         do logAgent.AppendToLog (sprintf "discovery_b64 property printerID: %s"  printerUniqueId)
                         do printerUniqueId <- printerUniqueId.Substring (0, (printerUniqueId.IndexOf 'J' + 10))
                         do logAgent.AppendToLog (sprintf "adjusted printerID: %s"  printerUniqueId)
+                        do channelName <- "v1.main.zebra.com"
                         do printersAgent.AddPrinter printerUniqueId inbox
-                        inbox.Post((Binary, UTF8.bytes """ { "open" : "v1.raw.zebra.com" } """, true), true)
-                        inbox.Post((Binary, UTF8.bytes """ { "open" : "v1.config.zebra.com" } """, true), true)
+                        do printersAgent.SendMsgOverMainChannel printerUniqueId (Opcode.Binary, UTF8.bytes """ { "open" : "v1.raw.zebra.com" } """, true) true
+                        do printersAgent.SendMsgOverMainChannel printerUniqueId (Opcode.Binary, UTF8.bytes """ { "open" : "v1.config.zebra.com" } """, true) true
                     | None -> ()
 
                     match jval.TryGetProperty "alert" with
@@ -188,7 +178,7 @@ let ws allAgents (webSocket : WebSocket) (context: HttpContext) =
                                         let priceString = prod.unitPrice.ToString()
                                         do logAgent.AppendToLog (sprintf "Barcode: %s Price: %s Description: %s" barcode priceString prod.description) 
                                         let priceLbl = (buildpricetag prod)
-                                        do printersAgent.SendMsgOverRawChannel printerUniqueId (Opcode.Binary, Encoding.ASCII.GetBytes priceLbl, true) true
+                                        do printersAgent.SendMsgOverRawChannel printerUniqueId (Opcode.Binary, UTF8.bytes priceLbl, true) true
                                     | None ->
                                         do logAgent.AppendToLog (sprintf "Barcode: %s not found in store" barcode)
                                 | "ifadLabelConversion" ->  
@@ -196,13 +186,13 @@ let ws allAgents (webSocket : WebSocket) (context: HttpContext) =
                                     let label200dpi = convertIfadLabel label300dpi
                                     do logAgent.AppendToLog (sprintf "Original label: %s" label300dpi)    
                                     do logAgent.AppendToLog (sprintf "Converted label: %s" label200dpi)
-                                    do printersAgent.SendMsgOverRawChannel printerUniqueId (Opcode.Binary, Encoding.ASCII.GetBytes label200dpi, true) true
+                                    do printersAgent.SendMsgOverRawChannel printerUniqueId (Opcode.Binary, UTF8.bytes label200dpi, true) true
                                 | "wikipediaConversion" ->  
                                     let demoinlabel = (jsonalertval.GetProperty "setting_value").AsString()
                                     let demooutlabel = (convertWikipediaLabel demoinlabel)
                                     do logAgent.AppendToLog (sprintf "Original label: %s" demoinlabel)    
                                     do logAgent.AppendToLog (sprintf "Converted label: %s" demooutlabel)
-                                    do printersAgent.SendMsgOverRawChannel printerUniqueId (Opcode.Binary, Encoding.ASCII.GetBytes demooutlabel, true) true
+                                    do printersAgent.SendMsgOverRawChannel printerUniqueId (Opcode.Binary, UTF8.bytes demooutlabel, true) true
                                 | _ -> ()
                             | None -> ()
                         | _ -> ()
@@ -223,9 +213,9 @@ let ws allAgents (webSocket : WebSocket) (context: HttpContext) =
                              do printersAgent.UpdateRawChannel printerUniqueId (Some inbox)
                         | "v1.config.zebra.com" ->     
                              do printersAgent.UpdateConfigChannel printerUniqueId (Some inbox)
-                             do printersAgent.SendMsgOverConfigChannel printerUniqueId (Opcode.Binary, Encoding.ASCII.GetBytes """{}{"alerts.configured":"ALL MESSAGES,SDK,Y,Y,WEBLINK.IP.CONN1,0,N,|SGD SET,SDK,Y,Y,WEBLINK.IP.CONN1,0,N,capture.channel1.data.raw"} """, true) true
-                             do printersAgent.SendMsgOverConfigChannel printerUniqueId (Opcode.Binary, Encoding.ASCII.GetBytes """{}{"device.product_name":null} """, true) true
-                             do printersAgent.SendMsgOverConfigChannel printerUniqueId (Opcode.Binary, Encoding.ASCII.GetBytes """{}{"appl.name":null} """, true) true
+                             do printersAgent.SendMsgOverConfigChannel printerUniqueId (Opcode.Binary, UTF8.bytes """{}{"alerts.configured":"ALL MESSAGES,SDK,Y,Y,WEBLINK.IP.CONN1,0,N,|SGD SET,SDK,Y,Y,WEBLINK.IP.CONN1,0,N,capture.channel1.data.raw"} """, true) true
+                             do printersAgent.SendMsgOverConfigChannel printerUniqueId (Opcode.Binary, UTF8.bytes """{}{"device.product_name":null} """, true) true
+                             do printersAgent.SendMsgOverConfigChannel printerUniqueId (Opcode.Binary, UTF8.bytes """{}{"appl.name":null} """, true) true
                              do sendUSBCaptureCmds printerUniqueId printersAgent true
                         | _ -> ()
                     | None -> ()
@@ -293,7 +283,7 @@ let app  : WebPart =
   let mLogAgent = new LogAgent(logEvent)
   
   let storeAgent = new StoreAgent()
-  let printersAgent = new PrintersAgent()
+  let printersAgent = new PrintersAgent(mLogAgent)
   let allAgents = (storeAgent, printersAgent, mLogAgent)
   
   let objectDo func:WebPart = 
@@ -376,18 +366,18 @@ let app  : WebPart =
 
           path "/json2printer" >=> objectDo (fun (pm:Msg2Printer) -> 
                                                do mLogAgent.AppendToLog (sprintf "POST /json2printer - %A" pm)
-                                               let data2send = Encoding.ASCII.GetBytes (pm.msg)
+                                               let data2send = UTF8.bytes (pm.msg)
                                                do printersAgent.SendMsgOverConfigChannel pm.printerID (Opcode.Binary, data2send, true ) true)
           path "/printproduct" >=> objectDo (fun (prodprint:ProductPrinterObj) ->  
                                                do mLogAgent.AppendToLog (sprintf "POST /printproduct - %A" prodprint)
-                                               let data2send = Encoding.ASCII.GetBytes (buildpricetag prodprint.ProductObj)
+                                               let data2send = UTF8.bytes (buildpricetag prodprint.ProductObj)
                                                do printersAgent.SendMsgOverConfigChannel prodprint.id (Opcode.Binary, data2send, true ) true) 
           path "/upgradeprinter" >=> objectDo (fun (fwjob:FwJobObj) ->  
                                                do mLogAgent.AppendToLog (sprintf "POST /upgradeprinter - %A" fwjob)
                                                do doFwUpgrade fwjob printersAgent mLogAgent)
           path "/printraw" >=> objectDo (fun (pm:Msg2Printer) ->  
                                                do mLogAgent.AppendToLog (sprintf "POST /printraw - %A" pm)
-                                               let data2send = Encoding.ASCII.GetBytes (pm.msg)
+                                               let data2send = UTF8.bytes (pm.msg)
                                                do printersAgent.SendMsgOverRawChannel pm.printerID (Opcode.Binary, data2send, true ) true) 
         ]
     NOT_FOUND "Found no handlers." ]

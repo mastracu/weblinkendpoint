@@ -17,6 +17,7 @@ type ChannelFrame = Opcode*byte[]*bool
 type ChannelAgent = MailboxProcessor<ChannelFrame*bool>
 
 [<DataContract>]
+
 type Printer =
    { 
       [<field: DataMember(Name = "uniqueID")>]
@@ -84,7 +85,7 @@ let rec updateApp id appname list =
       | [] -> []
       | printer :: xs -> if printer.uniqueID = id 
                           then {printer with sgdSetAlertFeedback = appname} :: xs 
-                          else (printer :: updateAppVersion id appname xs)
+                          else (printer :: updateApp id appname xs)
 
 
 let rec updateRawChannel id agent list =
@@ -168,11 +169,13 @@ type ConnectedPrinters =
    static member Empty = {PrinterList = [] }
 
 
-type PrintersAgent() =
+type PrintersAgent(logAgent:LogAgent) =
     let storeAgentMailboxProcessor =
         MailboxProcessor.Start(fun inbox ->
             let rec printersAgentLoop connPrts =
-                async { let! msg = inbox.Receive()
+                async { 
+                    let! msg = inbox.Receive()  
+                    logAgent.AppendToLog (sprintf "Printersagent: message received %A" msg )
                     match msg with
                     | Exit -> return ()
                     | Clear -> return! printersAgentLoop ConnectedPrinters.Empty
@@ -184,7 +187,7 @@ type PrintersAgent() =
                     | ClearConfigChannel (id,chan) -> return! printersAgentLoop ({ PrinterList = clearConfigChannel id chan connPrts.PrinterList})
                     | UpdatePartNumber (id,pn) -> return! printersAgentLoop ({ PrinterList = updatePartNumber id pn connPrts.PrinterList})
                     | UpdateAppVersion (id,ver) -> return! printersAgentLoop ({ PrinterList = updateAppVersion id ver connPrts.PrinterList})
-                    | UpdateApp (id,appname) -> return! printersAgentLoop ({ PrinterList = updateAppVersion id appname connPrts.PrinterList})
+                    | UpdateApp (id,appname) -> return! printersAgentLoop ({ PrinterList = updateApp id appname connPrts.PrinterList})
                     | PrintersInventory replyChannel -> 
                         replyChannel.Reply (json<Printer array> (List.toArray connPrts.PrinterList))
                         return! printersAgentLoop connPrts
