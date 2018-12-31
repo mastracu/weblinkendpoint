@@ -257,23 +257,7 @@ let ws allAgents (webSocket : WebSocket) (context: HttpContext) =
         return successOrError
   }
 
-[<DataContract>]
-type ProductPrinterObj =
-   { 
-      [<field: DataMember(Name = "ProductObj")>]
-      ProductObj : Product;
-      [<field: DataMember(Name = "id")>]
-      id : String;
-   }
 
-[<DataContract>]
-type Msg2Printer =
-   {
-      [<field: DataMember(Name = "printerID")>]
-      printerID : string;
-      [<field: DataMember(Name = "msg")>]
-      msg : string;
-   }
 
 type LogEntryOrTimeout = Timeout | LogEntry of String
 
@@ -322,6 +306,23 @@ let sseContinuation sEvent (mLogAgent:LogAgent) = (fun out ->
           }
 )
 
+[<DataContract>]
+type ProductPrinterObj =
+   { 
+      [<field: DataMember(Name = "ProductObj")>]
+      ProductObj : Product;
+      [<field: DataMember(Name = "id")>]
+      id : String;
+   }
+
+[<DataContract>]
+type Msg2Printer =
+   {
+      [<field: DataMember(Name = "printerID")>]
+      printerID : string;
+      [<field: DataMember(Name = "msg")>]
+      msg : string;
+   }
 
 let app  : WebPart = 
   let logEvent = new Event<String>()

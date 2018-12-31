@@ -184,7 +184,6 @@ type PrintersAgent(logAgent:LogAgent) =
                     | UpdateAppVersion (id,ver) -> return! printersAgentLoop ({ PrinterList = updateAppVersion id ver connPrts.PrinterList})
                     | UpdateApp (id,appname) -> return! printersAgentLoop ({ PrinterList = updateApp id appname connPrts.PrinterList})
                     | PrintersInventory replyChannel -> 
-                        // logAgent.AppendToLog (sprintf "Printersagent: inside PrintersInventory" )
                         // logAgent.AppendToLog (sprintf "Printersagent: inside PrintersInventory printerList: %A" connPrts.PrinterList )
                         replyChannel.Reply (json<Printer array> (List.toArray connPrts.PrinterList))
                         return! printersAgentLoop connPrts
