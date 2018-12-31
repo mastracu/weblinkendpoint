@@ -35,7 +35,7 @@ type FwJobObj =
 let doFwUpgrade (fwJob:FwJobObj) (agent: ChannelAgent) (mLogAgent:LogAgent) =
     // I don't use websocket continuation frames for firmware download
     async {
-        let chunckSize = 1024  // tried with 2048 but seen no improvement
+        let chunckSize = 4096  // tried with 2048 but seen no improvement
         let buffer = Array.zeroCreate chunckSize
         let prevbuffer = Array.zeroCreate chunckSize
         let finished = ref false
