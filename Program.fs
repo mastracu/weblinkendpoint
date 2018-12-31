@@ -379,7 +379,11 @@ let app  : WebPart =
                                                do printersAgent.SendMsgOverRawChannel prodprint.id (Opcode.Binary, data2send, true ) true) 
           path "/upgradeprinter" >=> objectDo (fun (fwjob:FwJobObj) ->  
                                                do mLogAgent.AppendToLog (sprintf "POST /upgradeprinter - %A" fwjob)
-                                               do doFwUpgrade fwjob printersAgent mLogAgent)
+                                               do match printersAgent.FetchPrinterInfo fwjob.id with
+                                                  | None -> ()
+                                                  | Some pr -> match pr.rawChannelAgent with
+                                                               | None -> ()
+                                                               | Some agent -> do doFwUpgrade fwjob agent mLogAgent)
           path "/printraw" >=> objectDo (fun (pm:Msg2Printer) ->  
                                                do mLogAgent.AppendToLog (sprintf "POST /printraw - %A" pm)
                                                let data2send = UTF8.bytes (pm.msg)
