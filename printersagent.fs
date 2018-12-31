@@ -31,11 +31,11 @@ type Printer =
       [<field: DataMember(Name = "sgdSetAlertFeedback")>]
       sgdSetAlertFeedback : string;
       // PriceTag | IfadLabelConversion
-      [<field: DataMember(Name = "mainChannelAgent")>]
+      //[<field: DataMember(Name = "mainChannelAgent")>]
       mainChannelAgent : ChannelAgent;
-      [<field: DataMember(Name = "rawChannelAgent")>]
+      //[<field: DataMember(Name = "rawChannelAgent")>]
       rawChannelAgent : ChannelAgent option;
-      [<field: DataMember(Name = "configChannelAgent")>]
+      //[<field: DataMember(Name = "configChannelAgent")>]
       configChannelAgent : ChannelAgent option;
       // only one entry per uniqueID - mainChannelFeed cannot be empty 
    }
