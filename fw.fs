@@ -47,7 +47,7 @@ let doFwUpgrade (fwJob:FwJobObj) (agent: ChannelAgent) (mLogAgent:LogAgent) =
         while not finished.Value do
            let! count = stream.AsyncRead(buffer, 0, chunckSize)
            finished := count <= 0
-           if (!finished) then
+           if (not finished.Value) then
               acc := acc.Value + 1L
               do agent.Post ((Opcode.Binary, buffer, true), false)              
               // do! Async.Sleep 150 // seen problem if this sleep is removed
