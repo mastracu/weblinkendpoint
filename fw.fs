@@ -46,7 +46,7 @@ let doFwUpgrade (fwJob:FwJobObj) (printersAgent: PrintersAgent) (mLogAgent:LogAg
         while not finished.Value do
            // Download one (at most) 1kb chunk and copy it
            let! count = stream.AsyncRead(buffer, 0, chunckSize)
-           do printersAgent.SendMsgOverRawChannel fwJob.id (Opcode.Binary, buffer, true) true
+           do printersAgent.SendMsgOverRawChannel fwJob.id (Opcode.Binary, buffer, true) false
            acc := acc.Value + 1L
            if count < chunckSize then
               do mLogAgent.AppendToLog (sprintf "Frame #%u has size %d" acc.Value count)
