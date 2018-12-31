@@ -54,6 +54,8 @@ let doFwUpgrade (fwJob:FwJobObj) (agent: ChannelAgent) (mLogAgent:LogAgent) =
                  do mLogAgent.AppendToLog (sprintf "Frame #%u has size %d" acc.Value count)
               else 
                  ()
+              if acc.Value = 5000L then
+                 do! Async.Sleep 10000
            else
               ()
 

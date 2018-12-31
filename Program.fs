@@ -71,13 +71,13 @@ let ws allAgents (webSocket : WebSocket) (context: HttpContext) =
   let inbox = MailboxProcessor.Start (fun inbox -> async {
         let close = ref false
         while not !close do
-            let! (op, data, fi), isLogged = inbox.Receive()
-            do logAgent.AppendToLog (sprintf "New msg picked. current queue length: %u" inbox.CurrentQueueLength)
+            let! (op, pld, fi), isLogged = inbox.Receive()
+            do logAgent.AppendToLog (sprintf "New msg %s of type %A picked. current queue length: %u" (UTF8.toString pld) op inbox.CurrentQueueLength)
             if isLogged then
-                do logAgent.AppendToLog (sprintf "%s (%s)> %s" (UTF8.toString data) channelName printerUniqueId)
+                do logAgent.AppendToLog (sprintf "%s (%s)> %s" (UTF8.toString pld) channelName printerUniqueId)
             else
                 ()
-            let! successOrError = webSocket.send op (data|> ByteSegment) fi
+            let! successOrError = webSocket.send op (pld|> ByteSegment) fi
             match successOrError with
             | Choice1Of2(con) -> ()
             | Choice2Of2(error) -> do logAgent.AppendToLog (sprintf "### ERROR %A in websocket send operation ###" error)
