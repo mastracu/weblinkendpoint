@@ -55,10 +55,12 @@ let doFwUpgrade (fwJob:FwJobObj) (agent: ChannelAgent) (mLogAgent:LogAgent) =
                  do mLogAgent.AppendToLog (sprintf "Frame #%u has size %d" acc.Value count)
               else 
                  ()
-              if buffer = prevbuffer then
-                 do mLogAgent.AppendToLog (sprintf "2 consecutive identical buffers detected !!!")
+              if buffer.[0..count-1] = prevbuffer.[0..count-1] then
+                 do mLogAgent.AppendToLog (sprintf "Frame #%u is duplicated !!!" acc.Value)
               else
                  ()
+              for i in 0 .. count-1 do
+                 prevbuffer.[i] <- buffer.[i]                 
            else
               ()
 
