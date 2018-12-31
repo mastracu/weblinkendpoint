@@ -37,7 +37,6 @@ let doFwUpgrade (fwJob:FwJobObj) (agent: ChannelAgent) (mLogAgent:LogAgent) =
     async {
         let chunckSize = 4096  // tried with 2048 but seen no improvement
         let buffer = Array.zeroCreate chunckSize
-        let prevbuffer = Array.zeroCreate chunckSize
         let finished = ref false
         let acc = ref 0L
 
@@ -50,17 +49,11 @@ let doFwUpgrade (fwJob:FwJobObj) (agent: ChannelAgent) (mLogAgent:LogAgent) =
            if (not finished.Value) then
               acc := acc.Value + 1L
               do agent.Post ((Opcode.Binary, buffer, true), false)              
-              do! Async.Sleep 100 // seen problem if this sleep is removed
+              do! Async.Sleep 50 // seen problem if this sleep is removed
               if count < chunckSize then
                  do mLogAgent.AppendToLog (sprintf "Frame #%u has size %d" acc.Value count)
               else 
                  ()
-              if buffer.[0..count-1] = prevbuffer.[0..count-1] then
-                 do mLogAgent.AppendToLog (sprintf "Frame #%u is duplicated !!!" acc.Value)
-              else
-                 ()
-              for i in 0 .. count-1 do
-                 prevbuffer.[i] <- buffer.[i]                 
            else
               ()
 
