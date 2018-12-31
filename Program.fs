@@ -275,37 +275,15 @@ type Msg2Printer =
       msg : string;
    }
 
-
 type LogEntryOrTimeout = Timeout | LogEntry of String
 
-let app  : WebPart = 
-  let logEvent = new Event<String>()
-  let mLogAgent = new LogAgent(logEvent)
-  
-  let storeAgent = new StoreAgent()
-  let printersAgent = new PrintersAgent(mLogAgent)
-  let allAgents = (storeAgent, printersAgent, mLogAgent)
-  
-  let objectDo func:WebPart = 
-     mapJson (fun obj -> 
-                       func obj
-                       obj)
-
-  do mLogAgent.AppendToLog "WebServer started"
-
-  //let appname = System.Environment.GetEnvironmentVariable("HEROKU_APP_NAME")
-  //let releaseAt = System.Environment.GetEnvironmentVariable("HEROKU_RELEASE_CREATED_AT")
-  //let releaseVersion = System.Environment.GetEnvironmentVariable("HEROKU_RELEASE_VERSION")
-
-  choose [
-    path "/websocketWithSubprotocol" >=> WebSocketUM.handShakeWithSubprotocol (chooseSubprotocol "v1.weblink.zebra.com") (ws allAgents)
-    path "/sseLog" >=> request (fun _ -> EventSource.handShake (fun out ->
+let sseContinuation sEvent (mLogAgent:LogAgent) = (fun out ->
           let emptyEvent = new Event<Unit>()
           let Timer15sec = new System.Timers.Timer(float 15000)
           do Timer15sec.AutoReset <- true
           let timeoutEvent = Timer15sec.Elapsed
           do Timer15sec.Start()
-          let newEvent = (logEvent.Publish |> Event.map (fun str -> LogEntry str) , 
+          let newEvent = (sEvent |> Event.map (fun str -> LogEntry str) , 
                           timeoutEvent |> Event.map (fun _ -> Timeout)) ||> Event.merge
 
           let inbox = MailboxProcessor.Start (fun inbox -> 
@@ -342,7 +320,31 @@ let app  : WebPart =
                     do mLogAgent.AppendToLog ("Forced SSE disconnect - disposed resources in sse handshake continuation function")
                 return successOrError
           }
-    ))
+)
+
+
+let app  : WebPart = 
+  let logEvent = new Event<String>()
+  let mLogAgent = new LogAgent(logEvent)
+  
+  let storeAgent = new StoreAgent()
+  let printersAgent = new PrintersAgent(mLogAgent)
+  let allAgents = (storeAgent, printersAgent, mLogAgent)
+  
+  let objectDo func:WebPart = 
+     mapJson (fun obj -> 
+                       func obj
+                       obj)
+
+  do mLogAgent.AppendToLog "WebServer started"
+
+  //let appname = System.Environment.GetEnvironmentVariable("HEROKU_APP_NAME")
+  //let releaseAt = System.Environment.GetEnvironmentVariable("HEROKU_RELEASE_CREATED_AT")
+  //let releaseVersion = System.Environment.GetEnvironmentVariable("HEROKU_RELEASE_VERSION")
+
+  choose [
+    path "/websocketWithSubprotocol" >=> WebSocketUM.handShakeWithSubprotocol (chooseSubprotocol "v1.weblink.zebra.com") (ws allAgents)
+    path "/sseLog" >=> request (fun _ -> EventSource.handShake (sseContinuation logEvent.Publish mLogAgent ))
 
     GET >=> choose 
         [ path "/hello" >=> OK "Hello GET"
@@ -371,7 +373,7 @@ let app  : WebPart =
           path "/printproduct" >=> objectDo (fun (prodprint:ProductPrinterObj) ->  
                                                do mLogAgent.AppendToLog (sprintf "POST /printproduct - %A" prodprint)
                                                let data2send = UTF8.bytes (buildpricetag prodprint.ProductObj)
-                                               do printersAgent.SendMsgOverConfigChannel prodprint.id (Opcode.Binary, data2send, true ) true) 
+                                               do printersAgent.SendMsgOverRawChannel prodprint.id (Opcode.Binary, data2send, true ) true) 
           path "/upgradeprinter" >=> objectDo (fun (fwjob:FwJobObj) ->  
                                                do mLogAgent.AppendToLog (sprintf "POST /upgradeprinter - %A" fwjob)
                                                do doFwUpgrade fwjob printersAgent mLogAgent)

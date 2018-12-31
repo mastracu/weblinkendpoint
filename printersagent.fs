@@ -29,15 +29,10 @@ type Printer =
       [<field: DataMember(Name = "friendlyName")>]
       friendlyName : string;
       [<field: DataMember(Name = "sgdSetAlertFeedback")>]
-      sgdSetAlertFeedback : string;
-      // PriceTag | IfadLabelConversion
-      //[<field: DataMember(Name = "mainChannelAgent")>]
+      sgdSetAlertFeedback : string;      // priceTag | ifadLabelConversion
       mainChannelAgent : ChannelAgent;
-      //[<field: DataMember(Name = "rawChannelAgent")>]
       rawChannelAgent : ChannelAgent option;
-      //[<field: DataMember(Name = "configChannelAgent")>]
       configChannelAgent : ChannelAgent option;
-      // only one entry per uniqueID - mainChannelFeed cannot be empty 
    }
 
 let rec addPrinter id agent list =
@@ -175,7 +170,7 @@ type PrintersAgent(logAgent:LogAgent) =
             let rec printersAgentLoop connPrts =
                 async { 
                     let! msg = inbox.Receive()  
-                    logAgent.AppendToLog (sprintf "Printersagent: message received %A" msg )
+                    // logAgent.AppendToLog (sprintf "Printersagent: message received %A" msg )
                     match msg with
                     | Exit -> return ()
                     | Clear -> return! printersAgentLoop ConnectedPrinters.Empty
@@ -189,8 +184,8 @@ type PrintersAgent(logAgent:LogAgent) =
                     | UpdateAppVersion (id,ver) -> return! printersAgentLoop ({ PrinterList = updateAppVersion id ver connPrts.PrinterList})
                     | UpdateApp (id,appname) -> return! printersAgentLoop ({ PrinterList = updateApp id appname connPrts.PrinterList})
                     | PrintersInventory replyChannel -> 
-                        logAgent.AppendToLog (sprintf "Printersagent: inside PrintersInventory" )
-                        logAgent.AppendToLog (sprintf "Printersagent: inside PrintersInventory printerList: %A" connPrts.PrinterList )
+                        // logAgent.AppendToLog (sprintf "Printersagent: inside PrintersInventory" )
+                        // logAgent.AppendToLog (sprintf "Printersagent: inside PrintersInventory printerList: %A" connPrts.PrinterList )
                         replyChannel.Reply (json<Printer array> (List.toArray connPrts.PrinterList))
                         return! printersAgentLoop connPrts
                     | IsKnownID (id, replyChannel) -> 
