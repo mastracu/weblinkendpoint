@@ -73,7 +73,6 @@ let ws allAgents (webSocket : WebSocket) (context: HttpContext) =
         while not !close do
             let! (op, data, fi), isLogged = inbox.Receive()
             if isLogged then
-                // text = (UTF8.toString data)
                 do logAgent.AppendToLog (sprintf "%s (%s)> %s" (UTF8.toString data) channelName printerUniqueId)
                 // do logAgent.AppendToLog (sprintf "%d bytes %s (%s)> %s" text.Length (text.Substring(0,100)) channelName printerUniqueId)
             else
