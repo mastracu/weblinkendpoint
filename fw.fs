@@ -55,7 +55,9 @@ let doFwUpgrade (fwJob:FwJobObj) (agent: ChannelAgent) (mLogAgent:LogAgent) =
               else 
                  ()
               if acc.Value = 5000L then
-                 do! Async.Sleep 10000
+                 do! Async.Sleep 60000
+              else
+                 ()
            else
               ()
 

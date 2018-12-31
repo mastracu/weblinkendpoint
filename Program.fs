@@ -72,7 +72,7 @@ let ws allAgents (webSocket : WebSocket) (context: HttpContext) =
         let close = ref false
         while not !close do
             let! (op, pld, fi), isLogged = inbox.Receive()
-            do logAgent.AppendToLog (sprintf "New msg %s of type %A picked. current queue length: %u" (UTF8.toString pld) op inbox.CurrentQueueLength)
+            do logAgent.AppendToLog (sprintf "New msg of type %A picked. current queue length: %u" op inbox.CurrentQueueLength)
             if isLogged then
                 do logAgent.AppendToLog (sprintf "%s (%s)> %s" (UTF8.toString pld) channelName printerUniqueId)
             else
