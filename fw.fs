@@ -35,7 +35,7 @@ type FwJobObj =
 let doFwUpgrade (fwJob:FwJobObj) (agent: ChannelAgent) (mLogAgent:LogAgent) =
     // I don't use websocket continuation frames for firmware download
     async {
-        let chunckSize = 4096  // tried with 2048 but seen no improvement
+        let chunckSize = 8192  // tried with 2048 but seen no improvement
         let buffer = Array.zeroCreate chunckSize
         let finished = ref false
         let acc = ref 0L
@@ -49,7 +49,7 @@ let doFwUpgrade (fwJob:FwJobObj) (agent: ChannelAgent) (mLogAgent:LogAgent) =
            if (not finished.Value) then
               acc := acc.Value + 1L
               do agent.Post ((Opcode.Binary, buffer, true), false)              
-              do! Async.Sleep 50 // seen problem if this sleep is removed
+              do! Async.Sleep 100 // seen problem if this sleep is removed
               if count < chunckSize then
                  do mLogAgent.AppendToLog (sprintf "Frame #%u has size %d" acc.Value count)
               else 
