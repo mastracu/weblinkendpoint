@@ -51,7 +51,7 @@ let doFwUpgrade (fwJob:FwJobObj) (printersAgent: PrintersAgent) (mLogAgent:LogAg
            if count < chunckSize then
               do mLogAgent.AppendToLog (sprintf "Frame #%u has size %d" acc.Value count)
            finished := count <= 0
-           do! Async.Sleep 50 // seen problem if this sleep is removed
+           do! Async.Sleep 100 // seen problem if this sleep is removed
 
         do mLogAgent.AppendToLog (sprintf "FW Download queued-up (%u frames)  %s > %s" acc.Value fwJob.fwFile fwJob.id )
         do mLogAgent.AppendToLog (sprintf "Printer %s will not respond until fw upgrade process is complete  (it takes about 5 mins)" fwJob.id )
