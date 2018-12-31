@@ -35,7 +35,7 @@ type FwJobObj =
 let doFwUpgrade (fwJob:FwJobObj) (agent: ChannelAgent) (mLogAgent:LogAgent) =
     // I don't use websocket continuation frames for firmware download
     async {
-        let chunckSize = 8192  // tried with 2048 but seen no improvement
+        let chunckSize = 4096  // tried with 2048 but seen no improvement
         let buffer = Array.zeroCreate chunckSize
         let finished = ref false
         let acc = ref 0L
@@ -57,8 +57,8 @@ let doFwUpgrade (fwJob:FwJobObj) (agent: ChannelAgent) (mLogAgent:LogAgent) =
            else
               ()
 
-        do mLogAgent.AppendToLog (sprintf "FW Download queued-up (%u frames)  %s > %s" acc.Value fwJob.fwFile fwJob.id )
-        do mLogAgent.AppendToLog (sprintf "Printer %s will not respond until fw upgrade process is complete  (it takes about 5 mins)" fwJob.id )
+        do mLogAgent.AppendToLog (sprintf "FW Download queued-up (%u frames of %d bytes)  %s > %s" acc.Value chunckSize fwJob.fwFile fwJob.id )
+        do mLogAgent.AppendToLog (sprintf "Printer %s will not respond until fw upgrade process is complete" fwJob.id )
 
     } |> Async.Start
 
