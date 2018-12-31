@@ -72,6 +72,7 @@ let ws allAgents (webSocket : WebSocket) (context: HttpContext) =
         let close = ref false
         while not !close do
             let! (op, data, fi), isLogged = inbox.Receive()
+            do logAgent.AppendToLog (sprintf "New msg picked. current queue length: %u" inbox.CurrentQueueLength)
             if isLogged then
                 do logAgent.AppendToLog (sprintf "%s (%s)> %s" (UTF8.toString data) channelName printerUniqueId)
             else
@@ -80,7 +81,6 @@ let ws allAgents (webSocket : WebSocket) (context: HttpContext) =
             match successOrError with
             | Choice1Of2(con) -> ()
             | Choice2Of2(error) -> do logAgent.AppendToLog (sprintf "### ERROR %A in websocket send operation ###" error)
-            do! Async.Sleep 100 // seen problem if this sleep is removed
 
             close := op = Close                    
   })
