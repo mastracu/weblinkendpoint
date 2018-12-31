@@ -111,31 +111,6 @@ let rec clearConfigChannel id agent list =
                           then {printer with configChannelAgent = None} :: xs 
                           else (printer :: clearConfigChannel id agent xs)
 
-let rec sendMsgOverMainChannel id frame ifLog list = 
-      match list with
-      | [] -> ()
-      | printer :: xs -> if printer.uniqueID = id 
-                         then printer.mainChannelAgent.Post (frame, ifLog)
-                         else sendMsgOverMainChannel id frame ifLog xs
-
-let rec sendMsgOverRawChannel id frame ifLog list = 
-      match list with
-      | [] -> ()
-      | printer :: xs -> if printer.uniqueID = id 
-                         then match printer.rawChannelAgent with
-                              | None -> ()
-                              | Some chan -> chan.Post (frame, ifLog)
-                         else sendMsgOverRawChannel id frame ifLog xs
-
-let rec sendMsgOverConfigChannel id frame ifLog list = 
-      match list with
-      | [] -> ()
-      | printer :: xs -> if printer.uniqueID = id 
-                         then match printer.configChannelAgent with
-                              | None -> ()
-                              | Some chan -> chan.Post (frame, ifLog)
-                         else sendMsgOverConfigChannel id frame ifLog xs
-
 let isKnownID id list = List.exists (fun printer -> printer.uniqueID = id) list
 let tryFindPrinter id list = List.tryFind (fun (prt:Printer) -> prt.uniqueID = id) list
 

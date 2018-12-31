@@ -10,6 +10,7 @@ open Suave
 open WebSocketUM
 open MessageLogAgent
 open PrintersAgent
+open System.Diagnostics
 
 
 [<DataContract>]
@@ -45,13 +46,12 @@ let doFwUpgrade (fwJob:FwJobObj) (printersAgent: PrintersAgent) (mLogAgent:LogAg
         while not finished.Value do
            // Download one (at most) 1kb chunk and copy it
            let! count = stream.AsyncRead(buffer, 0, chunckSize)
-           // let str = Encoding.ASCII.GetString(buffer)
            do printersAgent.SendMsgOverRawChannel fwJob.id (Opcode.Binary, buffer, true) true
            acc := acc.Value + 1L
            if count < chunckSize then
               do mLogAgent.AppendToLog (sprintf "Frame #%u has size %d" acc.Value count)
            finished := count <= 0
-           do! Async.Sleep 100 // seen problem if this sleep is removed
+           do! Async.Sleep 150 // seen problem if this sleep is removed
 
         do mLogAgent.AppendToLog (sprintf "FW Download queued-up (%u frames)  %s > %s" acc.Value fwJob.fwFile fwJob.id )
         do mLogAgent.AppendToLog (sprintf "Printer %s will not respond until fw upgrade process is complete  (it takes about 5 mins)" fwJob.id )
