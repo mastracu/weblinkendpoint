@@ -50,7 +50,7 @@ let doFwUpgrade (fwJob:FwJobObj) (agent: ChannelAgent) (mLogAgent:LogAgent) =
            finished := count <= 0
            if (not finished.Value) then
               acc := acc.Value + 1L
-              do agent.Post ((Opcode.Binary, UTF8.bytes (Encoding.ASCII.GetString(buffer)), true), false)              
+              do agent.Post ((Opcode.Binary, Array.copy buffer), true), false)              
               if count < chunckSize then
                  do mLogAgent.AppendToLog (sprintf "Frame #%u has size %d" acc.Value count)
               else 
