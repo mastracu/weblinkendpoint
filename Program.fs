@@ -33,7 +33,17 @@ open LabelBuilder
 open System
 open fw
 
-
+let Crc16b (msg:byte[]) =
+    let polynomial      = 0xA001us
+    let mutable code    = 0xffffus
+    for b in msg do
+        code <- code ^^^ uint16 b
+        for j in [0..7] do
+            if (code &&& 1us <> 0us) then
+                code <- (code >>> 1) ^^^ polynomial
+            else
+                code <- code >>> 1
+    code
 
 let sendBTCaptureCmds printerID (printersAgent:PrintersAgent) toLog= 
     do printersAgent.SendMsgOverConfigChannel printerID (Opcode.Binary, UTF8.bytes """{}{"capture.channel1.port":"bt"} """, true) toLog
@@ -72,6 +82,7 @@ let ws allAgents (webSocket : WebSocket) (context: HttpContext) =
         let close = ref false
         while not !close do
             let! (op, pld, fi), isLogged = inbox.Receive()
+            do logAgent.AppendToLog (sprintf "pld crc16 = %u opCode = %A" (Crc16b pld) op)
             if isLogged then
                 do logAgent.AppendToLog (sprintf "%s (%s)> %s" (UTF8.toString pld) channelName printerUniqueId)
             else
@@ -224,7 +235,7 @@ let ws allAgents (webSocket : WebSocket) (context: HttpContext) =
                         | _ -> ()
                     | None -> ()
 
-                    match jval.TryGetProperty "device.product_name" with
+                    match jval.TryGetProperty "device.product_name" with    
                     // match jval.TryGetProperty "device.configuration_number" with
                     | Some jsonval ->   let devConfigNumber = JsonExtensions.AsString (jsonval)
                                         do printersAgent.UpdatePartNumber printerUniqueId devConfigNumber
