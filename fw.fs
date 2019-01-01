@@ -11,6 +11,7 @@ open WebSocketUM
 open MessageLogAgent
 open PrintersAgent
 open System.Diagnostics
+open System.Text
 
 
 [<DataContract>]
@@ -37,6 +38,7 @@ let doFwUpgrade (fwJob:FwJobObj) (agent: ChannelAgent) (mLogAgent:LogAgent) =
     async {
         let chunckSize = 4096  // tried with 2048 but seen no improvement
         let buffer = Array.zeroCreate chunckSize
+        let copyOfBuffer = Array.zeroCreate chunckSize
         let finished = ref false
         let acc = ref 0L
 
@@ -48,12 +50,12 @@ let doFwUpgrade (fwJob:FwJobObj) (agent: ChannelAgent) (mLogAgent:LogAgent) =
            finished := count <= 0
            if (not finished.Value) then
               acc := acc.Value + 1L
-              do agent.Post ((Opcode.Binary, buffer, true), false)              
+              do agent.Post ((Opcode.Binary, UTF8.bytes (Encoding.ASCII.GetString(buffer)), true), false)              
               if count < chunckSize then
                  do mLogAgent.AppendToLog (sprintf "Frame #%u has size %d" acc.Value count)
               else 
                  ()
-              do! Async.Sleep 100
+              // do! Async.Sleep 100
            else
               ()
 
