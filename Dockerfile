@@ -3,7 +3,6 @@ WORKDIR /src
 
 
 COPY . /src
-COPY ./firmware /src
+COPY ../weblinkendpoint/firmware /src
 RUN nuget restore && xbuild
 EXPOSE 8083
-ENTRYPOINT ["mono", "WebSocket.exe"]
