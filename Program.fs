@@ -276,7 +276,7 @@ let ws allAgents (webSocket : WebSocket) (context: HttpContext) =
 type LogEntryOrTimeout = Timeout | LogEntry of String
 
 let sseContinuation sEvent (mLogAgent:LogAgent) = (fun out ->
-          let emptyEvent = new Event<Unit>()
+          let errorEvent = new Event<Unit>()
           let Timer15sec = new System.Timers.Timer(float 15000)
           do Timer15sec.AutoReset <- true
           let timeoutEvent = Timer15sec.Elapsed
@@ -297,25 +297,28 @@ let sseContinuation sEvent (mLogAgent:LogAgent) = (fun out ->
                         | Timeout ->
                             let! _ = "keepAlive" |> comment out
                             ()
-                        let! _ = dispatch out
+                        let! successOrError = dispatch out
+                        match successOrError with
+                        | Choice1Of2(con) -> ()
+                        | Choice2Of2(error) -> 
+                            System.Console.Write("SSE dispatch out error")
+                            errorEvent.Trigger()
                         return! loop (n+1) }
                 loop 0)
 
           let disposableResource = newEvent |> Observable.subscribe (fun arg -> do inbox.Post(arg)) 
 
+
           // https://github.com/SuaveIO/suave/issues/463
           async {
                 let! successOrError = socket {
-                      let! never=Control.Async.AwaitEvent(emptyEvent.Publish) |>  Suave.Sockets.SocketOp.ofAsync
+                      let! _ =Control.Async.AwaitEvent(errorEvent.Publish) |>  Suave.Sockets.SocketOp.ofAsync
                       return out
                 }
-                match successOrError with
-                | Choice1Of2(con) -> ()
-                | Choice2Of2(error) -> 
-                    disposableResource.Dispose()
-                    Timer15sec.Stop()
-                    Timer15sec.Dispose()
-                    do mLogAgent.AppendToLog ("Forced SSE disconnect - disposed resources in sse handshake continuation function")
+                disposableResource.Dispose()
+                Timer15sec.Stop()
+                Timer15sec.Dispose()
+                do mLogAgent.AppendToLog ("Forced SSE disconnect - disposed resources in sse handshake continuation function")
                 return successOrError
           }
 )
