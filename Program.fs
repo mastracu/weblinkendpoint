@@ -301,7 +301,6 @@ let sseContinuation sEvent (mLogAgent:LogAgent) = (fun out ->
                         match successOrError with
                         | Choice1Of2(con) -> ()
                         | Choice2Of2(error) -> 
-                            System.Console.Write("SSE dispatch out error")
                             errorEvent.Trigger()
                         return! loop (n+1) }
                 loop 0)
@@ -318,11 +317,11 @@ let sseContinuation sEvent (mLogAgent:LogAgent) = (fun out ->
                 disposableResource.Dispose()
                 Timer15sec.Stop()
                 Timer15sec.Dispose()
-                do mLogAgent.AppendToLog ("Forced SSE disconnect - disposed resources in sse handshake continuation function")
+                System.Console.Write(DateTime.Now.ToString() + "Exiting SSE - disposed resources in sse handshake continuation function")
                 return successOrError
           }
 )
-
+    
 [<DataContract>]
 type ProductPrinterObj =
    { 
