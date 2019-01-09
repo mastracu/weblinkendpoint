@@ -153,7 +153,31 @@
         </div>
 
         <div id="Custom label" class="tabcontent">
-            <textarea name="label" id="labelformat" cols="75" rows="10" spellcheck="false"></textarea>
+            <textarea name="label" placeholder="key un or drag and drop" id="labelformat" cols="75" rows="10" spellcheck="false" ondrop="drop(event)" ondragover="allowDrop(event)"></textarea>
+            <p>
+                Certificates in Flash:
+                <button type="button" value="^XA^HWE:*.NRD^XZ" class="btn btn-default btn-sm" draggable="true" ondragstart="drag(event)">
+                    <span class="glyphicon glyphicon-list-alt"></span> List all
+                </button>
+                <button type="button" value="^XA^IDE:*.NRD^XZ" class="btn btn-default btn-sm" draggable="true" ondragstart="drag(event)">
+                    <span class="glyphicon glyphicon-list-alt"></span> Delete all
+                </button>
+            </p>
+            <p>
+                Diagnostic info to host:
+                <button type="button" value="~HD" class="btn btn-default btn-sm" draggable="true" ondragstart="drag(event)">
+                    <span class="glyphicon glyphicon-list-alt"></span> Head
+                </button>
+                <button type="button" value="^XA^HH^XZ" class="btn btn-default btn-sm" draggable="true" ondragstart="drag(event)">
+                    <span class="glyphicon glyphicon-list-alt"></span> Configuration Label
+                </button>
+            </p>
+            <!--<p>
+        List-alt icon on a styled link button:
+        <button type="button" value="^XA^HWE:*.NRD^XZ" class="btn btn-info btn-lg" draggable="true" ondragstart="drag(event)">
+            <span class="glyphicon glyphicon-list-alt"></span> Host Directory List
+        </button>
+    </p>-->
         </div>
 
         <div id="Price label" class="tabcontent">
@@ -539,6 +563,20 @@
         dropZone.addEventListener('drop', handleFileSelect, false);
 
         document.getElementById("defaultOpen").click();
+
+        function allowDrop(ev) {
+            ev.preventDefault();
+        }
+
+        function drag(ev) {
+            ev.dataTransfer.setData("text", ev.target.value);
+        }
+
+        function drop(ev) {
+            ev.preventDefault();
+            var data = ev.dataTransfer.getData("text");
+            ev.target.value = data;
+        }
 
     </script>
 </body>
