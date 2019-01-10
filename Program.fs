@@ -89,7 +89,9 @@ let ws allAgents (webSocket : WebSocket) (context: HttpContext) =
             let! successOrError = webSocket.send op (pld|> ByteSegment) fi
             match successOrError with
             | Choice1Of2(con) -> ()
-            | Choice2Of2(error) -> do logAgent.AppendToLog (sprintf "### ERROR %A in websocket send operation ###" error)
+            | Choice2Of2(error) -> 
+                do logAgent.AppendToLog (sprintf "### ERROR %A in websocket %s(%s) send operation ###" error printerUniqueId channelName)
+                close := true
 
             close := op = Close                    
   })
