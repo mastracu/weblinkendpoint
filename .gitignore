@@ -242,3 +242,12 @@ ModelManifest.xml
 .fake/
 /weblink-mastracu.it-sen2sever.txt
 /samplelabelheroku.prn
+
+# Certificates, private keys, etc
+ifad.mastracu.it.key
+ifad.mastracu.it.csr
+ifad.mastracu.it_cer
+weblinkendpoint.mastracu.it.cer
+weblinkendpoint.mastracu.it.key
+ZebraCAChain.cer
+
