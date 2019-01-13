@@ -243,7 +243,7 @@ ModelManifest.xml
 /weblink-mastracu.it-sen2sever.txt
 /samplelabelheroku.prn
 
-# Certificates, private keys, etc
+# Certificates, private keys, etc UM Jan,13 2019
 ifad.mastracu.it.key
 ifad.mastracu.it.csr
 ifad.mastracu.it_cer
@@ -251,3 +251,10 @@ weblinkendpoint.mastracu.it.cer
 weblinkendpoint.mastracu.it.key
 ZebraCAChain.cer
 
+# DLL and Executables UM Jan,13 2019
+Suave.dll
+Suave.dll.config
+Suave.xml
+WebSocket.exe
+WebSocket.exe.config
+WebSocket.XML
