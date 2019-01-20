@@ -91,7 +91,7 @@ let ws allAgents (webSocket : WebSocket) (context: HttpContext) =
             | Choice1Of2(con) -> 
                 close := op = Close
             | Choice2Of2(error) -> 
-                do logAgent.AppendToLog (sprintf "### ERROR %A in websocket %s(%s) send operation ###" error printerUniqueId channelName)
+                do System.Console.WriteLine (DateTime.Now.ToString() + sprintf " ### ERROR %A in websocket %s(%s) send operation ###" error printerUniqueId channelName)
                 close := true                
   })
 
@@ -167,9 +167,9 @@ let ws allAgents (webSocket : WebSocket) (context: HttpContext) =
                         let zebraDiscoveryPacket = JsonExtensions.AsString jsonval |> decode64
                         let uniqueID = List.rev (snd (List.fold (fun (pos,acclist) byte -> (pos+1, if (pos > 187 && pos < 202 ) then byte::acclist else acclist))  (0,[]) zebraDiscoveryPacket))
                         do printerUniqueId <- uniqueID |> intListToString
-                        do logAgent.AppendToLog (sprintf "discovery_b64 property printerID: %s"  printerUniqueId)
+                        do System.Console.WriteLine (DateTime.Now.ToString() + sprintf " discovery_b64 property printerID: %s"  printerUniqueId)
                         do printerUniqueId <- printerUniqueId.Substring (0, (printerUniqueId.IndexOf 'J' + 10))
-                        do logAgent.AppendToLog (sprintf "adjusted printerID: %s"  printerUniqueId)
+                        do System.Console.WriteLine (DateTime.Now.ToString() + sprintf "adjusted printerID: %s"  printerUniqueId)
                         do channelName <- "v1.main.zebra.com"
                         do printersAgent.AddPrinter printerUniqueId inbox
                         do printersAgent.SendMsgOverMainChannel printerUniqueId (Opcode.Binary, UTF8.bytes """ { "open" : "v1.raw.zebra.com" } """, true) true
@@ -183,7 +183,7 @@ let ws allAgents (webSocket : WebSocket) (context: HttpContext) =
                             let sgdFeedback = printersAgent.FetchPrinterInfo printerUniqueId
                             match sgdFeedback with 
                             | Some feedback -> 
-                                do logAgent.AppendToLog (sprintf "Printer application: %s" feedback.sgdSetAlertFeedback )
+                                do System.Console.WriteLine (DateTime.Now.ToString() + sprintf " Printer application: %s" feedback.sgdSetAlertFeedback )
                                 match feedback.sgdSetAlertFeedback with
                                 | "priceTag" -> 
                                     let barcode = (jsonalertval.GetProperty "setting_value").AsString()
@@ -191,22 +191,22 @@ let ws allAgents (webSocket : WebSocket) (context: HttpContext) =
                                     match maybeProd with
                                     | Some prod -> 
                                         let priceString = prod.unitPrice.ToString()
-                                        do logAgent.AppendToLog (sprintf "Barcode: %s Price: %s Description: %s" barcode priceString prod.description) 
+                                        do System.Console.WriteLine (DateTime.Now.ToString() + sprintf " Barcode: %s Price: %s Description: %s" barcode priceString prod.description) 
                                         let priceLbl = (buildpricetag prod)
                                         do printersAgent.SendMsgOverRawChannel printerUniqueId (Opcode.Binary, UTF8.bytes priceLbl, true) true
                                     | None ->
-                                        do logAgent.AppendToLog (sprintf "Barcode: %s not found in store" barcode)
+                                        do System.Console.WriteLine (DateTime.Now.ToString() + sprintf " Barcode: %s not found in store" barcode)
                                 | "ifadLabelConversion" ->  
                                     let label300dpi = (jsonalertval.GetProperty "setting_value").AsString()
                                     let label200dpi = convertIfadLabel label300dpi
-                                    do logAgent.AppendToLog (sprintf "Original label: %s" label300dpi)    
-                                    do logAgent.AppendToLog (sprintf "Converted label: %s" label200dpi)
+                                    do System.Console.WriteLine (DateTime.Now.ToString() + sprintf " Original label: %s" label300dpi)    
+                                    do System.Console.WriteLine (DateTime.Now.ToString() + sprintf " Converted label: %s" label200dpi)
                                     do printersAgent.SendMsgOverRawChannel printerUniqueId (Opcode.Binary, UTF8.bytes label200dpi, true) true
                                 | "wikipediaConversion" ->  
                                     let demoinlabel = (jsonalertval.GetProperty "setting_value").AsString()
                                     let demooutlabel = (convertWikipediaLabel demoinlabel)
-                                    do logAgent.AppendToLog (sprintf "Original label: %s" demoinlabel)    
-                                    do logAgent.AppendToLog (sprintf "Converted label: %s" demooutlabel)
+                                    do System.Console.WriteLine (DateTime.Now.ToString() + sprintf " Original label: %s" demoinlabel)    
+                                    do System.Console.WriteLine (DateTime.Now.ToString() + sprintf " Converted label: %s" demooutlabel)
                                     do printersAgent.SendMsgOverRawChannel printerUniqueId (Opcode.Binary, UTF8.bytes demooutlabel, true) true
                                 | _ -> ()
                             | None -> ()
@@ -219,7 +219,7 @@ let ws allAgents (webSocket : WebSocket) (context: HttpContext) =
                         match jval.TryGetProperty "unique_id" with
                         | Some jsonval ->   
                              do printerUniqueId <- JsonExtensions.AsString (jsonval)
-                             do logAgent.AppendToLog (sprintf "chan: %s printerID %s" channelName printerUniqueId)
+                             do System.Console.WriteLine (DateTime.Now.ToString() + sprintf " chan: %s printerID %s" channelName printerUniqueId)
                         | None -> ()
                         match channelName with
                         | "v1.raw.zebra.com" ->
@@ -252,23 +252,23 @@ let ws allAgents (webSocket : WebSocket) (context: HttpContext) =
                 // The printer sends a PING message roughly ever 60 seconds. The server needs to respond with a PONG, per RFC6455
                 // After three failed PING attempts, the printer disconnects and attempts to reconnect
 
-                do logAgent.AppendToLog "Ping message from printer. Responding with Pong message"
+                do System.Console.WriteLine (DateTime.Now.ToString() + " Ping message from printer. Responding with Pong message")
                 // A Pong frame sent in response to a Ping frame must have identical "Application data" as found in the message body of the Ping frame being replied to.
                 // the `send` function sends a message back to the client
                 do inbox.Post ((Opcode.Pong, data, true), false)
 
               | (Close, _, _) ->
-                do logAgent.AppendToLog (sprintf "(%s, %s) Got Close message from printer, releasing resources" printerUniqueId channelName)
+                do System.Console.WriteLine (DateTime.Now.ToString() + sprintf " (%s, %s) Got Close message from printer, releasing resources" printerUniqueId channelName)
                 do releaseResources()
                 loop <- false
         
               | (_,_,fi) -> 
-                do logAgent.AppendToLog (sprintf "Unexpected message from printer of type %A" fi)
+                do System.Console.WriteLine (DateTime.Now.ToString() + sprintf " Unexpected message from printer of type %A" fi)
         }
         match successOrError with
         | Choice1Of2(con) -> ()
         | Choice2Of2(error) -> 
-            do logAgent.AppendToLog (sprintf "### (%s, %s) ERROR in websocket monad, releasing resources ###" printerUniqueId channelName)
+            do System.Console.WriteLine (DateTime.Now.ToString() + sprintf " ### (%s, %s) ERROR in websocket monad, releasing resources ###" printerUniqueId channelName)
             do releaseResources()
         return successOrError
   }
@@ -319,7 +319,7 @@ let sseContinuation sEvent (mLogAgent:LogAgent) = (fun out ->
                 disposableResource.Dispose()
                 Timer15sec.Stop()
                 Timer15sec.Dispose()
-                System.Console.Write(DateTime.Now.ToString() + "Exiting SSE - disposed resources in sse handshake continuation function")
+                System.Console.WriteLine(DateTime.Now.ToString() + " Exiting SSE - disposed resources in sse handshake continuation function")
                 return successOrError
           }
 )
@@ -355,7 +355,7 @@ let app  : WebPart =
                        func obj
                        obj)
 
-  do mLogAgent.AppendToLog "WebServer started"
+  do System.Console.WriteLine (DateTime.Now.ToString() + " WebServer started")
 
   //let appname = System.Environment.GetEnvironmentVariable("HEROKU_APP_NAME")
   //let releaseAt = System.Environment.GetEnvironmentVariable("HEROKU_RELEASE_CREATED_AT")
@@ -386,22 +386,22 @@ let app  : WebPart =
           path "/productremove" >=> objectDo (fun prod -> storeAgent.RemoveSku prod.sku)
 
           path "/json2printer" >=> objectDo (fun (pm:Msg2Printer) -> 
-                                               do mLogAgent.AppendToLog (sprintf "POST /json2printer - %A" pm)
+                                               do System.Console.WriteLine (DateTime.Now.ToString() + sprintf " POST /json2printer - %A" pm)
                                                let data2send = UTF8.bytes (pm.msg)
                                                do printersAgent.SendMsgOverConfigChannel pm.printerID (Opcode.Binary, data2send, true ) true)
           path "/printproduct" >=> objectDo (fun (prodprint:ProductPrinterObj) ->  
-                                               do mLogAgent.AppendToLog (sprintf "POST /printproduct - %A" prodprint)
+                                               do System.Console.WriteLine (DateTime.Now.ToString() + sprintf " POST /printproduct - %A" prodprint)
                                                let data2send = UTF8.bytes (buildpricetag prodprint.ProductObj)
                                                do printersAgent.SendMsgOverRawChannel prodprint.id (Opcode.Binary, data2send, true ) true) 
           path "/upgradeprinter" >=> objectDo (fun (fwjob:FwJobObj) ->  
-                                               do mLogAgent.AppendToLog (sprintf "POST /upgradeprinter - %A" fwjob)
+                                               do System.Console.WriteLine (DateTime.Now.ToString() + sprintf " POST /upgradeprinter - %A" fwjob)
                                                do match printersAgent.FetchPrinterInfo fwjob.id with
                                                   | None -> ()
                                                   | Some pr -> match pr.rawChannelAgent with
                                                                | None -> ()
                                                                | Some agent -> do doFwUpgrade fwjob agent mLogAgent)
           path "/printraw" >=> objectDo (fun (pm:Msg2Printer) ->  
-                                               do mLogAgent.AppendToLog (sprintf "POST /printraw - %A" pm)
+                                               do System.Console.WriteLine (DateTime.Now.ToString() + sprintf " POST /printraw - %A" pm)
                                                let data2send = UTF8.bytes (pm.msg)
                                                do printersAgent.SendMsgOverRawChannel pm.printerID (Opcode.Binary, data2send, true ) true) 
         ]
