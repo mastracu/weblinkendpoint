@@ -169,7 +169,7 @@ let ws allAgents (webSocket : WebSocket) (context: HttpContext) =
                         do printerUniqueId <- uniqueID |> intListToString
                         do System.Console.WriteLine (DateTime.Now.ToString() + sprintf " discovery_b64 property printerID: %s"  printerUniqueId)
                         do printerUniqueId <- printerUniqueId.Substring (0, (printerUniqueId.IndexOf 'J' + 10))
-                        do System.Console.WriteLine (DateTime.Now.ToString() + sprintf "adjusted printerID: %s"  printerUniqueId)
+                        do System.Console.WriteLine (DateTime.Now.ToString() + sprintf " adjusted printerID: %s"  printerUniqueId)
                         do channelName <- "v1.main.zebra.com"
                         do printersAgent.AddPrinter printerUniqueId inbox
                         do printersAgent.SendMsgOverMainChannel printerUniqueId (Opcode.Binary, UTF8.bytes """ { "open" : "v1.raw.zebra.com" } """, true) true
