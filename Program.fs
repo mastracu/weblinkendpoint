@@ -313,7 +313,7 @@ let sseContinuation sEvent (mLogAgent:LogAgent) = (fun out ->
           // https://github.com/SuaveIO/suave/issues/463
           async {
                 let! successOrError = socket {
-                      System.Console.WriteLine(DateTime.Now.ToString() + " Entering SSE continuation ")  
+                      System.Console.WriteLine(DateTime.Now.ToString() + " New SSE continuation is setup")  
                       let! _ =Control.Async.AwaitEvent(errorEvent.Publish) |>  Suave.Sockets.SocketOp.ofAsync
                       return out
                 }
