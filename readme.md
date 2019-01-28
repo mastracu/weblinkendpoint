@@ -22,7 +22,7 @@ I typically use Wifi printers and connect to ZGuest wireless network in Zebra of
 You then specify the address of the weblink endpoint by issuing 
 
 ```
-! U1 setvar "weblink.ip.conn1.location" "https://ifad.mastracu.it/websocketWithSubprotocol"
+! U1 setvar "weblink.ip.conn1.location" "https://weblinktest.mastracu.it/websocketWithSubprotocol"
 ```
 You then re-start / power-cycle the printer by issuing
 
