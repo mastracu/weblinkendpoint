@@ -1,4 +1,4 @@
-﻿
+﻿   
 open FSharp.Data
 
 open Suave
@@ -62,7 +62,7 @@ let config =
     let ip127  = IPAddress.Parse("127.0.0.1")
     let ipZero = IPAddress.Parse("0.0.0.0")
 
-    { defaultConfig with 
+    { defaultConfig with
         bindings=[ (if port = null then HttpBinding.create HTTP ipZero (uint16 8083)  // 3 Nov - it was ipZero
                     else HttpBinding.create HTTP ipZero (uint16 port)) ] }
 
@@ -313,6 +313,7 @@ let sseContinuation sEvent (mLogAgent:LogAgent) = (fun out ->
           // https://github.com/SuaveIO/suave/issues/463
           async {
                 let! successOrError = socket {
+                      System.Console.WriteLine(DateTime.Now.ToString() + " Entering SSE continuation ")  
                       let! _ =Control.Async.AwaitEvent(errorEvent.Publish) |>  Suave.Sockets.SocketOp.ofAsync
                       return out
                 }
@@ -341,6 +342,7 @@ type Msg2Printer =
       [<field: DataMember(Name = "msg")>]
       msg : string;
    }
+
 
 let app  : WebPart = 
   let logEvent = new Event<String>()
