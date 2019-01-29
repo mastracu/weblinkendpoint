@@ -531,7 +531,8 @@
                                         var header = "! CISDFCRC16\n0000\n" + thefile.name + "\n" + lunghezza + "\n0000\n";
                                         var PrinterLabelObj = { printerID: selectedPrinter[0].uniqueID, blog: rawdata };
                                         var myJSON = JSON.stringify(PrinterLabelObj);
-                                        console.log("JSON output: " + myJSON);
+                                        console.log("json output: " + myJSON);
+                                        console.log("header: " + header);
                                         // var xhr = new XMLHttpRequest();
                                         // var url = "printraw";
                                         // xhr.open("POST", url, true);
