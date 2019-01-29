@@ -527,12 +527,12 @@
                                 reader.onload = (function (thefile) {
                                     return function (event) {
                                         var rawdata = event.target.result;
-                                        var lunghezza = rawdata.length.toString(16).padStart(8, '0');
-                                        var header = "! CISDFCRC16\n0000\n" + thefile.name + "\n" + lunghezza + "\n0000\n";
+                                        // var lunghezza = rawdata.length.toString(16).padStart(8, '0');
+                                        // var header = "! CISDFCRC16\n0000\n" + thefile.name + "\n" + lunghezza + "\n0000\n";
                                         var PrinterLabelObj = { printerID: selectedPrinter[0].uniqueID, blog: rawdata };
                                         var myJSON = JSON.stringify(PrinterLabelObj);
                                         console.log("json output: " + myJSON);
-                                        console.log("header: " + header);
+                                        // console.log("header: " + header);
                                         // var xhr = new XMLHttpRequest();
                                         // var url = "printraw";
                                         // xhr.open("POST", url, true);
