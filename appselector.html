@@ -482,6 +482,37 @@
                     });
 
                     break;
+                //case "CISDFCRC16":
+                //    $("#sendcmd-button").off('click').on('click', function () {
+                //        var selectedPrinter = $("#printers-table").tabulator("getSelectedData");
+
+                //        if (selectedPrinter.length == 0) {
+                //            alert("No printer selected !")
+                //        }
+                //        else {
+                //            for (var i = 0, f; f = window.files2store[i]; i++) {
+                //                var reader = new FileReader();
+                //                // Closure to capture the file information.
+                //                reader.onload = (function (thefile) {
+                //                    return function (event) {
+                //                        var testo = event.target.result;
+                //                        var lunghezza = testo.length.toString(16).padStart(8, '0');
+                //                        var messaggio = "! CISDFCRC16\n0000\n" + thefile.name + "\n" + lunghezza + "\n0000\n" + testo;
+                //                        // alert(messaggio);
+                //                        var PrinterLabelObj = { printerID: selectedPrinter[0].uniqueID, msg: messaggio };
+                //                        var myJSON = JSON.stringify(PrinterLabelObj);
+                //                        var xhr = new XMLHttpRequest();
+                //                        var url = "printraw";
+                //                        xhr.open("POST", url, true);
+                //                        xhr.setRequestHeader("Content-type", "application/json");
+                //                        xhr.send(myJSON);
+                //                    };
+                //                })(f);
+                //                reader.readAsText(f);
+                //            }
+                //        }
+                //    });
+                //    break;
                 case "CISDFCRC16":
                     $("#sendcmd-button").off('click').on('click', function () {
                         var selectedPrinter = $("#printers-table").tabulator("getSelectedData");
@@ -495,20 +526,20 @@
                                 // Closure to capture the file information.
                                 reader.onload = (function (thefile) {
                                     return function (event) {
-                                        var testo = event.target.result;
-                                        var lunghezza = testo.length.toString(16).padStart(8, '0');
-                                        var messaggio = "! CISDFCRC16\n0000\n" + thefile.name + "\n" + lunghezza + "\n0000\n" + testo;
-                                        // alert(messaggio);
-                                        var PrinterLabelObj = { printerID: selectedPrinter[0].uniqueID, msg: messaggio };
+                                        var rawdata = event.target.result;
+                                        var lunghezza = rawdata.length.toString(16).padStart(8, '0');
+                                        var header = "! CISDFCRC16\n0000\n" + thefile.name + "\n" + lunghezza + "\n0000\n";
+                                        var PrinterLabelObj = { printerID: selectedPrinter[0].uniqueID, blog: rawdata };
                                         var myJSON = JSON.stringify(PrinterLabelObj);
-                                        var xhr = new XMLHttpRequest();
-                                        var url = "printraw";
-                                        xhr.open("POST", url, true);
-                                        xhr.setRequestHeader("Content-type", "application/json");
-                                        xhr.send(myJSON);
+                                        console.log("JSON output: " + myJSON);
+                                        // var xhr = new XMLHttpRequest();
+                                        // var url = "printraw";
+                                        // xhr.open("POST", url, true);
+                                        // xhr.setRequestHeader("Content-type", "application/json");
+                                        // xhr.send(myJSON);
                                     };
                                 })(f);
-                                reader.readAsText(f);
+                                reader.readAsArrayBuffer(f);
                             }
                         }
                     });
