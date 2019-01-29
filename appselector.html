@@ -398,6 +398,7 @@
         es.addEventListener("message", listener);
         es.addEventListener("error", listener);
 
+        // https://stackoverflow.com/questions/9267899/arraybuffer-to-base64-encoded-string
         function _arrayBufferToBase64(buffer) {
             var binary = '';
             var bytes = new Uint8Array(buffer);
@@ -457,7 +458,7 @@
                             var PrinterLabelObj = { printerID: selectedPrinter[0].uniqueID, msg: $('#labelformat').val() }
                             var myJSON = JSON.stringify(PrinterLabelObj);
                             var xhr = new XMLHttpRequest();
-                            var url = "printraw";
+                            var url = "utf82raw";
                             xhr.open("POST", url, true);
                             xhr.setRequestHeader("Content-type", "application/json");
                             xhr.send(myJSON);
@@ -512,7 +513,7 @@
                 //                        var PrinterLabelObj = { printerID: selectedPrinter[0].uniqueID, msg: messaggio };
                 //                        var myJSON = JSON.stringify(PrinterLabelObj);
                 //                        var xhr = new XMLHttpRequest();
-                //                        var url = "printraw";
+                //                        var url = "utf82raw";
                 //                        xhr.open("POST", url, true);
                 //                        xhr.setRequestHeader("Content-type", "application/json");
                 //                        xhr.send(myJSON);
@@ -539,15 +540,16 @@
                                         var rawdata = event.target.result;
                                         var lunghezza = rawdata.byteLength.toString(16).padStart(8, '0');
                                         var header = "! CISDFCRC16\n0000\n" + thefile.name + "\n" + lunghezza + "\n0000\n";
-                                        var PrinterLabelObj = { printerID: selectedPrinter[0].uniqueID, bindata: _arrayBufferToBase64(rawdata) };
+                                        var PrinterLabelObj = { printerID: selectedPrinter[0].uniqueID, CISDFCRC16Hdr: header, base64Data: _arrayBufferToBase64(rawdata) };
                                         var myJSON = JSON.stringify(PrinterLabelObj);
-                                        console.log("json output: " + myJSON);
-                                        console.log("header: " + header);
-                                        // var xhr = new XMLHttpRequest();
-                                        // var url = "printraw";
-                                        // xhr.open("POST", url, true);
-                                        // xhr.setRequestHeader("Content-type", "application/json");
-                                        // xhr.send(myJSON);
+                                        // console.log("json output: " + myJSON);
+                                        // console.log("header: " + header);
+                                        // https://stackoverflow.com/questions/35971904/system-convert-tobase64string-in-f
+                                        var xhr = new XMLHttpRequest();
+                                        var url = "CISDFCRC16";
+                                        xhr.open("POST", url, true);
+                                        xhr.setRequestHeader("Content-type", "application/json");
+                                        xhr.send(myJSON);
                                     };
                                 })(f);
                                 reader.readAsArrayBuffer(f);

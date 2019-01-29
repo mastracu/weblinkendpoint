@@ -26,6 +26,7 @@ let buildpricetag (prod:Product) =
     let label0 = "
         ^XA
         ^MMT
+        ^CI28
         ^PW400
         ^LL0240
         ^LS0
