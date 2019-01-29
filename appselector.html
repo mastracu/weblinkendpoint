@@ -526,7 +526,7 @@
                                 // Closure to capture the file information.
                                 reader.onload = (function (thefile) {
                                     return function (event) {
-                                        var rawdata = event.target.result;
+                                        var rawdata = reader.result;
                                         // var lunghezza = rawdata.length.toString(16).padStart(8, '0');
                                         // var header = "! CISDFCRC16\n0000\n" + thefile.name + "\n" + lunghezza + "\n0000\n";
                                         var PrinterLabelObj = { printerID: selectedPrinter[0].uniqueID, blog: rawdata };
