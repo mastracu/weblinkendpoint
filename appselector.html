@@ -398,6 +398,16 @@
         es.addEventListener("message", listener);
         es.addEventListener("error", listener);
 
+        function _arrayBufferToBase64(buffer) {
+            var binary = '';
+            var bytes = new Uint8Array(buffer);
+            var len = bytes.byteLength;
+            for (var i = 0; i < len; i++) {
+                binary += String.fromCharCode(bytes[i]);
+            }
+            return window.btoa(binary);
+        }
+
         function openTab(evt, tabName) {
             // Declare all variables
             var i, tabcontent, tablinks;
@@ -529,9 +539,9 @@
                                         var rawdata = event.target.result;
                                         var lunghezza = rawdata.byteLength.toString(16).padStart(8, '0');
                                         var header = "! CISDFCRC16\n0000\n" + thefile.name + "\n" + lunghezza + "\n0000\n";
-                                        // var PrinterLabelObj = { printerID: selectedPrinter[0].uniqueID, blog: arr.value };
-                                        // var myJSON = JSON.stringify(PrinterLabelObj);
-                                        // console.log("json output: " + myJSON);
+                                        var PrinterLabelObj = { printerID: selectedPrinter[0].uniqueID, bindata: _arrayBufferToBase64(rawdata) };
+                                        var myJSON = JSON.stringify(PrinterLabelObj);
+                                        console.log("json output: " + myJSON);
                                         console.log("header: " + header);
                                         // var xhr = new XMLHttpRequest();
                                         // var url = "printraw";
