@@ -142,14 +142,20 @@
                 <option value="{}{&#34interface.network.active.ip_addr&#34:null}">
                 <option value="{}{&#34interface.network.active.cable_type&#34:null}">
                 <option value="{}{&#34memory&#34:null}">
+                <option value="{}{&#34odometer.label_dot_length&#34:null}">
+                <option value="{}{&#34odometer.rfid&#34:null}">
                 <option value="{}{&#34odometer.total_label_count&#34:null}">
                 <option value="{}{&#34odometer.user_label_count&#34:null}">
-                <option value="{}{&#34odometer.label_dot_length&#34:null}">
                 <option value="{}{&#34power&#34:null}">
                 <option value="{}{&#34power.health&#34:null}">
                 <option value="{}{&#34power.percent_full&#34:null}">
                 <option value="{}{&#34power.sleep.enable&#34:null}">
                 <option value="{}{&#34print.tone&#34:null}">
+                <option value="{}{&#34rfid.error.response&#34:null}">
+                <option value="{}{&#34rfid.position.program&#34:null}">
+                <option value="{}{&#34rfid.reader_1.power.read&#34:null}">
+                <option value="{}{&#34rfid.reader_1.power.write&#34:null}">
+                <option value="{}{&#34rfid.tag.calibrate&#34:&#34&#34}">
                 <option value="{}{&#34ribbon.cartridge&#34:null}">
                 <option value="{}{&#34weblink.ip.conn1.location&#34:null}">
                 <option value="{}{&#34zpl.calibrate&#34:&#34&#34}">
@@ -186,12 +192,6 @@
             <p>
                 <a target="_blank" href="http://labelary.com/viewer.html">ZPL viewer</a>&emsp;<a target="_blank" href="http://explainzpl.appspot.com/">ZPL code analysis</a>
             </p>
-            <!--<p>
-        List-alt icon on a styled link button:
-        <button type="button" value="^XA^HWE:*.NRD^XZ" class="btn btn-info btn-lg" draggable="true" ondragstart="drag(event)">
-            <span class="glyphicon glyphicon-list-alt"></span> Host Directory List
-        </button>
-    </p>-->
         </div>
 
         <div id="Price label" class="tabcontent">
@@ -493,37 +493,6 @@
                     });
 
                     break;
-                //case "CISDFCRC16":
-                //    $("#sendcmd-button").off('click').on('click', function () {
-                //        var selectedPrinter = $("#printers-table").tabulator("getSelectedData");
-
-                //        if (selectedPrinter.length == 0) {
-                //            alert("No printer selected !")
-                //        }
-                //        else {
-                //            for (var i = 0, f; f = window.files2store[i]; i++) {
-                //                var reader = new FileReader();
-                //                // Closure to capture the file information.
-                //                reader.onload = (function (thefile) {
-                //                    return function (event) {
-                //                        var testo = event.target.result;
-                //                        var lunghezza = testo.length.toString(16).padStart(8, '0');
-                //                        var messaggio = "! CISDFCRC16\n0000\n" + thefile.name + "\n" + lunghezza + "\n0000\n" + testo;
-                //                        // alert(messaggio);
-                //                        var PrinterLabelObj = { printerID: selectedPrinter[0].uniqueID, msg: messaggio };
-                //                        var myJSON = JSON.stringify(PrinterLabelObj);
-                //                        var xhr = new XMLHttpRequest();
-                //                        var url = "utf82raw";
-                //                        xhr.open("POST", url, true);
-                //                        xhr.setRequestHeader("Content-type", "application/json");
-                //                        xhr.send(myJSON);
-                //                    };
-                //                })(f);
-                //                reader.readAsText(f);
-                //            }
-                //        }
-                //    });
-                //    break;
                 case "CISDFCRC16":
                     $("#sendcmd-button").off('click').on('click', function () {
                         var selectedPrinter = $("#printers-table").tabulator("getSelectedData");
@@ -534,7 +503,6 @@
                         else {
                             for (var i = 0, f; f = window.files2store[i]; i++) {
                                 var reader = new FileReader();
-                                // Closure to capture the file information.
                                 reader.onload = (function (thefile) {
                                     return function (event) {
                                         var rawdata = event.target.result;
@@ -542,9 +510,6 @@
                                         var header = "! CISDFCRC16\n0000\n" + thefile.name + "\n" + lunghezza + "\n0000\n";
                                         var PrinterLabelObj = { printerID: selectedPrinter[0].uniqueID, CISDFCRC16Hdr: header, base64Data: _arrayBufferToBase64(rawdata) };
                                         var myJSON = JSON.stringify(PrinterLabelObj);
-                                        // console.log("json output: " + myJSON);
-                                        // console.log("header: " + header);
-                                        // https://stackoverflow.com/questions/35971904/system-convert-tobase64string-in-f
                                         var xhr = new XMLHttpRequest();
                                         var url = "CISDFCRC16";
                                         xhr.open("POST", url, true);

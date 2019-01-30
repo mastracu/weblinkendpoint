@@ -400,12 +400,12 @@ let app  : WebPart =
 
           path "/json2printer" >=> objectDo (fun (mp:Msg2Printer) -> 
                                                do System.Console.WriteLine (DateTime.Now.ToString() + sprintf " POST /json2printer - %A" mp)
-                                               let data2send = UTF8.bytes (mp.msg)
-                                               do printersAgent.SendMsgOverConfigChannel mp.printerID (Opcode.Binary, data2send, true ) true)
+                                               let bytes2send = UTF8.bytes (mp.msg)
+                                               do printersAgent.SendMsgOverConfigChannel mp.printerID (Opcode.Binary, bytes2send, true ) true)
           path "/printproduct" >=> objectDo (fun (prodprint:ProductPrinterObj) ->  
                                                do System.Console.WriteLine (DateTime.Now.ToString() + sprintf " POST /printproduct - %A" prodprint)
-                                               let data2send = UTF8.bytes (buildpricetag prodprint.ProductObj)
-                                               do printersAgent.SendMsgOverRawChannel prodprint.id (Opcode.Binary, data2send, true ) true) 
+                                               let bytes2send = UTF8.bytes (buildpricetag prodprint.ProductObj)
+                                               do printersAgent.SendMsgOverRawChannel prodprint.id (Opcode.Binary, bytes2send, true ) true) 
           path "/upgradeprinter" >=> objectDo (fun (fwjob:FwJobObj) ->  
                                                do System.Console.WriteLine (DateTime.Now.ToString() + sprintf " POST /upgradeprinter - %A" fwjob)
                                                do match printersAgent.FetchPrinterInfo fwjob.id with
@@ -415,12 +415,12 @@ let app  : WebPart =
                                                                | Some agent -> do doFwUpgrade fwjob agent mLogAgent)
           path "/utf82raw" >=> objectDo (fun (mp:Msg2Printer) ->  
                                                do System.Console.WriteLine (DateTime.Now.ToString() + sprintf " POST /utf82raw - %A" mp)
-                                               let data2send = UTF8.bytes (mp.msg)
-                                               do printersAgent.SendMsgOverRawChannel mp.printerID (Opcode.Binary, data2send, true ) true) 
+                                               let bytes2send = UTF8.bytes (mp.msg)
+                                               do printersAgent.SendMsgOverRawChannel mp.printerID (Opcode.Binary, bytes2send, true ) true) 
           path "/CISDFCRC16" >=> objectDo (fun (fp:File2Printer) ->  
                                                do System.Console.WriteLine (DateTime.Now.ToString() + sprintf " POST /CISDFCRC16 - %A" fp.CISDFCRC16Hdr)
-                                               let data2send = Array.append (ASCII.bytes fp.CISDFCRC16Hdr) (Convert.FromBase64String fp.base64Data)
-                                               do printersAgent.SendMsgOverRawChannel fp.printerID (Opcode.Binary, data2send, true ) true) 
+                                               let bytes2send = Array.append (ASCII.bytes fp.CISDFCRC16Hdr) (Convert.FromBase64String fp.base64Data)
+                                               do printersAgent.SendMsgOverRawChannel fp.printerID (Opcode.Binary, bytes2send, true ) true) 
         ]
     NOT_FOUND "Found no handlers." ]
 
