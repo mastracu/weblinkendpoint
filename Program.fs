@@ -420,7 +420,7 @@ let app  : WebPart =
           path "/CISDFCRC16" >=> objectDo (fun (fp:File2Printer) ->  
                                                do System.Console.WriteLine (DateTime.Now.ToString() + sprintf " POST /CISDFCRC16 - %A" fp.CISDFCRC16Hdr)
                                                let bytes2send = Array.append (ASCII.bytes fp.CISDFCRC16Hdr) (Convert.FromBase64String fp.base64Data)
-                                               do printersAgent.SendMsgOverRawChannel fp.printerID (Opcode.Binary, bytes2send, true ) true) 
+                                               do printersAgent.SendMsgOverRawChannel fp.printerID (Opcode.Binary, bytes2send, true ) false) 
         ]
     NOT_FOUND "Found no handlers." ]
 
