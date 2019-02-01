@@ -132,7 +132,6 @@
                 <option value="{}{&#34device.uptime&#34:null}">
                 <option value="{}{&#34display.language&#34:null}">
                 <option value="{}{&#34display.text&#34:null}">
-                <option value="{}{&#34ezpl.label_sensor&#34:null}">
                 <option value="{}{&#34ezpl.media_type&#34:null}">
                 <option value="{}{&#34ezpl.print_method&#34:null}">
                 <option value="{}{&#34ezpl.print_width&#34:null}">
@@ -290,7 +289,10 @@
             rowSelectionChanged: function (data, rows) {
                 //update selected row counter on selection change
             },
-        });
+            rowClick: function (e, row) {                var rowData = row.getData();
+                console.log(rowData);
+                console.log(rowData.liveLog);
+            },        });
 
         $("#printers-table").tabulator({
             selectable: 1,
