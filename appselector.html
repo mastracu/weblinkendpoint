@@ -143,7 +143,6 @@
                 <option value="{}{&#34interface.network.active.ip_addr&#34:null}">
                 <option value="{}{&#34interface.network.active.cable_type&#34:null}">
                 <option value="{}{&#34memory&#34:null}">
-                <option value="{}{&#34odometer.label_dot_length&#34:null}">
                 <option value="{}{&#34odometer.rfid&#34:null}">
                 <option value="{}{&#34odometer.total_label_count&#34:null}">
                 <option value="{}{&#34odometer.user_label_count&#34:null}">
@@ -167,11 +166,11 @@
         <div id="Custom label" class="tabcontent">
             <textarea name="label" placeholder="key in or drag and drop" id="labelformat" cols="75" rows="10" spellcheck="false" ondrop="drop(event)" ondragover="allowDrop(event)"></textarea>
             <p>
-                Certificates in Flash:
-                <button type="button" value="^XA^HWE:*.NRD^XZ" class="btn btn-default btn-sm" draggable="true" ondragstart="drag(event)">
+                Objects in Flash:
+                <button type="button" value="^XA^HWE:*.*^XZ" class="btn btn-default btn-sm" draggable="true" ondragstart="drag(event)">
                     <span class="glyphicon glyphicon-certificate"></span> List all
                 </button>
-                <button type="button" value="^XA^IDE:*.NRD^XZ" class="btn btn-default btn-sm" draggable="true" ondragstart="drag(event)">
+                <button type="button" value="^XA^IDE:*.*^XZ" class="btn btn-default btn-sm" draggable="true" ondragstart="drag(event)">
                     <span class="glyphicon glyphicon-remove"></span> Delete all
                 </button>
             </p>
@@ -193,7 +192,10 @@
             <p>
                 Calibration:
                 <button type="button" value="~JC" class="btn btn-default btn-sm" draggable="true" ondragstart="drag(event)">
-                    <span class="glyphicon glyphicon-menu-hamburger"></span> Label calibration
+                    <span class="glyphicon glyphicon-film"></span> Media sensor calibration
+                </button>
+                <button type="button" value="~JG" class="btn btn-default btn-sm" draggable="true" ondragstart="drag(event)">
+                    <span class="glyphicon glyphicon-menu-hamburger"></span> Media sensor profile
                 </button>
                 <button type="button" value="^XA^HR^XZ" class="btn btn-default btn-sm" draggable="true" ondragstart="drag(event)">
                     <span class="glyphicon glyphicon-object-align-horizontal"></span> RFID calibration
@@ -398,7 +400,7 @@
         var listener = function (event) {
             var type = event.type;
 
-//          console.log(event.type + event.data);
+            console.log(event.type + event.data);
 
             if (type == "message") {
                 $("#live-log-table").tabulator("addRow", { liveLog: event.data }, true);
