@@ -131,6 +131,21 @@
             overflow: scroll !important;
         }
 
+        /* The Close Button */
+        .closeModal {
+            color: #aaaaaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+            
+        .closeModal:hover,
+        .closeModal:focus {
+                color: #000;
+                text-decoration: none;
+                cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -302,8 +317,7 @@
     <div id="myModal" class="modal">
         <!-- Modal content -->
         <div class="modal-content">
-            <span class="close">&times;</span>
-            <!--<span id=spanInModal style="height: 800px;overflow: scroll !important;">tobereplaced..</span>-->
+            <span class="closeModal">&times;</span>
             <span id=spanInModal>tobereplaced..</span>
         </div>
     </div>
@@ -318,7 +332,7 @@
         // Get the modal
         var modal = document.getElementById('myModal');
         // Get the <span> element that closes the modal
-        var spanclose = document.getElementsByClassName("close")[0];
+        var spanclose = document.getElementsByClassName("closeModal")[0];
 
         // When the user clicks on <span> (x), close the modal
         spanclose.onclick = function () {
