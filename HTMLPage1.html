@@ -56,13 +56,11 @@
 
     <!-- The Modal -->
     <div id="myModal" class="modal">
-
         <!-- Modal content -->
         <div class="modal-content">
             <span class="close">&times;</span>
-            <p>Some text in the Modal..</p>
+            <span id=spanInModal>Some text in the Modal..</span>
         </div>
-
     </div>
 
     <script>
@@ -76,8 +74,10 @@ var btn = document.getElementById("myBtn");
 var span = document.getElementsByClassName("close")[0];
 
 // When the user clicks the button, open the modal
-btn.onclick = function() {
-  modal.style.display = "block";
+        btn.onclick = function () {
+            var ciccio = 'ciao\npippo\nshoah\nisraeli';
+            document.getElementById("spanInModal").innerHTML = "<PRE>" + ciccio + "</PRE>";
+            modal.style.display = "block";
 }
 
 // When the user clicks on <span> (x), close the modal

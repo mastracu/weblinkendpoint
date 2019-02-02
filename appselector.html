@@ -301,7 +301,7 @@
         <!-- Modal content -->
         <div class="modal-content">
             <span class="close">&times;</span>
-            <span id=spanInModal>Some text in the Modal..</span>
+            <span id=spanInModal>tobereplaced..</span>
         </div>
     </div>
 
@@ -342,7 +342,7 @@
             rowClick: function (e, row) {
                 var rowData = row.getData();
                 console.log(rowData.liveLog);
-                document.getElementById("spanInModal").innerHTML = rowData.liveLog;
+                document.getElementById("spanInModal").innerHTML = "<PRE>" + rowData.liveLog + "</PRE>";
                 modal.style.display = "block";
             },
         });
