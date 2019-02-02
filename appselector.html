@@ -298,13 +298,11 @@
 
     <!-- The Modal -->
     <div id="myModal" class="modal">
-
         <!-- Modal content -->
         <div class="modal-content">
             <span class="close">&times;</span>
-            <p>Some text in the Modal..</p>
+            <span id=spanInModal>Some text in the Modal..</span>
         </div>
-
     </div>
 
 
@@ -344,6 +342,7 @@
             rowClick: function (e, row) {
                 var rowData = row.getData();
                 console.log(rowData.liveLog);
+                document.getElementById("spanInModal").innerHTML = rowData.liveLog;
                 modal.style.display = "block";
             },
         });
