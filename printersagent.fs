@@ -4,11 +4,6 @@ open System
 open System.Runtime.Serialization.Json
 open System.Runtime.Serialization
 
-open System.IO
-open System.Xml
-open System.Text
-open FSharp.Data
-
 open JsonHelper
 open MessageLogAgent
 open Suave.WebSocketUM
@@ -29,7 +24,7 @@ type Printer =
       [<field: DataMember(Name = "friendlyName")>]
       friendlyName : string;
       [<field: DataMember(Name = "sgdSetAlertFeedback")>]
-      sgdSetAlertFeedback : string;      // priceTag | ifadLabelConversion
+      sgdSetAlertProcessor : string;      // "none" | "priceTag" | "ifadLabelConversion" | "wikipediaConversion" | "labelToGo"
       mainChannelAgent : ChannelAgent;
       rawChannelAgent : ChannelAgent option;
       configChannelAgent : ChannelAgent option;
@@ -42,7 +37,7 @@ let rec addPrinter id agent list =
                productName = ""; 
                appVersion = ""; 
                friendlyName = ""; 
-               sgdSetAlertFeedback = "ifadLabelConversion";
+               sgdSetAlertProcessor = "none";
                rawChannelAgent = None;
                configChannelAgent = None}]
       | printHead :: xs -> if (printHead.uniqueID = id) 
@@ -79,7 +74,7 @@ let rec updateApp id appname list =
       match list with
       | [] -> []
       | printer :: xs -> if printer.uniqueID = id 
-                          then {printer with sgdSetAlertFeedback = appname} :: xs 
+                          then {printer with sgdSetAlertProcessor = appname} :: xs 
                           else (printer :: updateApp id appname xs)
 
 

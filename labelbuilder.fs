@@ -4,23 +4,19 @@ open StoreAgent
 open Suave.Utils
 
 let helloLabel () =
-    let createdAt = System.Environment.GetEnvironmentVariable("HEROKU_RELEASE_CREATED_AT")
-    let releaseVersion = System.Environment.GetEnvironmentVariable("HEROKU_RELEASE_VERSION")
+// let createdAt = System.Environment.GetEnvironmentVariable("HEROKU_RELEASE_CREATED_AT")
+// let releaseVersion = System.Environment.GetEnvironmentVariable("HEROKU_RELEASE_VERSION")
 
     let helloLabel = "
     CT~~CD,~CC^~CT~
     ^XA
     ^MMT
-    ^PW400
+    ^PW200
     ^LL0240
     ^LS0
-    ^FT20,50^A0N,28,28^FH\^FDCONNECTED TO HEROKU^FS
-    ^FT20,90^A0N,28,28^FH\^FDSUAVE F# APP: XXXXXXXXX^FS
-    ^FT20,130^A0N,28,28^FH\^FDYYYYYYYYYYYY^FS
+    ^FT20,50^A0N,28,28^FH\^FDCONNECTED TO WEBLINK^FS
     ^PQ1,1,1,Y^XZ"
-
-    let label1 = String.replace "XXXXXXXXX" releaseVersion helloLabel
-    String.replace "YYYYYYYYYYYY" createdAt label1
+    helloLabel
 
 let buildpricetag (prod:Product) =
     let label0 = "
@@ -68,13 +64,14 @@ let convertIfadLabel (label:string) =
 
 
 let convertWikipediaLabel (label:string) =
-//^XA
-//^LH30,30
-//^FO20,10
-//^ADN,90,50
-//^AD^FDWikipedia^FS
-//^XZ
+(*
+^XA
+^LH30,30
+^FO20,10
+^ADN,90,50
+^AD^FDWikipedia^FS
+^XZ
+*)
     let index1 = label.IndexOf("^AD^FD") + "^AD^FD".Length   // IFAD INVENTORY
     let field1 = label.Substring (index1, label.IndexOf("^FS", index1) - index1)
-    
     "^XA^LH30,30^FO20,10^ADN,90,50^AD^FD" + "Converted" + "^FS^XZ"

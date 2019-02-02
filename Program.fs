@@ -45,6 +45,9 @@ let Crc16b (msg:byte[]) =
                 code <- code >>> 1
     code
 
+let sendResetCaptureCmds printerID (printersAgent:PrintersAgent) toLog= 
+    do printersAgent.SendMsgOverConfigChannel printerID (Opcode.Binary, UTF8.bytes """{}{"capture.channel1.port":"off"} """, true) toLog
+
 let sendBTCaptureCmds printerID (printersAgent:PrintersAgent) toLog= 
     do printersAgent.SendMsgOverConfigChannel printerID (Opcode.Binary, UTF8.bytes """{}{"capture.channel1.port":"bt"} """, true) toLog
     do printersAgent.SendMsgOverConfigChannel printerID (Opcode.Binary, UTF8.bytes """{}{"capture.channel1.max_length":"64"} """, true) toLog
@@ -183,8 +186,8 @@ let ws allAgents (webSocket : WebSocket) (context: HttpContext) =
                             let sgdFeedback = printersAgent.FetchPrinterInfo printerUniqueId
                             match sgdFeedback with 
                             | Some feedback -> 
-                                do System.Console.WriteLine (DateTime.Now.ToString() + sprintf " Printer application: %s" feedback.sgdSetAlertFeedback )
-                                match feedback.sgdSetAlertFeedback with
+                                do System.Console.WriteLine (DateTime.Now.ToString() + sprintf " Printer application: %s" feedback.sgdSetAlertProcessor )
+                                match feedback.sgdSetAlertProcessor with
                                 | "priceTag" -> 
                                     let barcode = (jsonalertval.GetProperty "setting_value").AsString()
                                     let maybeProd = storeAgent.EanLookup barcode
@@ -208,6 +211,7 @@ let ws allAgents (webSocket : WebSocket) (context: HttpContext) =
                                     do System.Console.WriteLine (DateTime.Now.ToString() + sprintf " Original label: %s" demoinlabel)    
                                     do System.Console.WriteLine (DateTime.Now.ToString() + sprintf " Converted label: %s" demooutlabel)
                                     do printersAgent.SendMsgOverRawChannel printerUniqueId (Opcode.Binary, UTF8.bytes demooutlabel, true) true
+                                | "labelToGo" -> ()
                                 | _ -> ()
                             | None -> ()
                         | _ -> ()
@@ -232,7 +236,7 @@ let ws allAgents (webSocket : WebSocket) (context: HttpContext) =
                              do printersAgent.SendMsgOverConfigChannel printerUniqueId (Opcode.Binary, UTF8.bytes """{}{"device.product_name":null} """, true) true
                              do printersAgent.SendMsgOverConfigChannel printerUniqueId (Opcode.Binary, UTF8.bytes """{}{"appl.name":null} """, true) true
                              do printersAgent.SendMsgOverConfigChannel printerUniqueId (Opcode.Binary, UTF8.bytes """{}{"odometer.user_label_count":"0"} """, true) true
-                             do sendUSBCaptureCmds printerUniqueId printersAgent true
+                             do sendResetCaptureCmds printerUniqueId printersAgent true
                         | _ -> ()
                     | None -> ()
 
@@ -389,11 +393,14 @@ let app  : WebPart =
         ]
     POST >=> choose
         [ path "/printerupdate" >=> 
-           objectDo (fun prt -> printersAgent.UpdateApp prt.uniqueID prt.sgdSetAlertFeedback
-                                if prt.sgdSetAlertFeedback = "priceTag" then
-                                    sendBTCaptureCmds prt.uniqueID printersAgent true
-                                else
-                                    sendUSBCaptureCmds prt.uniqueID printersAgent true
+           objectDo (fun prt -> printersAgent.UpdateApp prt.uniqueID prt.sgdSetAlertProcessor
+                                match prt.sgdSetAlertProcessor with
+                                | "none" -> sendResetCaptureCmds prt.uniqueID printersAgent true
+                                | "priceTag" -> sendBTCaptureCmds prt.uniqueID printersAgent true
+                                | "labelToGo" -> sendBTCaptureCmds prt.uniqueID printersAgent true
+                                | "ifadLabelConversion" -> sendUSBCaptureCmds prt.uniqueID printersAgent true
+                                | "wikipediaConversion" -> sendUSBCaptureCmds prt.uniqueID printersAgent true
+                                | _ -> ()
                     )
           path "/productupdate" >=> objectDo (fun prod -> storeAgent.UpdateWith prod)
           path "/productremove" >=> objectDo (fun prod -> storeAgent.RemoveSku prod.sku)
