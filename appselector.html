@@ -105,6 +105,29 @@
             display: none;            
         }
 
+        /* The Modal (background) */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            padding-top: 100px; /* Location of the box */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgb(0,0,0); /* Fallback color */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        }
+
+        /* Modal Content */
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+        }
 
     </style>
 </head>
@@ -232,13 +255,13 @@
             <div id="fw-table" style=" overflow:hidden"></div>
         </div>
 
-    <button id="sendcmd-button" class="button" style="vertical-align: top">
-        <span class="glyphicon glyphicon-play"></span>
-    </button>
-    <div id="printers-table"></div>
-    <button id="refresh-button" class="button" style="vertical-align: top">
-        <span class="glyphicon glyphicon-refresh"></span>
-    </button>
+        <button id="sendcmd-button" class="button" style="vertical-align: top">
+            <span class="glyphicon glyphicon-play"></span>
+        </button>
+        <div id="printers-table"></div>
+        <button id="refresh-button" class="button" style="vertical-align: top">
+            <span class="glyphicon glyphicon-refresh"></span>
+        </button>
 
     </div>
 
@@ -273,11 +296,40 @@
         </div>
     </div>
 
+    <!-- The Modal -->
+    <div id="myModal" class="modal">
+
+        <!-- Modal content -->
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <p>Some text in the Modal..</p>
+        </div>
+
+    </div>
+
+
     <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
     <script src="eventsource.js"></script>
     <script type="text/javascript" src="tabulator.min.js"></script>
     <script type="text/javascript">
+
+        // Get the modal
+        var modal = document.getElementById('myModal');
+        // Get the <span> element that closes the modal
+        var spanclose = document.getElementsByClassName("close")[0];
+
+        // When the user clicks on <span> (x), close the modal
+        spanclose.onclick = function () {
+            modal.style.display = "none";
+        }
+
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function (event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
 
         $("#live-log-table").tabulator({
             selectable: 1,
@@ -289,10 +341,12 @@
             rowSelectionChanged: function (data, rows) {
                 //update selected row counter on selection change
             },
-            rowClick: function (e, row) {                var rowData = row.getData();
-                console.log(rowData);
+            rowClick: function (e, row) {
+                var rowData = row.getData();
                 console.log(rowData.liveLog);
-            },        });
+                modal.style.display = "block";
+            },
+        });
 
         $("#printers-table").tabulator({
             selectable: 1,
@@ -379,7 +433,7 @@
         });
         $("#fw-table").tabulator("setData", "fwlist.json");
         document.getElementById("PROGRAM").style.display = "none";
-        
+
         $("#refresh-button").click(function () {
             $("#printers-table").tabulator("setData", "printerslist.json");
         });
@@ -439,7 +493,7 @@
                 tablinks[i].className = tablinks[i].className.replace(" active", "");
             }
 
-//          console.log(tabName);
+            //          console.log(tabName);
 
             switch (tabName) {
                 case "JSON cmd":
@@ -614,6 +668,8 @@
             var data = ev.dataTransfer.getData("text");
             ev.target.value = data;
         }
+
+
 
     </script>
 </body>
