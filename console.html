@@ -153,11 +153,11 @@
     <div class="tab">
         <button class="tablinks" onclick="openTab(event, 'JSON cmd')" id="defaultOpen">CONFIG channel console</button>
         <button class="tablinks" onclick="openTab(event, 'Custom label')">RAW channel console</button>
-        <button class="tablinks" onclick="openTab(event, 'Price label')" id="priceTab">ZPL price label</button>
         <button class="tablinks" onclick="openTab(event, 'CISDFCRC16')">! CISDFCRC16</button>
         <button class="tablinks" onclick="openTab(event, 'PROGRAM')">! PROGRAM</button>
-        <button class="tablinks" style="float:right" onclick="openTab(event, 'Info')">Info</button>
-        <button class="tablinks" style="float:right" onclick="openTab(event, 'Settings')">Settings</button>
+        <button class="tablinks" onclick="openTab(event, 'Price label')" id="priceTab">ZPL price label</button>
+        <button class="tablinks" style="float:right" onclick="openTab(event, 'Info')">Guide to applications demonstration</button>
+        <button class="tablinks" style="float:right" onclick="openTab(event, 'Settings')">On-connection application assignment</button>
     </div>
     <div id="mainblock">
         <div id="JSON cmd" class="tabcontent">
@@ -284,13 +284,11 @@
 
     </div>
 
-
-
-    <!--<div id="Info" class="tabcontent">
-        <p style="text-align: center;">
+    <div id="Info" class="tabcontent">
+        <p style="text-align: left;">
             Weblink Multi-App Endpoint
             <br />
-            <span style="font-family:Arial; color:red">! U1 setvar "weblink.ip.conn1.location" "https://ifad.mastracu.it/websocketWithSubprotocol"</span>
+            <span style="font-family:Arial; color:red">! U1 setvar "weblink.ip.conn1.location" "https://weblinktest.mastracu.it/websocketWithSubprotocol"</span>
             and power-cycle the printer.
             <br />
             Select app you want to run on each printer.
@@ -298,11 +296,10 @@
             Code and apps description <a target="_blank" href="https://github.com/mastracu/weblinkendpoint">here</a>
             <br />
             Push JSON commands down the Weblink channel to printer and check printer response on Live Log.
-            Click printer serial number to access key printer settings.
             <br />
             Print price labels from cloud or custom label from ZPL code (any app)
         </p>
-    </div>-->
+    </div>
 
     <div class="left-div-margin">
         <div id="live-log-table"></div>
@@ -638,7 +635,11 @@
                     $("#sendcmd-button").click(function () {
                     });
             };
-
+            if (tabName == "Info") {
+                document.getElementById("mainblock").style.display = "none";
+            } else {
+                document.getElementById("mainblock").style.display = "inline-block";
+            };
             // Show the current tab, and add an "active" class to the button that opened the tab
             document.getElementById(tabName).style.display = "inline-block";
             evt.currentTarget.className += " active";
