@@ -288,164 +288,181 @@
     <div id="Info" class="tabcontent" style="margin-left: 4px;">
         <div class="col-md-12">
 
-            <h2>Weblink Multi-App Endpoint</h2>
+            <h1 id="fweblinkendpointforzebraprinters">F# WeblinkEndpoint for Zebra Printers</h1>
 
+            <p>Demo app to demonstrate how to leverage Weblink technology to support multiple use-cases:</p>
+            <p>Code and apps description <a target="_blank" href="https://github.com/mastracu/weblinkendpoint">here</a></p>
+            <p>readme.md converted into html in https://www.browserling.com/tools/markdown-to-html </p>
             <ul>
-                <li><a href="#commands">What ZPL commands does Labelary support?</a></li>
-                <li><a href="#browsers">What browsers can be used with the online ZPL viewer?</a></li>
-                <li><a href="#bad-rendering">Why aren't my labels rendering correctly?</a></li>
-                <li><a href="#no-rendering">Why aren't my labels rendering at all?</a></li>
-                <li><a href="#images">Why can't I add an image to my label using the online ZPL viewer?</a></li>
-                <li><a href="#i18n">How can I render Cyrillic / Greek / Chinese / Japanese / Korean / other text?</a></li>
-                <li><a href="#colored-stock">How can I simulate colored label stock?</a></li>
-                <li><a href="#guarantees">What support / privacy / availability / performance guarantees are provided with the free Labelary web service and the online ZPL viewer?</a></li>
-                <li><a href="#saas">Do you have a paid SaaS offering with extra guarantees around support / privacy / availability / performance?</a></li>
-                <li><a href="#offline">Can I use the Labelary engine locally, without relying on the public web service?</a></li>
-                <li><a href="#image-conversion">How can I convert an image to the ZPL image format?</a></li>
+                <li>printing price labels (repricing) using ZQ320 indoor version (label printer with Wifi and BT) + CS4070 BT scanner</li>
+                <li>convertion of a 300 dpi label into a 200 dpi label – this is a real case from a recent customer request. For the customer modifying the printing app was just impossible.</li>
+                <li>self-service label printing in parcel shops to - for instance - return goods purchased online</li>
             </ul>
 
-            <h4 id="commands">What ZPL commands does Labelary support?</h4>
-            <p>See the <a href="docs.html">documentation</a> for a full list of the ZPL commands that are supported.</p>
+            <p>Tested with ZQ310 (2inch) and ZQ320 (3 inch) indoor + CS4070, ZD420 203dpi Cartridge and ZT410 203 dpi</p>
+
+            <h2 id="gettingstarted">Getting Started</h2>
+
+            <p>Simple instructions follow</p>
+
+            <h3 id="demosessionsetup">Demo session setup</h3>
+
             <p>
-                If you need to use a currently unsupported ZPL command, feel free to <a href="mailto:support@labelary.com">let us know</a>. We'll add your request to our backlog
-                and send you an email when we get to it. We also provide commercial support for urgent needs; if you have a time-critical request, just drop us a note and we'll
-                be happy to provide you with an estimate.
+                You will need to hook up your printer to the Internet
+                In order to do that, you may use "Configure Printer Connectivity" in Zebra Setup Utility.
+                I typically use Wifi printers and connect to ZGuest wireless network in Zebra office.
             </p>
 
-            <h4 id="browsers">What browsers can be used with the online ZPL viewer?</h4>
-            <p>In general, any modern, evergreen browser should work.</p>
-            <p>Specifically, this means that you should be able to use the latest versions of Firefox, Chrome, and Safari, as well as Internet Explorer 10 or later.</p>
+            <p>You then specify the address of the weblink endpoint by issuing </p>
 
-            <h4 id="bad-rendering">Why aren't my labels rendering correctly?</h4>
-            <p>There are a number of reasons that you might be seeing differences between your physical labels and the Labelary output.</p>
-            <p>
-                First of all, your labels may rely on custom configuration to work correctly. Labelary simulates a new printer with the default factory settings. If your
-                labels rely on custom fonts or images that are not included in each label template, this may result in images that do not match the labels printed by your
-                pre-configured physical printer.
-            </p>
-            <p>
-                Secondly, your labels may be using a ZPL feature that Labelary does not support or that is supported incorrectly. Check the list of <a href="docs.html">
-                    implemented
-                    ZPL commands
-                </a> to ensure that all of the commands that are relevant to your use case are supported. If your commands are all supported but you are seeing
-                differences between Labelary's output and your physical labels, <a href="mailto:support@labelary.com">drop us a note</a> with an example so that we can fix
-                it and add your test case to the thousands of tests that we already use to verify Labelary's behavior.
-            </p>
+<pre><code>! U1 setvar "weblink.ip.conn1.location" "https://weblinktest.mastracu.it/websocketWithSubprotocol"
+</code></pre>
 
-            <h4 id="no-rendering">Why aren't my labels rendering at all?</h4>
+            <p>You then re-start / power-cycle the printer by issuing</p>
+
+<pre><code>! U1 setvar "device.reset" ""
+</code></pre>
+
             <p>
-                If you're using the online viewer, you may be having issues with your firewall. Browsers use Cross-Origin Resource Sharing (CORS) to allow web domains to
-                communicate across domain boundaries. However, some firewalls automatically <a href="http://jeffmcmahan.info/blog/firewall-causes-cors-to-fail/">remove</a>
-                CORS headers from HTTP requests. Browsers need these headers to keep you safe. If these headers are being removed, you'll see errors such as
+                Check the printer is now connected.
+                If it is, it will be listed in http://weblinkendpoint.mastracyu.it/appselector.html
             </p>
-            <p class="quote">
-                "XMLHttpRequest cannot load http://api.labelary.com/version. No 'Access-Control-Allow-Origin' header is present on the requested resource.
-                Origin 'http://labelary.com' is therefore not allowed access"
-            </p>
-            <p>in your browser console, and you should contact your firewall maintainer or IT department so that they can fix your firewall configuration.</p>
+            <p>The printers will also spit out a welcome label once it’s connected.</p>
+            <p>You may also need to calibrate the printer and/or reset the sensor settings depending on the media being used.</p>
+
+            <h3 id="notesformobileprinters">Notes for mobile printers</h3>
+
             <p>
-                If you're not using the online viewer, or you don't think you are running into the firewall configuration issue described above, then you may have found a bug. We'd
-                appreciate it if you'd <a href="mailto:support@labelary.com">send us an email</a> (including the ZPL code that you were using) so that we can investigate!
+                On mobile printers like ZQ320 and ZQ310, I have seen a behaviour where the printer will not stay in sleep mode (https://www.zebra.com/content/dam/zebra/software/en/application-notes/AppNote-SleepMode-v5.pdf) if weblink is enabled.
+                The printer will awake seconds after entering sleep mode.
+                Because of this, I turn sleep mode off by issuing
             </p>
 
-            <h4 id="images">Why can't I add an image to my label using the online ZPL viewer?</h4>
+<pre><code>! U1 setvar "power.sleep.enable" "off"
+</code></pre>
+
             <p>
-                Labelary can read a wide variety of common image formats, but it can't read JPEG images that use a CMYK color model. If you're using a CMYK JPEG
-                image, try converting it to a different format before uploading it. You should have no issues with RGB JPEG images.
-            </p>
-            <p>
-                If this isn't the problem and you're still having issues adding your image to your label, please <a href="mailto:support@labelary.com">send us</a>
-                your ZPL code and your image so that we can investigate!
+                Also testing with ZQ310, I have noted mobile printer will shut down weblink connection after issuing battery low alert.
+                In my test battery low alert was issued at about 10% battery level (6.5 Volts) and printer did shut down at about 6% battery level (6.28 Volts)
             </p>
 
-            <h4 id="i18n">How can I render Cyrillic / Greek / Chinese / Japanese / Korean / other text?</h4>
-            <p>There are two aspects to rendering international text: the encoding and the font.</p>
-            <p>
-                First of all, make sure that you are using an encoding that supports the international characters that you're trying to render. We suggest using
-                <span class="tech">UTF-8</span> and placing a <span class="tech">^CI28</span> command at the top of your ZPL template. Be sure to remove any other
-                <span class="tech">^CI</span> commands in your ZPL template.
-            </p>
-            <p>
-                Second, you will need to use a font which contains glyphs for the international characters that you're trying to render. The ZPL built-in fonts don't
-                support many non-Latin characters, so you may need to use a custom font (uploaded to the printer via the <span class="tech">~DU</span> command, for
-                example). Labelary provides two non-standard international fonts out of the box: font <span class="tech">N</span>, which provides access to the
-                <a href="https://fonts.google.com/specimen/Noto+Sans">Google Noto Sans Regular</a> font, and font <span class="tech">J</span>, which provides access to the
-                <a href="https://www.google.com/get/noto/help/cjk/">Google Noto Sans CJK Regular</a> font. Feel free to use these fonts in your label designs, but keep in
-                mind that they will not exist on physical printers unless you upload them yourself.
-            </p>
-            <p>Some sample labels using <span class="tech">UTF-8</span> encoding and the <span class="tech">N</span> and <span class="tech">J</span> custom fonts:</p>
-            <ul>
-                <li><a href="viewer.html?density=8&width=4&height=2&units=inches&index=0&zpl=%5EXA%0A%5ECI28%0A%5ECFN%2C50%0A%5EFO100%2C100%5EFD%D0%91%D1%83%D0%BC%D0%B0%CC%81%D0%B3%D0%B0%20%D0%B2%D1%81%D1%91%20%D1%81%D1%82%D0%B5%CC%81%D1%80%D0%BF%D0%B8%D1%82.%5EFS%0A%5EXZ">Cyrillic Sample Label</a> (with font <span class="tech">N</span>)</li>
-                <li><a href="viewer.html?density=8&width=7&height=2&units=inches&index=0&zpl=%5EXA%0A%5ECI28%0A%5ECFN%2C50%0A%5EFO100%2C100%5EFD%CE%91%CE%BA%CE%AC%CE%BB%CE%B5%CF%83%CF%84%CE%BF%CF%82%20%CF%83%CF%85%CE%BC%CF%80%CE%AD%CE%B8%CE%B5%CF%81%CE%BF%CF%82%20%CE%B4%CE%B5%CE%BD%20%CE%B2%CF%81%CE%AF%CF%83%CE%BA%CE%B5%CE%B9%20%CF%80%CE%BF%CF%85%20%CE%BD%CE%B1%20%CE%BA%CE%AC%CF%84%CF%83%CE%B5%CE%B9.%5EFS%0A%5EXZ">Greek Sample Label</a> (with font <span class="tech">N</span>)</li>
-                <li><a href="viewer.html?density=8&width=4&height=2&units=inches&index=0&zpl=%5EXA%0A%5ECI28%0A%5ECFJ%2C50%0A%5EFO100%2C100%5EFD%E5%8D%83%E5%86%9B%E6%98%93%E5%BE%97%2C%20%E4%B8%80%E5%B0%86%E9%9A%BE%E6%B1%82%5EFS%0A%5EXZ">Chinese Sample Label</a> (with font <span class="tech">J</span>)</li>
-                <li><a href="viewer.html?density=8&width=4&height=2&units=inches&index=0&zpl=%5EXA%0A%5ECI28%0A%5ECFJ%2C50%0A%5EFO100%2C100%5EFD%E5%B0%8F%E6%89%93%E3%82%82%E7%A9%8D%E3%82%82%E3%82%8C%E3%81%B0%E5%A4%A7%E6%9C%A8%E3%82%92%E5%80%92%E3%81%99%5EFS%0A%5EXZ">Japanese Sample Label</a> (with font <span class="tech">J</span>)</li>
-                <li><a href="viewer.html?density=8&width=3&height=2&units=inches&index=0&zpl=%5EXA%0A%5ECI28%0A%5ECFJ%2C50%0A%5EFO100%2C100%5EFD%EC%9E%91%EC%9D%80%20%EA%B3%A0%EC%B6%94%EA%B0%80%20%EB%A7%B5%EB%8B%A4%5EFS%0A%5EXZ">Korean Sample Label</a> (with font <span class="tech">J</span>)</li>
-            </ul>
-            <p>Languages which use mostly Latin characters can usually use the default fonts, as long as the encoding is correct.</p>
-            <p>Some sample labels using <span class="tech">UTF-8</span> encoding and font <span class="tech">0</span> (available by default, no custom font necessary):</p>
-            <ul>
-                <li><a href="viewer.html?density=8&width=4&height=2&units=inches&index=0&zpl=%5EXA%0A%5ECI28%0A%5ECF0%2C50%0A%5EFO100%2C100%5EFDJe%20n%C3%A4her%20dem%20Bein%2C%5EFS%0A%5EFO100%2C175%5EFDdesto%20s%C3%BC%C3%9Fer%20das%20Fleisch.%5EFS%0A%5EXZ">German Sample Label</a> (with default font <span class="tech">0</span>)</li>
-                <li><a href="viewer.html?density=8&width=4&height=2&units=inches&index=0&zpl=%5EXA%0A%5ECI28%0A%5ECF0%2C50%0A%5EFO100%2C100%5EFDL%27honn%C3%AAtet%C3%A9%20est%20la%20meilleure%20politique.%5EFS%0A%5EXZ">French Sample Label</a> (with default font <span class="tech">0</span>)</li>
-                <li><a href="viewer.html?density=8&width=4&height=2&units=inches&index=0&zpl=%5EXA%0A%5ECI28%0A%5ECF0%2C50%0A%5EFO100%2C100%5EFDSi%20dice%20sempre%20il%20lupo%20pi%C3%B9%20grande%20che%20non%20%C3%A8.%5EFS%0A%5EXZ">Italian Sample Label</a> (with default font <span class="tech">0</span>)</li>
-                <li><a href="viewer.html?density=8&width=4&height=2&units=inches&index=0&zpl=%5EXA%0A%5ECI28%0A%5ECF0%2C50%0A%5EFO100%2C100%5EFD%C2%A1Qu%C3%A9%20peque%C3%B1o%20es%20el%20mundo!%5EFS%0A%5EXZ">Spanish Sample Label</a> (with default font <span class="tech">0</span>)</li>
-                <li><a href="viewer.html?density=8&width=4&height=2&units=inches&index=0&zpl=%5EXA%0A%5ECI28%0A%5ECF0%2C50%0A%5EFO100%2C100%5EFDA%20experi%C3%AAncia%20%C3%A9%20m%C3%A3e%20da%20ci%C3%AAncia.%5EFS%0A%5EXZ">Portuguese Sample Label</a> (with default font <span class="tech">0</span>)</li>
-                <li><a href="viewer.html?density=8&width=4&height=2&units=inches&index=0&zpl=%5EXA%0A%5ECI28%0A%5ECF0%2C50%0A%5EFO100%2C100%5EFDAtt%20v%C3%A5ga%20%C3%A4r%20att%20tappa%20fotf%C3%A4stet%20en%20stund%2C%5EFS%0A%5EFO100%2C175%5EFDatt%20inte%20v%C3%A5ga%20%C3%A4r%20att%20f%C3%B6rlora%20sig%20sj%C3%A4lv.%5EFS%0A%5EXZ">Swedish Sample Label</a> (with default font <span class="tech">0</span>)</li>
-                <li><a href="viewer.html?density=8&width=4&height=2&units=inches&index=0&zpl=%5EXA%0A%5ECI28%0A%5ECF0%2C50%0A%5EFO100%2C100%5EFDIkke%20kan%20f%C3%A5%20%C3%B8je%20p%C3%A5%20skoven%20for%20bare%20tr%C3%A6er.%5EFS%0A%5EXZ">Danish Sample Label</a> (with default font <span class="tech">0</span>)</li>
-                <li><a href="viewer.html?density=8&width=4&height=2&units=inches&index=0&zpl=%5EXA%0A%5ECI28%0A%5ECF0%2C50%0A%5EFO100%2C100%5EFDLepszy%20wr%C3%B3bel%20w%20gar%C5%9Bci%20ni%C5%BC%20go%C5%82%C4%85b%20na%20dachu.%5EFS%0A%5EXZ">Polish Sample Label</a> (with default font <span class="tech">0</span>)</li>
-            </ul>
+            <h3 id="sendingjsonconfigurationcommandstotheprinter">Sending JSON configuration commands to the printer</h3>
 
-            <h4 id="colored-stock">How can I simulate colored label stock?</h4>
-            <p>
-                You can simulate colored (or partially colored) label stock by using the non-standard <span class="tech">~BR</span> ("background rectangle") and
-                <span class="tech">~BI</span> ("background image") commands.
-            </p>
-            <p>See <a href="docs.html#label-stock">here</a> for more information about these commands.</p>
+            <p>Demonstrate how one can remotely send configuration commands to a printer or query printer data by sending commands from appselector page and checking response on logtable.</p>
+            <p>Some revealing commands to issue are</p>
 
-            <h4 id="guarantees">What support / privacy / availability / performance guarantees are provided with the free Labelary web service and the online ZPL viewer?</h4>
-            <p>
-                None. The public web service is a fully-functional instance of the Labelary ZPL rendering engine, provided at no cost for the benefit of label designers around
-                the world. However, there are no SLAs around this service, and all free support is on a best-effort basis.
-            </p>
-            <p>If you'd like to incorporate Labelary into a business-critical production process, you may want to consider the <a href="#offline">offline licensing</a> option.</p>
+<pre><code>{}{"ribbon.cartridge":null} 
+</code></pre>
 
-            <h4 id="saas">Do you have a paid SaaS offering with extra guarantees around support / privacy / availability / performance?</h4>
-            <p>No, but we are considering such an offering. If you would be interested, please <a href="mailto:support@labelary.com">let us know</a>.</p>
+            <p>on a ZD420 cartridge TT printer and</p>
 
-            <h4 id="offline">Can I use the Labelary engine locally, without relying on the public web service?</h4>
-            <p>We do offer an offline version of the Labelary engine licensed for local use. Please <a href="mailto:support@labelary.com">contact us</a> for licensing information.</p>
+<pre><code>{}{"power":null} 
+</code></pre>
 
-            <h4 id="image-conversion">How can I convert an image to the ZPL image format?</h4>
-            <p>For one-off conversions, we recommend that you just use our <a href="viewer.html">online ZPL viewer</a> to add images to your label templates.</p>
+            <p>on a mobile printer.</p>
+
+            <h3 id="repricingapplicationpricetag">Repricing application - <code>priceTag</code></h3>
+
             <p>
-                If you need to convert batches of images and aren't afraid to get your hands dirty, you can use our (undocumented) image conversion web service. Have a look at the
-                JavaScript in the online viewer page for pointers. Robert Coleman's <a href="https://github.com/rjocoleman/labelary">Labelary Ruby gem</a> also provides a nice
-                Ruby <a href="https://github.com/rjocoleman/labelary#zpl-encoding-images">wrapper</a> for the Labelary image conversion web service.
+                Minimum label width: 5cms or 2 inches
+                Minimum label height: 3cms
             </p>
+
+            <p>Follow the following steps to set it up</p>
+
+            <ol>
+                <li>Ensure the BT scanner is configured to CR-LF terminate the barcode. </li>
+            </ol>
+
+            <p><img src="img/enter.png" alt="Barcode" />        </p>
+
+            <ol>
+                <li>Verify the printer is listed as connected in the the WebLinkEndPoint. Send the following json command to get the btaddress of the printer: </li>
+            </ol>
+
+<pre><code>{}{"bluetooth.short_address":null} 
+</code></pre>
+
+            <p></p>
+
+            <ol>
+                <li>From 123scan generate the Bluetooth Pairing barcode (Serial Port Profile - Master) by keying in the address retrieved in previous point.</li>
+
+                <li>Scan the barcode with CS4070 and the scanner should establish the BT connection with the printer (solid blue LED on the printer) </li>
+            </ol>
+
+            <p>On http://weblinkendpoint.mastracu.it/pricetag.html you add a new item that you have handy in the meeting room.</p>
+
+            <p><strong>Please ensure barcode is 13-digits long as only EAN-13 barcodes are currently supported.</strong></p>
+
+            <p>Please note that scanning the BT addr barcode on the back of the printer will not work.</p>
+
             <p>
-                If you'd rather not use our image conversion web service and don't mind forgoing the advanced compression functionality which it provides, have a look at the
-                <a href="https://github.com/cod3monk/pyzpl2">pyzpl2</a> project, which provides a simple conversion function
-                <a href="https://github.com/cod3monk/zpl/blob/master/zpl/label.py#L81">here</a>.
+                I can then go ahead and scan the barcodes of the item above.
+                A pricetag will be automatically printed if the barcode is found.
+                I can then change the price of the item in the table on http://weblinkendpoint.mastracu.it/pricetag.html . I then scan the same product again and the label is printed with a different price. By selecting a product and a printer from http://weblinkendpoint.mastracu.it/pricetag.html I can also show how to print a label “remotely”.
             </p>
+
+            <p><strong>Please note - data are not persistent and application is restarted every 24 hours so price changes / new products will be lost the following day.</strong></p>
+
+            <p>See https://devcenter.heroku.com/articles/dynos#restarting and https://devcenter.heroku.com/articles/dynos#ephemeral-filesystem</p>
+
+            <h3 id="labelconversionifadlabelconvertion">Label conversion - <code>ifadLabelConvertion</code></h3>
+
             <p>
-                Finally, if you'd rather write your own conversion utility, be sure to read the "Alternative Data Compression Scheme for ~DG and ~DB Commands" section of the official
-                ZPL II Programming Guide, Volume 2.
+                For the label conversion demo, from http://ifad.mastracu.it/appselector.html
+                I change the application associated with a 200dpi printer to ifadlabelconvertion.
+                Now everything I send to the printer via USB gets forwarded onto the cloud.
             </p>
+
+            <p>Send file IFAAM004_2289143IFAAM004.txt via USB </p>
+
+<pre><code>^XA^LH30,30^FO20,10^ADN80,50^FDIFAD INVENTORY^FS^FO20,80
+^ADN60,30^FDNOTEBOOK^FS^FO20,120^ADN30,10^FDS/N:^FS^FO80,120
+^ADN30,35^FD026442374753^FS^FO80,160^B3N,N,130,N,N^FD000000054986
+^FS^FO150,305^ADN30,35^FD000000054986^FS^XZ                              
+</code></pre>
+
+            <p>and it gets converted to a quasi-equivalent 200 dpi label.</p>
+
+            <p>Render label with http://labelary.com/viewer.html</p>
+
+            <p>
+                Minimum label width: 5cms
+                Minimum label height: 3cms
+            </p>
+
+            <h3 id="shipmentlabellabeltogo">Shipment Label - <code>labelToGo</code></h3>
+
+            <p>Printer gets template id and var data via BT scanner - endpoint sends label down to printer</p>
+
+            <ol>
+                <li>Configure and pair BT scanner (see 1-3 in Repricing app)</li>
+
+                <li>Generate return barcode from http://ifad.mastracu.it/mobiletest.html</li>
+
+                <li>Scan with BT scanner; label gets printed.</li>
+            </ol>
+
+            <h2 id="versioning">Versioning</h2>
+
+            <p>0.1 Dec 2018</p>
 
             <!--<p style="text-align: left;">
-            Weblink Multi-App Endpoint
-            <br />
-            <span style="font-family:Arial; color:red">! U1 setvar "weblink.ip.conn1.location" "https://weblinktest.mastracu.it/websocketWithSubprotocol"</span>
-            and power-cycle the printer.
-            <br />
-            Select app you want to run on each printer.
-            Appropiate redirection commands will be pushed and data from printer will be accordingly processed.
-            Code and apps description <a target="_blank" href="https://github.com/mastracu/weblinkendpoint">here</a>
-            <br />
-            Push JSON commands down the Weblink channel to printer and check printer response on Live Log.
-            <br />
-            Print price labels from cloud or custom label from ZPL code (any app)
-        </p>-->
-            </div>
+        Weblink Multi-App Endpoint
+        <br />
+        <span style="font-family:Arial; color:red">! U1 setvar "weblink.ip.conn1.location" "https://weblinktest.mastracu.it/websocketWithSubprotocol"</span>
+        and power-cycle the printer.
+        <br />
+        Select app you want to run on each printer.
+        Appropiate redirection commands will be pushed and data from printer will be accordingly processed.
+        Code and apps description <a target="_blank" href="https://github.com/mastracu/weblinkendpoint">here</a>
+        <br />
+        Push JSON commands down the Weblink channel to printer and check printer response on Live Log.
+        <br />
+        Print price labels from cloud or custom label from ZPL code (any app)
+    </p>-->
+        </div>
         </div>
 
         <div id="bottom-pane" class="live-monitor-div">
@@ -782,7 +799,7 @@
                         $("#sendcmd-button").click(function () {
                         });
                 };
-                if (tabName == "Info") {
+                if (tabName == "Info" || tabName == "Settings") {
                     document.getElementById("mainblock").style.display = "none";
                     document.getElementById("bottom-pane").style.display = "none";
                 } else {
