@@ -41,8 +41,9 @@
             margin-bottom: 5px;
         }
 
-        .left-div-margin {
+        .live-monitor-div {
             width: 99%;
+            left: 0px;
             margin-left: 4px;
             margin-bottom: 10px;
             position: fixed;
@@ -301,7 +302,7 @@
         </p>
     </div>
 
-    <div class="left-div-margin">
+    <div id="bottom-pane" class="live-monitor-div">
         <div id="live-log-table"></div>
         <button id="logclear-button" class="button">
             <span class="glyphicon glyphicon-trash"></span>
@@ -637,8 +638,10 @@
             };
             if (tabName == "Info") {
                 document.getElementById("mainblock").style.display = "none";
+                document.getElementById("bottom-pane").style.display = "none";
             } else {
                 document.getElementById("mainblock").style.display = "inline-block";
+                document.getElementById("bottom-pane").style.display = "inline-block";
             };
             // Show the current tab, and add an "active" class to the button that opened the tab
             document.getElementById(tabName).style.display = "inline-block";
