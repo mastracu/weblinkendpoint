@@ -168,15 +168,15 @@
             text-transform: uppercase;
             text-align: center;
             padding: 1rem;
-            color: #A77B0E;
+            /* color: #A77B0E; */
+            color: white;
             background: #FAE042;
+            /* background: #4CAF50; */
             cursor: pointer;
             border-radius: 7px;
             transition: all 0.25s ease-out;
         }
-        .lbl-toggle:hover {
-                color: #7C5A0B;
-        }
+
         .lbl-toggle::before {
                 content: ' ';
                 display: inline-block;
@@ -274,7 +274,7 @@
             <!--<textarea name="label" placeholder="key in or drag and drop" id="labelformat" cols="75" rows="10" spellcheck="false" ondrop="drop(event)" ondragover="allowDrop(event)"></textarea>-->
             <div class="wrap-collabsible">
                 <input id="collapsible1" class="toggle" type="checkbox">
-                <label for="collapsible1" class="lbl-toggle">Input 1</label>
+                <label id="lblcollapsible1" for="collapsible1" class="lbl-toggle">Input 1</label>
                 <div class="collapsible-content">
                     <div class="content-inner">
                         <textarea name="label" placeholder="key in or drag and drop for input1" id="labelformat1" cols="75" rows="10" spellcheck="false" onfocus="myFunction(this.id)" ondrop="drop(event)" ondragover="allowDrop(event)"></textarea>
@@ -283,7 +283,7 @@
             </div>
             <div class="wrap-collabsible">
                 <input id="collapsible2" class="toggle" type="checkbox">
-                <label for="collapsible2" class="lbl-toggle">Input 2</label>
+                <label id="lblcollapsible2" for="collapsible2" class="lbl-toggle">Input 2</label>
                 <div class="collapsible-content">
                     <div class="content-inner">
                         <textarea name="label" placeholder="key in or drag and drop for input2" id="labelformat2" cols="75" rows="10" spellcheck="false" onfocus="myFunction(this.id)" ondrop="drop(event)" ondragover="allowDrop(event)"></textarea>
@@ -944,10 +944,20 @@
             function myFunction(x) {
                 labelformat1.style.borderColor = "transparent";
                 labelformat2.style.borderColor = "transparent";
-                document.getElementById(x).style.borderColor = "green";
+                lblcollapsible1.style.background = "#FAE042";
+                lblcollapsible2.style.background = "#FAE042";
+                
+                document.getElementById(x).style.borderColor = "#4CAF50";
                 inputTextArea = x;
-            }
 
+                if (x == "labelformat1")
+                {
+                    lblcollapsible1.style.background = "#4CAF50";
+                };
+                if (x == "labelformat2") {
+                    lblcollapsible2.style.background = "#4CAF50";
+                };
+            }
         </script>
 </body>
 </html>
