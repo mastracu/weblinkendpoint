@@ -592,8 +592,8 @@
                 }
             }
 
-            var inputTextArea = "labelformat1";
-            myFunction(inputTextArea);
+            var inputTextArea;
+            myFunction("labelformat1");
 
             $("#live-log-table").tabulator({
                 selectable: 1,
@@ -945,6 +945,7 @@
                 labelformat1.style.borderColor = "transparent";
                 labelformat2.style.borderColor = "transparent";
                 document.getElementById(x).style.borderColor = "green";
+                inputTextArea = x;
             }
 
         </script>
