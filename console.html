@@ -146,6 +146,15 @@
                 cursor: pointer;
         }
 
+        textarea {
+            border-style: solid;
+            border-width: medium;
+        }
+
+        textarea:focus {
+            outline: none;
+        }
+
         /* https://alligator.io/css/collapsible/ */
 
         input[type='checkbox'] {
@@ -268,7 +277,7 @@
                 <label for="collapsible1" class="lbl-toggle">Input 1</label>
                 <div class="collapsible-content">
                     <div class="content-inner">
-                        <textarea name="label" placeholder="key in or drag and drop for input1" id="labelformat" cols="75" rows="10" spellcheck="false" ondrop="drop(event)" ondragover="allowDrop(event)"></textarea>
+                        <textarea name="label" placeholder="key in or drag and drop for input1" id="labelformat1" cols="75" rows="10" spellcheck="false" onfocus="myFunction(this.id)" ondrop="drop(event)" ondragover="allowDrop(event)"></textarea>
                     </div>
                 </div>
             </div>
@@ -277,7 +286,7 @@
                 <label for="collapsible2" class="lbl-toggle">Input 2</label>
                 <div class="collapsible-content">
                     <div class="content-inner">
-                        <textarea name="label" placeholder="key in or drag and drop for input2" id="labelformat" cols="75" rows="10" spellcheck="false" ondrop="drop(event)" ondragover="allowDrop(event)"></textarea>
+                        <textarea name="label" placeholder="key in or drag and drop for input2" id="labelformat2" cols="75" rows="10" spellcheck="false" onfocus="myFunction(this.id)" ondrop="drop(event)" ondragover="allowDrop(event)"></textarea>
                     </div>
                 </div>
             </div>
@@ -583,6 +592,9 @@
                 }
             }
 
+            var inputTextArea = "labelformat1";
+            myFunction(inputTextArea);
+
             $("#live-log-table").tabulator({
                 selectable: 1,
                 layout: "fitColumns", //fit columns to width of table (optional)
@@ -777,7 +789,7 @@
                                 alert("No printer selected !")
                             }
                             else {
-                                var PrinterLabelObj = { printerID: selectedPrinter[0].uniqueID, msg: $('#labelformat').val() }
+                                var PrinterLabelObj = { printerID: selectedPrinter[0].uniqueID, msg: document.getElementById(inputTextArea).val() };
                                 var myJSON = JSON.stringify(PrinterLabelObj);
                                 var xhr = new XMLHttpRequest();
                                 var url = "utf82raw";
@@ -929,7 +941,11 @@
                 ev.target.value = data;
             }
 
-
+            function myFunction(x) {
+                labelformat1.style.borderColor = "transparent";
+                labelformat2.style.borderColor = "transparent";
+                document.getElementById(x).style.borderColor = "green";
+            }
 
         </script>
 </body>
