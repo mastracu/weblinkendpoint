@@ -789,7 +789,7 @@
                                 alert("No printer selected !")
                             }
                             else {
-                                var PrinterLabelObj = { printerID: selectedPrinter[0].uniqueID, msg: document.getElementById(inputTextArea).val() };
+                                var PrinterLabelObj = { printerID: selectedPrinter[0].uniqueID, msg: document.getElementById(inputTextArea).value };
                                 var myJSON = JSON.stringify(PrinterLabelObj);
                                 var xhr = new XMLHttpRequest();
                                 var url = "utf82raw";
