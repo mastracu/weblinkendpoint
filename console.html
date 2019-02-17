@@ -14,9 +14,9 @@
             cursor: pointer;
         }
 
-        .button:hover {
-            background: green;
-        }
+            .button:hover {
+                background: green;
+            }
 
         .form {
             margin-bottom: 5px;
@@ -31,7 +31,7 @@
         #jsoncmd {
             height: 42px;
             font-size: 12pt;
-            vertical-align : top;
+            vertical-align: top;
         }
 
         .left-div {
@@ -80,30 +80,30 @@
             width: 99%;
         }
 
-        /* Style the buttons that are used to open the tab content */
-        .tab button {
-            background-color: inherit;
-            float: left;
-            border: none;
-            outline: none;
-            cursor: pointer;
-            padding: 14px 16px;
-            transition: 0.3s;
-        }
+            /* Style the buttons that are used to open the tab content */
+            .tab button {
+                background-color: inherit;
+                float: left;
+                border: none;
+                outline: none;
+                cursor: pointer;
+                padding: 14px 16px;
+                transition: 0.3s;
+            }
 
-        /* Change background color of buttons on hover */
-        .tab button:hover {
-            background-color: #ddd;
-        }
+                /* Change background color of buttons on hover */
+                .tab button:hover {
+                    background-color: #ddd;
+                }
 
-        /* Create an active/current tablink class */
-        .tab button.active {
-            background-color: #ccc;
-        }
+                /* Create an active/current tablink class */
+                .tab button.active {
+                    background-color: #ccc;
+                }
 
         /* Style the tab content */
         .tabcontent {
-            display: none;            
+            display: none;
         }
 
         /* The Modal (background) */
@@ -139,14 +139,70 @@
             font-size: 28px;
             font-weight: bold;
         }
-
-            
         .closeModal:hover,
-        .closeModal:focus {
+            .closeModal:focus {
                 color: #000;
                 text-decoration: none;
                 cursor: pointer;
         }
+
+        /* https://alligator.io/css/collapsible/ */
+
+        input[type='checkbox'] {
+            display: none;
+        }
+        .lbl-toggle {
+            display: block;
+            font-weight: bold;
+            font-family: monospace;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            text-align: center;
+            padding: 1rem;
+            color: #A77B0E;
+            background: #FAE042;
+            cursor: pointer;
+            border-radius: 7px;
+            transition: all 0.25s ease-out;
+        }
+        .lbl-toggle:hover {
+                color: #7C5A0B;
+        }
+        .lbl-toggle::before {
+                content: ' ';
+                display: inline-block;
+                border-top: 5px solid transparent;
+                border-bottom: 5px solid transparent;
+                border-left: 5px solid currentColor;
+                vertical-align: middle;
+                margin-right: .7rem;
+                transform: translateY(-2px);
+                transition: transform .2s ease-out;
+        }
+        .collapsible-content .content-inner {
+            background: rgba(250, 224, 66, .2);
+            border-bottom: 1px solid rgba(250, 224, 66, .45);
+            border-bottom-left-radius: 7px;
+            border-bottom-right-radius: 7px;
+            padding: .5rem 1rem;
+        }
+        .collapsible-content {
+            max-height: 0px;
+            overflow: hidden;
+            transition: max-height .25s ease-in-out;
+        }
+        .toggle:checked + .lbl-toggle + .collapsible-content {
+            max-height: 350px;
+        }
+        .toggle:checked + .lbl-toggle::before {
+            transform: rotate(90deg) translateX(-3px);
+        }
+
+        .toggle:checked + .lbl-toggle {
+            border-bottom-right-radius: 0;
+            border-bottom-left-radius: 0;
+        }
+
     </style>
 </head>
 <body>
@@ -206,7 +262,25 @@
         </div>
 
         <div id="Custom label" class="tabcontent">
-            <textarea name="label" placeholder="key in or drag and drop" id="labelformat" cols="75" rows="10" spellcheck="false" ondrop="drop(event)" ondragover="allowDrop(event)"></textarea>
+            <!--<textarea name="label" placeholder="key in or drag and drop" id="labelformat" cols="75" rows="10" spellcheck="false" ondrop="drop(event)" ondragover="allowDrop(event)"></textarea>-->
+            <div class="wrap-collabsible">
+                <input id="collapsible1" class="toggle" type="checkbox">
+                <label for="collapsible1" class="lbl-toggle">Input 1</label>
+                <div class="collapsible-content">
+                    <div class="content-inner">
+                        <textarea name="label" placeholder="key in or drag and drop for input1" id="labelformat" cols="75" rows="10" spellcheck="false" ondrop="drop(event)" ondragover="allowDrop(event)"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="wrap-collabsible">
+                <input id="collapsible2" class="toggle" type="checkbox">
+                <label for="collapsible2" class="lbl-toggle">Input 2</label>
+                <div class="collapsible-content">
+                    <div class="content-inner">
+                        <textarea name="label" placeholder="key in or drag and drop for input2" id="labelformat" cols="75" rows="10" spellcheck="false" ondrop="drop(event)" ondragover="allowDrop(event)"></textarea>
+                    </div>
+                </div>
+            </div>
             <p>
                 Objects in Flash:
                 <button type="button" value="^XA^HWE:*.*^XZ" class="btn btn-default btn-sm" draggable="true" ondragstart="drag(event)">
@@ -248,42 +322,42 @@
             </p>
         </div>
 
-        <div id="Price label" class="tabcontent">
-            <div id="price-lookup-table" style=" overflow:hidden"></div>
+            <div id="Price label" class="tabcontent">
+                <div id="price-lookup-table" style=" overflow:hidden"></div>
 
-            <form id="newrowform" class="form">
-                <input type="text" placeholder="SKU" id="code" size="12" required>
-                <input type="text" id="description" placeholder="Description" size="17">
-                <input type="text" id="price" placeholder="Price" size="10" required>
-                <input type="text" id="ean" placeholder="Ean-13" size="15" required minlength="13" maxlength="13">
-            </form>
-            <button id="newrow-button" class="button">
-                <span class="glyphicon glyphicon-plus"></span>
+                <form id="newrowform" class="form">
+                    <input type="text" placeholder="SKU" id="code" size="12" required>
+                    <input type="text" id="description" placeholder="Description" size="17">
+                    <input type="text" id="price" placeholder="Price" size="10" required>
+                    <input type="text" id="ean" placeholder="Ean-13" size="15" required minlength="13" maxlength="13">
+                </form>
+                <button id="newrow-button" class="button">
+                    <span class="glyphicon glyphicon-plus"></span>
+                </button>
+                <button id="deleterow-button" class="button">
+                    <span class="glyphicon glyphicon-minus"></span>
+                </button>
+
+            </div>
+
+            <div id="CISDFCRC16" class="tabcontent">
+                <div id="drop_zone" style="border:dotted; width:500px; height:50px; text-align:center ">Drop files here<br />CISDFCRC16 header will be added automatically</div>
+                <output id="files2send"></output>
+            </div>
+
+            <div id="PROGRAM" class="tabcontent">
+                <div id="fw-table" style=" overflow:hidden"></div>
+            </div>
+
+            <button id="sendcmd-button" class="button" style="vertical-align: top">
+                <span class="glyphicon glyphicon-play"></span>
             </button>
-            <button id="deleterow-button" class="button">
-                <span class="glyphicon glyphicon-minus"></span>
+            <div id="printers-table"></div>
+            <button id="refresh-button" class="button" style="vertical-align: top">
+                <span class="glyphicon glyphicon-refresh"></span>
             </button>
 
         </div>
-
-        <div id="CISDFCRC16" class="tabcontent">
-            <div id="drop_zone" style="border:dotted; width:500px; height:50px; text-align:center ">Drop files here<br />CISDFCRC16 header will be added automatically</div>
-            <output id="files2send"></output>
-        </div>
-
-        <div id="PROGRAM" class="tabcontent">
-            <div id="fw-table" style=" overflow:hidden"></div>
-        </div>
-
-        <button id="sendcmd-button" class="button" style="vertical-align: top">
-            <span class="glyphicon glyphicon-play"></span>
-        </button>
-        <div id="printers-table"></div>
-        <button id="refresh-button" class="button" style="vertical-align: top">
-            <span class="glyphicon glyphicon-refresh"></span>
-        </button>
-
-    </div>
 
     <div id="Info" class="tabcontent" style="margin-left: 4px;">
         <div class="col-md-12">
