@@ -277,7 +277,7 @@
                 <label id="lblcollapsible1" for="collapsible1" class="lbl-toggle">Input 1</label>
                 <div class="collapsible-content">
                     <div class="content-inner">
-                        <textarea name="label" placeholder="key in or drag and drop for input1" id="labelformat1" cols="75" rows="10" spellcheck="false" onfocus="myFunction(this.id)" ondrop="drop(event)" ondragover="allowDrop(event)"></textarea>
+                        <textarea name="label" placeholder="key in or drag and drop for input1" id="labelformat1" cols="75" rows="8" spellcheck="false" onfocus="myFunction(this.id)" ondrop="drop(event)" ondragover="allowDrop(event)"></textarea>
                     </div>
                 </div>
             </div>
@@ -286,7 +286,7 @@
                 <label id="lblcollapsible2" for="collapsible2" class="lbl-toggle">Input 2</label>
                 <div class="collapsible-content">
                     <div class="content-inner">
-                        <textarea name="label" placeholder="key in or drag and drop for input2" id="labelformat2" cols="75" rows="10" spellcheck="false" onfocus="myFunction(this.id)" ondrop="drop(event)" ondragover="allowDrop(event)"></textarea>
+                        <textarea name="label" placeholder="key in or drag and drop for input2" id="labelformat2" cols="75" rows="1" spellcheck="false" onfocus="myFunction(this.id)" ondrop="drop(event)" ondragover="allowDrop(event)"></textarea>
                     </div>
                 </div>
             </div>
@@ -592,6 +592,7 @@
                 }
             }
 
+            collapsible1.checked = true;
             var inputTextArea;
             myFunction("labelformat1");
 
