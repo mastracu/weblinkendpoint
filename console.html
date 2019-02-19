@@ -591,6 +591,9 @@
                     if (http.readyState == 4 && http.status == 200) {
                         alert(http.responseText);
                     }
+                    else {
+                        alert("errore");
+                    }
                 }
                 http.send(selection);
             });
