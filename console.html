@@ -286,7 +286,7 @@
                 <label id="lblcollapsible2" for="collapsible2" class="lbl-toggle">Input 2</label>
                 <div class="collapsible-content">
                     <div class="content-inner">
-                        <textarea name="label" placeholder="key in or drag and drop for input2" id="labelformat2" cols="75" rows="1" spellcheck="false" onfocus="myFunction(this.id)" ondrop="drop(event)" ondragover="allowDrop(event)"></textarea>
+                        <textarea name="label" placeholder="key in or drag and drop for input2" id="labelformat2" onmouseover="sayHello()" cols="75" rows="1" spellcheck="false" onfocus="myFunction(this.id)" ondrop="drop(event)" ondragover="allowDrop(event)"></textarea>
                     </div>
                 </div>
             </div>
@@ -959,6 +959,11 @@
                     lblcollapsible2.style.background = "#4CAF50";
                 };
             }
+
+            function sayHello() {
+                alert("Mouse Over")
+            }
+
         </script>
 </body>
 </html>
