@@ -286,7 +286,7 @@
                 <label id="lblcollapsible2" for="collapsible2" class="lbl-toggle">Input 2</label>
                 <div class="collapsible-content">
                     <div class="content-inner">
-                        <textarea name="label" placeholder="key in or drag and drop for input2" id="labelformat2" onmouseover="sayHello()" cols="75" rows="1" spellcheck="false" onfocus="myFunction(this.id)" ondrop="drop(event)" ondragover="allowDrop(event)"></textarea>
+                        <textarea name="label" placeholder="key in or drag and drop for input2" id="labelformat2" cols="75" rows="1" spellcheck="false" onfocus="myFunction(this.id)" ondrop="drop(event)" ondragover="allowDrop(event)"></textarea>
                     </div>
                 </div>
             </div>
@@ -327,7 +327,10 @@
                 </button>
             </p>
             <p>
-                <a target="_blank" href="http://labelary.com/viewer.html">ZPL viewer</a>&emsp;<a target="_blank" href="http://explainzpl.appspot.com/">ZPL code analysis</a>
+                <a target="_blank" href="http://labelary.com/viewer.html">ZPL viewer</a>&emsp;
+                <button id="zplref-button" class="button">
+                    <span class="glyphicon glyphicon-modal-window"></span>
+                </button>
             </p>
         </div>
 
@@ -574,6 +577,24 @@
         <script src="eventsource.js"></script>
         <script type="text/javascript" src="tabulator.min.js"></script>
         <script type="text/javascript">
+
+            $("#zplref-button").click(function () {
+                selection = window.getSelection().toString();
+                var http = new XMLHttpRequest();
+                var url = 'https://kotlin-rain.appspot.com/zpl';
+                var params = selection;
+                http.open('POST', url, true);
+
+                //Send the proper header information along with the request
+                http.setRequestHeader("Content-Type", "text/plain;charset=UTF-8");
+
+                http.onreadystatechange = function () {//Call a function when the state changes.
+                    if (http.readyState == 4 && http.status == 200) {
+                        alert(http.responseText);
+                    }
+                }
+                http.send(params);
+            });
 
             // Get the modal
             var modal = document.getElementById('myModal');
@@ -958,10 +979,6 @@
                 if (x == "labelformat2") {
                     lblcollapsible2.style.background = "#4CAF50";
                 };
-            }
-
-            function sayHello() {
-                alert("Mouse Over")
             }
 
         </script>
