@@ -329,7 +329,7 @@
             <p>
                 <a target="_blank" href="http://labelary.com/viewer.html">ZPL viewer</a>&emsp;
                 <button id="zplref-button" class="button">
-                    <span class="glyphicon glyphicon-modal-window"></span>
+                    <span class="glyphicon glyphicon-book"></span>
                 </button>
             </p>
         </div>
@@ -578,22 +578,6 @@
         <script type="text/javascript" src="tabulator.min.js"></script>
         <script type="text/javascript">
 
-            $("#zplref-button").click(function () {
-                selection = window.getSelection().toString();
-                var http = new XMLHttpRequest();
-                var url = 'https://kotlin-rain.appspot.com/zpl';
-                http.open('POST', url, true);
-
-                //Send the proper header information along with the request
-                http.setRequestHeader("Content-Type", "text/plain;charset=UTF-8");
-
-                http.onreadystatechange = function () {//Call a function when the state changes.
-                    if (http.readyState == 4 && http.status == 200) {
-                        alert(http.responseText);
-                    }
-                }
-                http.send(selection);
-            });
 
             // Get the modal
             var modal = document.getElementById('myModal');
@@ -612,6 +596,27 @@
                 }
             }
 
+            $("#zplref-button").click(function () {
+                var selection = window.getSelection().toString();
+                var http = new XMLHttpRequest();
+                var url = 'https://kotlin-rain.appspot.com/zpl';
+                http.open('POST', url, true);
+
+                //Send the proper header information along with the request
+                http.setRequestHeader("Content-Type", "text/plain;charset=UTF-8");
+
+                http.onreadystatechange = function () {//Call a function when the state changes.
+                    if (http.readyState == 4 && http.status == 200) {
+                        var rowData = row.getData();
+                        // console.log(rowData.liveLog);
+                        document.getElementById("spanInModal").innerHTML = "<PRE>" + selection + "</PRE>";
+                        modal.style.display = "block";
+                        // alert(http.responseText);
+                    }
+                }
+                http.send(selection);
+            });
+
             collapsible1.checked = true;
             var inputTextArea;
             myFunction("labelformat1");
@@ -628,7 +633,7 @@
                 },
                 rowDblClick: function (e, row) {
                     var rowData = row.getData();
-                    console.log(rowData.liveLog);
+                    // console.log(rowData.liveLog);
                     document.getElementById("spanInModal").innerHTML = "<PRE>" + rowData.liveLog + "</PRE>";
                     modal.style.display = "block";
                 },
