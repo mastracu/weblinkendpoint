@@ -607,8 +607,7 @@
 
                 http.onreadystatechange = function () {//Call a function when the state changes.
                     if (http.readyState == 4 && http.status == 200) {
-                        var rowData = row.getData();
-                        // console.log(rowData.liveLog);
+                        console.log(selection);
                         document.getElementById("spanInModal").innerHTML = "<PRE>" + selection + "</PRE>";
                         modal.style.display = "block";
                         // alert(http.responseText);
