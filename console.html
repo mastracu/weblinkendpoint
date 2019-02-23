@@ -219,6 +219,7 @@
     <div class="tab">
         <button class="tablinks" onclick="openTab(event, 'JSON cmd')" id="defaultOpen">CONFIG channel console</button>
         <button class="tablinks" onclick="openTab(event, 'Custom label')">RAW channel console</button>
+        <button class="tablinks" onclick="openTab(event, 'Monaco')">MONACO editor</button>
         <button class="tablinks" onclick="openTab(event, 'CISDFCRC16')">! CISDFCRC16</button>
         <button class="tablinks" onclick="openTab(event, 'PROGRAM')">! PROGRAM</button>
         <button class="tablinks" onclick="openTab(event, 'Price label')" id="priceTab">ZPL price label</button>
@@ -370,6 +371,11 @@
             </button>
 
         </div>
+
+    <div id="Monaco" class="tabcontent" style="margin-left: 4px;">
+        <h2>Monaco Editor Sync Loading Sample</h2>
+        <div id="monacocontainer" style="width:800px;height:600px;border:1px solid grey"></div>
+    </div>
 
     <div id="Info" class="tabcontent" style="margin-left: 4px;">
         <div class="col-md-12">
@@ -910,7 +916,7 @@
                         $("#sendcmd-button").click(function () {
                         });
                 };
-                if (tabName == "Info" || tabName == "Settings") {
+                if ((tabName == "Info" || tabName == "Settings") || tabName == "Monaco") {
                     document.getElementById("mainblock").style.display = "none";
                     document.getElementById("bottom-pane").style.display = "none";
                 } else {
