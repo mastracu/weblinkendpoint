@@ -8,22 +8,29 @@
 <body>
 
     <h2>Monaco Editor Sync Loading Sample</h2>
-    <div id="container" style="width:800px;height:600px;border:1px solid grey"></div>
+    <div id="monacocontainer" style="width:800px;height:600px;border:1px solid grey"></div>
 
-    <script>var require = { paths: { 'vs': 'monaco-editor/min/vs' } };</script>
-    <script src="monaco-editor/min/vs/loader.js"></script>
-    <script src="monaco-editor/min/vs/editor/editor.main.nls.js"></script>
-    <script src="monaco-editor/min/vs/editor/editor.main.js"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
+    <script src="eventsource.js"></script>
+    <script type="text/javascript" src="tabulator.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.5/require.min.js" integrity="sha256-0SGl1PJNDyJwcV5T+weg2zpEMrh7xvlwO4oXgvZCeZk=" crossorigin="anonymous"></script>
 
     <script>
-	var editor = monaco.editor.create(document.getElementById('container'), {
-		value: [
-			'function x() {',
-			'\tconsole.log("Hello world!");',
-			'}'
-		].join('\n'),
-		language: 'javascript'
-	});
+
+        require.config({ paths: { 'vs': 'monaco-editor/min/vs' } });
+
+        require(['vs/editor/editor.main'], function () {
+            var editor = monaco.editor.create(document.getElementById('monacocontainer'), {
+                value: [
+                    'function x() {',
+                    '\tconsole.log("Hello world!");',
+                    '}'
+                ].join('\n'),
+                language: 'javascript'
+            });
+        });
+
     </script>
 
 </body>
