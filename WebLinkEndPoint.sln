@@ -14,6 +14,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		logtable.html = logtable.html
 		mobiletest.html = mobiletest.html
 		monaco.html = monaco.html
+		printerdefaultapp.json = printerdefaultapp.json
 		readme.md = readme.md
 		reverseshipment.html = reverseshipment.html
 	EndProjectSection

@@ -236,7 +236,15 @@ let ws allAgents (webSocket : WebSocket) (context: HttpContext) =
                              do printersAgent.SendMsgOverConfigChannel printerUniqueId (Opcode.Binary, UTF8.bytes """{}{"device.product_name":null} """, true) true
                              do printersAgent.SendMsgOverConfigChannel printerUniqueId (Opcode.Binary, UTF8.bytes """{}{"appl.name":null} """, true) true
                              do printersAgent.SendMsgOverConfigChannel printerUniqueId (Opcode.Binary, UTF8.bytes """{}{"odometer.user_label_count":"0"} """, true) true
-                             do sendResetCaptureCmds printerUniqueId printersAgent true
+                             match printersAgent.FetchPrinterInfo printerUniqueId with
+                                | None -> ()
+                                | Some pr -> match pr.sgdSetAlertProcessor with 
+                                                | "none" -> sendResetCaptureCmds printerUniqueId printersAgent true
+                                                | "priceTag" -> sendBTCaptureCmds printerUniqueId printersAgent true
+                                                | "labelToGo" -> sendBTCaptureCmds printerUniqueId printersAgent true
+                                                | "ifadLabelConversion" -> sendUSBCaptureCmds printerUniqueId printersAgent true
+                                                | "wikipediaConversion" -> sendUSBCaptureCmds printerUniqueId printersAgent true
+                                                | _ -> ()
                         | _ -> ()
                     | None -> ()
 
