@@ -21,13 +21,25 @@
         require.config({ paths: { 'vs': 'monaco-editor/min/vs' } });
 
         require(['vs/editor/editor.main'], function () {
-            var editor = monaco.editor.create(document.getElementById('monacocontainer'), {
-                value: [
-                    'function x() {',
-                    '\tconsole.log("Hello world!");',
-                    '}'
-                ].join('\n'),
-                language: 'javascript'
+
+            monaco.languages.register({ id: 'zpl' });
+
+            monaco.languages.registerHoverProvider('zpl', {
+                provideHover: function (model, position) {
+                    return {
+                        // range: new monaco.Range(1, 1, model.getLineCount(), model.getLineMaxColumn(model.getLineCount())),
+                        range: new monaco.Range(position.lineNumber, 1, position.lineNumber, model.getLineMaxColumn(position.lineNumber)),
+                        contents: [
+                            { value: '**ZPL REFERENCE GUIDE**' },
+                            { value: model.getLineContent(position.lineNumber) }
+                        ]
+                    }
+                }
+            });
+
+            monaco.editor.create(document.getElementById("monacocontainer"), {
+                value: '^XA\n^CF0,190\n^FO485,965\n^FDCA^FS\n^XZ',
+                language: 'zpl'
             });
         });
 
