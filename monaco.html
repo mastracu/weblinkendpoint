@@ -26,14 +26,14 @@
 
             monaco.languages.registerHoverProvider('zpl', {
                 provideHover: function (model, position) {
-                    return xhr('https://kotlin-rain.appspot.com/zpl', model.getLineMaxColumn(position.lineNumber)).then(function (res) {
+                    return xhr('https://kotlin-rain.appspot.com/zpl', model.getLineContent(position.lineNumber)).then(function (res) {
 
                         return {
                             // range: new monaco.Range(1, 1, model.getLineCount(), model.getLineMaxColumn(model.getLineCount())),
                             range: new monaco.Range(position.lineNumber, 1, position.lineNumber, model.getLineMaxColumn(position.lineNumber)),
                             contents: [
-                                { value: '**ZPL REFERENCE GUIDE**' },
-                                { value: model.getLineContent(position.lineNumber) }
+                                { value: '**' + model.getLineContent(position.lineNumber) + '**' },
+                                { value: '```html\n' + res.responseText + '\n```' }
                             ]
                         }
                     });
