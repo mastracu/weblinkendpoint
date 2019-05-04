@@ -26,14 +26,17 @@
 
             monaco.languages.registerHoverProvider('zpl', {
                 provideHover: function (model, position) {
-                    return {
-                        // range: new monaco.Range(1, 1, model.getLineCount(), model.getLineMaxColumn(model.getLineCount())),
-                        range: new monaco.Range(position.lineNumber, 1, position.lineNumber, model.getLineMaxColumn(position.lineNumber)),
-                        contents: [
-                            { value: '**ZPL REFERENCE GUIDE**' },
-                            { value: model.getLineContent(position.lineNumber) }
-                        ]
-                    }
+                    return xhr('https://kotlin-rain.appspot.com/zpl', model.getLineMaxColumn(position.lineNumber)).then(function (res) {
+
+                        return {
+                            // range: new monaco.Range(1, 1, model.getLineCount(), model.getLineMaxColumn(model.getLineCount())),
+                            range: new monaco.Range(position.lineNumber, 1, position.lineNumber, model.getLineMaxColumn(position.lineNumber)),
+                            contents: [
+                                { value: '**ZPL REFERENCE GUIDE**' },
+                                { value: model.getLineContent(position.lineNumber) }
+                            ]
+                        }
+                    });
                 }
             });
 
@@ -42,6 +45,35 @@
                 language: 'zpl'
             });
         });
+
+        function xhr(url, key) {
+            var req = null;
+            return new Promise(function (c, e) {
+                req = new XMLHttpRequest();
+                req.onreadystatechange = function () {
+                    if (req._canceled) { return; }
+
+                    if (req.readyState === 4) {
+                        if ((req.status >= 200 && req.status < 300) || req.status === 1223) {
+                            c(req);
+                        } else {
+                            e(req);
+                        }
+                        req.onreadystatechange = function () { };
+                    }
+                };
+
+                req.open("POST", url, true);
+                req.setRequestHeader("Content-Type", "text/plain;charset=UTF-8");
+
+                req.responseType = "";
+
+                req.send(key);
+            }, function () {
+                req._canceled = true;
+                req.abort();
+            });
+        }
 
     </script>
 
