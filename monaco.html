@@ -44,33 +44,6 @@
                 ]
             });
 
-            // Register a completion item provider for the new language
-            monaco.languages.registerCompletionItemProvider('zpl', {
-                provideCompletionItems: () => {
-                    var suggestions = [{
-                        label: 'simpleText',
-                        kind: monaco.languages.CompletionItemKind.Text,
-                        insertText: 'simpleText'
-                    //},
-                    //    label: 'field',
-                    //    kind: monaco.languages.CompletionItemKind.Keyword,
-                    //    insertText: '^FD${1:condition}^FS',
-                    //    insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
-                    //}, {
-                    //    label: 'newlabel',
-                    //    kind: monaco.languages.CompletionItemKind.Snippet,
-                    //    insertText: [
-                    //        '^XA',
-                    //        '$0',
-                    //        '^XZ'
-                    //    ].join('\n'),
-                    //    insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-                    //    documentation: 'New ZPL label'
-                    }];
-                    return { suggestions: suggestions };
-                }
-            });
-
             monaco.languages.registerHoverProvider('zpl', {
                 provideHover: function (model, position) {
                     return xhr('https://kotlin-rain.appspot.com/zpl', model.getLineContent(position.lineNumber)).then(function (res) {
