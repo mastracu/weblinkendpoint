@@ -223,7 +223,7 @@
         <button class="tablinks" onclick="openTab(event, 'PROGRAM')">! PROGRAM</button>
         <button class="tablinks" onclick="openTab(event, 'Price label')" id="priceTab">ZPL price label</button>
         <button class="tablinks" style="float:right" onclick="openTab(event, 'Info')">Guide to applications demonstration</button>
-        <button class="tablinks" style="float:right" onclick="openTab(event, 'Settings')">On-connection application assignment</button>
+        <button class="tablinks" style="float:right" onclick="openTab(event, 'Settings')">Static application assignment</button>
     </div>
     <div id="mainblock">
         <div id="JSON cmd" class="tabcontent">
@@ -371,6 +371,11 @@
 
     </div>
 
+    <div id="Settings" class="tabcontent" style="margin-left: 4px;">
+        <div id="Static" class="col-md-12" >
+        </div>
+    </div>
+    
     <div id="Info" class="tabcontent" style="margin-left: 4px;">
         <div class="col-md-12">
 
@@ -404,104 +409,104 @@
 <pre><code>! U1 setvar "weblink.ip.conn1.location" "https://weblinktest.mastracu.it/websocketWithSubprotocol"
 </code></pre>
 
-            <p>You then re-start / power-cycle the printer by issuing</p>
+                    <p>You then re-start / power-cycle the printer by issuing</p>
 
 <pre><code>! U1 setvar "device.reset" ""
 </code></pre>
 
-            <p>
-                Check the printer is now connected.
-                If it is, it will be listed in http://weblinkendpoint.mastracyu.it/appselector.html
-            </p>
-            <p>The printers will also spit out a welcome label once it’s connected.</p>
-            <p>You may also need to calibrate the printer and/or reset the sensor settings depending on the media being used.</p>
+                <p>
+                    Check the printer is now connected.
+                    If it is, it will be listed in http://weblinkendpoint.mastracyu.it/appselector.html
+                </p>
+                <p>The printers will also spit out a welcome label once it’s connected.</p>
+                <p>You may also need to calibrate the printer and/or reset the sensor settings depending on the media being used.</p>
 
-            <h3 id="notesformobileprinters">Notes for mobile printers</h3>
+                <h3 id="notesformobileprinters">Notes for mobile printers</h3>
 
-            <p>
-                On mobile printers like ZQ320 and ZQ310, I have seen a behaviour where the printer will not stay in sleep mode (https://www.zebra.com/content/dam/zebra/software/en/application-notes/AppNote-SleepMode-v5.pdf) if weblink is enabled.
-                The printer will awake seconds after entering sleep mode.
-                Because of this, I turn sleep mode off by issuing
-            </p>
+                <p>
+                    On mobile printers like ZQ320 and ZQ310, I have seen a behaviour where the printer will not stay in sleep mode (https://www.zebra.com/content/dam/zebra/software/en/application-notes/AppNote-SleepMode-v5.pdf) if weblink is enabled.
+                    The printer will awake seconds after entering sleep mode.
+                    Because of this, I turn sleep mode off by issuing
+                </p>
 
 <pre><code>! U1 setvar "power.sleep.enable" "off"
 </code></pre>
 
-            <p>
-                Also testing with ZQ310, I have noted mobile printer will shut down weblink connection after issuing battery low alert.
-                In my test battery low alert was issued at about 10% battery level (6.5 Volts) and printer did shut down at about 6% battery level (6.28 Volts)
-            </p>
+                <p>
+                    Also testing with ZQ310, I have noted mobile printer will shut down weblink connection after issuing battery low alert.
+                    In my test battery low alert was issued at about 10% battery level (6.5 Volts) and printer did shut down at about 6% battery level (6.28 Volts)
+                </p>
 
-            <h3 id="sendingjsonconfigurationcommandstotheprinter">Sending JSON configuration commands to the printer</h3>
+                <h3 id="sendingjsonconfigurationcommandstotheprinter">Sending JSON configuration commands to the printer</h3>
 
-            <p>Demonstrate how one can remotely send configuration commands to a printer or query printer data by sending commands from appselector page and checking response on logtable.</p>
-            <p>Some revealing commands to issue are</p>
+                <p>Demonstrate how one can remotely send configuration commands to a printer or query printer data by sending commands from appselector page and checking response on logtable.</p>
+                <p>Some revealing commands to issue are</p>
 
 <pre><code>{}{"ribbon.cartridge":null} 
 </code></pre>
 
-            <p>on a ZD420 cartridge TT printer and</p>
+                <p>on a ZD420 cartridge TT printer and</p>
 
 <pre><code>{}{"power":null} 
 </code></pre>
 
-            <p>on a mobile printer.</p>
+                <p>on a mobile printer.</p>
 
-            <h3 id="repricingapplicationpricetag">Repricing application - <code>priceTag</code></h3>
+                <h3 id="repricingapplicationpricetag">Repricing application - <code>priceTag</code></h3>
 
-            <p>
-                Minimum label width: 5cms or 2 inches
-                Minimum label height: 3cms
-            </p>
+                <p>
+                    Minimum label width: 5cms or 2 inches
+                    Minimum label height: 3cms
+                </p>
 
-            <p>Follow the following steps to set it up</p>
+                <p>Follow the following steps to set it up</p>
 
-            <ol>
-                <li>Ensure the BT scanner is configured to CR-LF terminate the barcode. </li>
-            </ol>
+                <ol>
+                    <li>Ensure the BT scanner is configured to CR-LF terminate the barcode. </li>
+                </ol>
 
-            <p><img src="img/enter.png" alt="Barcode" />        </p>
+                <p><img src="img/enter.png" alt="Barcode" />        </p>
 
-            <ol>
-                <li>Verify the printer is listed as connected in the the WebLinkEndPoint. Send the following json command to get the btaddress of the printer: </li>
-            </ol>
+                <ol>
+                    <li>Verify the printer is listed as connected in the the WebLinkEndPoint. Send the following json command to get the btaddress of the printer: </li>
+                </ol>
 
 <pre><code>{}{"bluetooth.short_address":null} 
 </code></pre>
 
-            <p></p>
+                <p></p>
 
-            <ol>
-                <li>From 123scan generate the Bluetooth Pairing barcode (Serial Port Profile - Master) by keying in the address retrieved in previous point.</li>
+                <ol>
+                    <li>From 123scan generate the Bluetooth Pairing barcode (Serial Port Profile - Master) by keying in the address retrieved in previous point.</li>
 
-                <li>Scan the barcode with CS4070 and the scanner should establish the BT connection with the printer (solid blue LED on the printer) </li>
-            </ol>
+                    <li>Scan the barcode with CS4070 and the scanner should establish the BT connection with the printer (solid blue LED on the printer) </li>
+                </ol>
 
-            <p>On http://weblinkendpoint.mastracu.it/pricetag.html you add a new item that you have handy in the meeting room.</p>
+                <p>On http://weblinkendpoint.mastracu.it/pricetag.html you add a new item that you have handy in the meeting room.</p>
 
-            <p><strong>Please ensure barcode is 13-digits long as only EAN-13 barcodes are currently supported.</strong></p>
+                <p><strong>Please ensure barcode is 13-digits long as only EAN-13 barcodes are currently supported.</strong></p>
 
-            <p>Please note that scanning the BT addr barcode on the back of the printer will not work.</p>
+                <p>Please note that scanning the BT addr barcode on the back of the printer will not work.</p>
 
-            <p>
-                I can then go ahead and scan the barcodes of the item above.
-                A pricetag will be automatically printed if the barcode is found.
-                I can then change the price of the item in the table on http://weblinkendpoint.mastracu.it/pricetag.html . I then scan the same product again and the label is printed with a different price. By selecting a product and a printer from http://weblinkendpoint.mastracu.it/pricetag.html I can also show how to print a label “remotely”.
-            </p>
+                <p>
+                    I can then go ahead and scan the barcodes of the item above.
+                    A pricetag will be automatically printed if the barcode is found.
+                    I can then change the price of the item in the table on http://weblinkendpoint.mastracu.it/pricetag.html . I then scan the same product again and the label is printed with a different price. By selecting a product and a printer from http://weblinkendpoint.mastracu.it/pricetag.html I can also show how to print a label “remotely”.
+                </p>
 
-            <p><strong>Please note - data are not persistent and application is restarted every 24 hours so price changes / new products will be lost the following day.</strong></p>
+                <p><strong>Please note - data are not persistent and application is restarted every 24 hours so price changes / new products will be lost the following day.</strong></p>
 
-            <p>See https://devcenter.heroku.com/articles/dynos#restarting and https://devcenter.heroku.com/articles/dynos#ephemeral-filesystem</p>
+                <p>See https://devcenter.heroku.com/articles/dynos#restarting and https://devcenter.heroku.com/articles/dynos#ephemeral-filesystem</p>
 
-            <h3 id="labelconversionifadlabelconvertion">Label conversion - <code>ifadLabelConvertion</code></h3>
+                <h3 id="labelconversionifadlabelconvertion">Label conversion - <code>ifadLabelConvertion</code></h3>
 
-            <p>
-                For the label conversion demo, from http://ifad.mastracu.it/appselector.html
-                I change the application associated with a 200dpi printer to ifadlabelconvertion.
-                Now everything I send to the printer via USB gets forwarded onto the cloud.
-            </p>
+                <p>
+                    For the label conversion demo, from http://ifad.mastracu.it/appselector.html
+                    I change the application associated with a 200dpi printer to ifadlabelconvertion.
+                    Now everything I send to the printer via USB gets forwarded onto the cloud.
+                </p>
 
-            <p>Send file IFAAM004_2289143IFAAM004.txt via USB </p>
+                <p>Send file IFAAM004_2289143IFAAM004.txt via USB </p>
 
 <pre><code>^XA^LH30,30^FO20,10^ADN80,50^FDIFAD INVENTORY^FS^FO20,80
 ^ADN60,30^FDNOTEBOOK^FS^FO20,120^ADN30,10^FDS/N:^FS^FO80,120
@@ -509,481 +514,486 @@
 ^FS^FO150,305^ADN30,35^FD000000054986^FS^XZ                              
 </code></pre>
 
-            <p>and it gets converted to a quasi-equivalent 200 dpi label.</p>
+                <p>and it gets converted to a quasi-equivalent 200 dpi label.</p>
 
-            <p>Render label with http://labelary.com/viewer.html</p>
+                <p>Render label with http://labelary.com/viewer.html</p>
 
-            <p>
-                Minimum label width: 5cms
-                Minimum label height: 3cms
-            </p>
+                <p>
+                    Minimum label width: 5cms
+                    Minimum label height: 3cms
+                </p>
 
-            <h3 id="shipmentlabellabeltogo">Shipment Label - <code>labelToGo</code></h3>
+                <h3 id="shipmentlabellabeltogo">Shipment Label - <code>labelToGo</code></h3>
 
-            <p>Printer gets template id and var data via BT scanner - endpoint sends label down to printer</p>
+                <p>Printer gets template id and var data via BT scanner - endpoint sends label down to printer</p>
 
-            <ol>
-                <li>Configure and pair BT scanner (see 1-3 in Repricing app)</li>
+                <ol>
+                    <li>Configure and pair BT scanner (see 1-3 in Repricing app)</li>
 
-                <li>Generate return barcode from http://ifad.mastracu.it/mobiletest.html</li>
+                    <li>Generate return barcode from http://ifad.mastracu.it/mobiletest.html</li>
 
-                <li>Scan with BT scanner; label gets printed.</li>
-            </ol>
+                    <li>Scan with BT scanner; label gets printed.</li>
+                </ol>
 
-            <h2 id="versioning">Versioning</h2>
+                <h2 id="versioning">Versioning</h2>
 
-            <p>0.1 Dec 2018</p>
+                <p>0.1 Dec 2018</p>
 
-            <!--<p style="text-align: left;">
-                Weblink Multi-App Endpoint
-                <br />
-                <span style="font-family:Arial; color:red">! U1 setvar "weblink.ip.conn1.location" "https://weblinktest.mastracu.it/websocketWithSubprotocol"</span>
-                and power-cycle the printer.
-                <br />
-                Select app you want to run on each printer.
-                Appropiate redirection commands will be pushed and data from printer will be accordingly processed.
-                Code and apps description <a target="_blank" href="https://github.com/mastracu/weblinkendpoint">here</a>
-                <br />
-                Push JSON commands down the Weblink channel to printer and check printer response on Live Log.
-                <br />
-                Print price labels from cloud or custom label from ZPL code (any app)
-            </p>-->
+                <!--<p style="text-align: left;">
+                    Weblink Multi-App Endpoint
+                    <br />
+                    <span style="font-family:Arial; color:red">! U1 setvar "weblink.ip.conn1.location" "https://weblinktest.mastracu.it/websocketWithSubprotocol"</span>
+                    and power-cycle the printer.
+                    <br />
+                    Select app you want to run on each printer.
+                    Appropiate redirection commands will be pushed and data from printer will be accordingly processed.
+                    Code and apps description <a target="_blank" href="https://github.com/mastracu/weblinkendpoint">here</a>
+                    <br />
+                    Push JSON commands down the Weblink channel to printer and check printer response on Live Log.
+                    <br />
+                    Print price labels from cloud or custom label from ZPL code (any app)
+                </p>-->
+            </div>
         </div>
-    </div>
 
-    <div id="bottom-pane" class="live-monitor-div">
-        <div id="live-log-table"></div>
-        <button id="logclear-button" class="button">
-            <span class="glyphicon glyphicon-trash"></span>
-        </button>
-        <div id="caption-div" class="left-div">
-            To access full weblinkendpoint logtable <a target="_blank" href="logtable.html">logtable.html</a>
-            To generate barcode for goods return (labelToGo app) <a target="_blank" href="mobiletest.html">mobiletest.html</a><br />
+        <div id="bottom-pane" class="live-monitor-div">
+            <div id="live-log-table"></div>
+            <button id="logclear-button" class="button">
+                <span class="glyphicon glyphicon-trash"></span>
+            </button>
+            <div id="caption-div" class="left-div">
+                To access full weblinkendpoint logtable <a target="_blank" href="logtable.html">logtable.html</a>
+                To generate barcode for goods return (labelToGo app) <a target="_blank" href="mobiletest.html">mobiletest.html</a><br />
+            </div>
         </div>
-    </div>
 
-    <!-- The Modal -->
-    <div id="myModal" class="modal">
-        <!-- Modal content -->
-        <div class="modal-content">
-            <span class="closeModal">&times;</span>
-            <span id=spanInModal>tobereplaced..</span>
+        <!-- The Modal -->
+        <div id="myModal" class="modal">
+            <!-- Modal content -->
+            <div class="modal-content">
+                <span class="closeModal">&times;</span>
+                <span id=spanInModal>tobereplaced..</span>
+            </div>
         </div>
-    </div>
 
-    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
-    <script src="eventsource.js"></script>
-    <script type="text/javascript" src="tabulator.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.5/require.min.js" integrity="sha256-0SGl1PJNDyJwcV5T+weg2zpEMrh7xvlwO4oXgvZCeZk=" crossorigin="anonymous"></script>
-    <script type="text/javascript">
+        <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
+        <script src="eventsource.js"></script>
+        <script type="text/javascript" src="tabulator.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.5/require.min.js" integrity="sha256-0SGl1PJNDyJwcV5T+weg2zpEMrh7xvlwO4oXgvZCeZk=" crossorigin="anonymous"></script>
+        <script type="text/javascript">
 
-        // Put the monaco.html code here starting with require.
+            $.getJSON("./printerdefaultapp.json", function (json) {
+                document.getElementById("Static").innerHTML = json;
+            });
 
-        // Get the modal
-        var modal = document.getElementById('myModal');
-        // Get the <span> element that closes the modal
-        var spanclose = document.getElementsByClassName("closeModal")[0];
 
-        // When the user clicks on <span> (x), close the modal
-        spanclose.onclick = function () {
-            modal.style.display = "none";
-        }
+            // Put the monaco.html code here starting with require.
 
-        // When the user clicks anywhere outside of the modal, close it
-        window.onclick = function (event) {
-            if (event.target == modal) {
+            // Get the modal
+            var modal = document.getElementById('myModal');
+            // Get the <span> element that closes the modal
+            var spanclose = document.getElementsByClassName("closeModal")[0];
+
+            // When the user clicks on <span> (x), close the modal
+            spanclose.onclick = function () {
                 modal.style.display = "none";
             }
-        }
 
-        $("#zplref-button").click(function () {
-            var selection = window.getSelection().toString();
-            var http = new XMLHttpRequest();
-            var url = 'https://kotlin-rain.appspot.com/zpl';
-            http.open('POST', url, true);
-
-            //Send the proper header information along with the request
-            http.setRequestHeader("Content-Type", "text/plain;charset=UTF-8");
-
-            http.onreadystatechange = function () {//Call a function when the state changes.
-                if (http.readyState == 4 && http.status == 200) {
-                    console.log(selection);
-                    document.getElementById("spanInModal").innerHTML = "<PRE>" + selection + "\n\n" + http.responseText + "</PRE>";
-                    modal.style.display = "block";
-                    // alert(http.responseText);
+            // When the user clicks anywhere outside of the modal, close it
+            window.onclick = function (event) {
+                if (event.target == modal) {
+                    modal.style.display = "none";
                 }
             }
-            http.send(selection);
-        });
 
-        collapsible1.checked = true;
-        var inputTextArea;
-        myFunction("labelformat1");
+            $("#zplref-button").click(function () {
+                var selection = window.getSelection().toString();
+                var http = new XMLHttpRequest();
+                var url = 'https://kotlin-rain.appspot.com/zpl';
+                http.open('POST', url, true);
 
-        $("#live-log-table").tabulator({
-            selectable: 1,
-            layout: "fitColumns", //fit columns to width of table (optional)
-            height: 290,
-            columns: [ //Define Table Columns
-                { title: "Websocket channels live monitoring", field: "liveLog", width: 5000, sorter: "string", align: "left", },
-            ],
-            rowSelectionChanged: function (data, rows) {
-                //update selected row counter on selection change
-            },
-            rowDblClick: function (e, row) {
-                var rowData = row.getData();
-                // console.log(rowData.liveLog);
-                document.getElementById("spanInModal").innerHTML = "<PRE>" + rowData.liveLog + "</PRE>";
-                modal.style.display = "block";
-            },
-        });
+                //Send the proper header information along with the request
+                http.setRequestHeader("Content-Type", "text/plain;charset=UTF-8");
 
-        $("#printers-table").tabulator({
-            selectable: 1,
-            layout: "fitColumns",
-            columns: [ //Define Table Columns
-                { title: "Printer Serial Number", field: "uniqueID", formatter: "link", formatterParams: { url: function (cell) { return "/printerSettings?printerId=" + cell.getValue(); }, target: "_blank", }, width: 200, sorter: "string", align: "left", },
-                { title: "Product Name", field: "productName", width: 150, sorter: "string", align: "left", },
-                { title: "FW Version", field: "appVersion", width: 208, sorter: "string", align: "left", },
-                {
-                    title: "Application", field: "sgdSetAlertFeedback", width: 200, sorter: "string", align: "left", editor: "select", editorParams: {
-                        "ifadLabelConversion": "ifadLabelConversion",
-                        "priceTag": "priceTag",
-                        "wikipediaConversion": "wikipediaConversion",
-                        "labelToGo": "labelToGo",
-                        "none": "none",
+                http.onreadystatechange = function () {//Call a function when the state changes.
+                    if (http.readyState == 4 && http.status == 200) {
+                        console.log(selection);
+                        document.getElementById("spanInModal").innerHTML = "<PRE>" + selection + "\n\n" + http.responseText + "</PRE>";
+                        modal.style.display = "block";
+                        // alert(http.responseText);
                     }
-                }],
-            cellEdited: function (cell) {
-                var data = cell.getRow().getData();
-                var myJSON = JSON.stringify(data);
-                var xhr = new XMLHttpRequest();
-                var url = "printerupdate";
-                xhr.open("POST", url, true);
-                xhr.setRequestHeader("Content-type", "application/json");
-                xhr.send(myJSON);
+                }
+                http.send(selection);
+            });
 
-            },
-            rowAdded: function (row) {
-            },
-        });
-        $("#printers-table").tabulator("setData", "printerslist.json");
+            collapsible1.checked = true;
+            var inputTextArea;
+            myFunction("labelformat1");
 
+            $("#live-log-table").tabulator({
+                selectable: 1,
+                layout: "fitColumns", //fit columns to width of table (optional)
+                height: 290,
+                columns: [ //Define Table Columns
+                    { title: "Websocket channels live monitoring", field: "liveLog", width: 5000, sorter: "string", align: "left", },
+                ],
+                rowSelectionChanged: function (data, rows) {
+                    //update selected row counter on selection change
+                },
+                rowDblClick: function (e, row) {
+                    var rowData = row.getData();
+                    // console.log(rowData.liveLog);
+                    document.getElementById("spanInModal").innerHTML = "<PRE>" + rowData.liveLog + "</PRE>";
+                    modal.style.display = "block";
+                },
+            });
 
-        document.getElementById("Price label").style.display = "inline-block";
-        $("#price-lookup-table").tabulator({
-            selectable: true,
-            height: 200,
-            layout: "fitColumns",
-            columns: [ //Define Table Columns
-                { title: "SKU", field: "sku", sorter: "number", width: 120, align: "right", },
-                { title: "Description", field: "description", sorter: "string", align: "left", width: 160 },
-                { title: "Unit Price", field: "unitPrice", width: 105, sorter: "number", editor: "input", validator: ["float", "required"], align: "right", sortable: false },
-                { title: "EAN 13 code", field: "eanCode", width: 150, sorter: "number", align: "right" },
-            ],
-            //index:"sku",
-            cellEdited: function (cell) {
-                var data = cell.getRow().getData();
-                var myJSON = JSON.stringify(data);
-                var xhr = new XMLHttpRequest();
-                var url = "productupdate";
-                xhr.open("POST", url, true);
-                xhr.setRequestHeader("Content-type", "application/json");
-                xhr.send(myJSON);
-            },
-            rowAdded: function (row) {
-                var data = row.getData();
-                var myJSON = JSON.stringify(data);
-                var xhr = new XMLHttpRequest();
-                var url = "productupdate";
-                xhr.open("POST", url, true);
-                xhr.setRequestHeader("Content-type", "application/json");
-                xhr.send(myJSON);
-            },
-            rowDeleted: function (row) {
-                var data = row.getData();
-                var myJSON = JSON.stringify(data);
-                var xhr = new XMLHttpRequest();
-                var url = "productremove";
-                xhr.open("POST", url, true);
-                xhr.setRequestHeader("Content-type", "application/json");
-                xhr.send(myJSON);
-            },
-        });
-        $("#price-lookup-table").tabulator("setData", "storepricelist.json");
-        document.getElementById("Price label").style.display = "none";
+            $("#printers-table").tabulator({
+                selectable: 1,
+                layout: "fitColumns",
+                columns: [ //Define Table Columns
+                    { title: "Printer Serial Number", field: "uniqueID", formatter: "link", formatterParams: { url: function (cell) { return "/printerSettings?printerId=" + cell.getValue(); }, target: "_blank", }, width: 200, sorter: "string", align: "left", },
+                    { title: "Product Name", field: "productName", width: 150, sorter: "string", align: "left", },
+                    { title: "FW Version", field: "appVersion", width: 208, sorter: "string", align: "left", },
+                    {
+                        title: "Application", field: "sgdSetAlertFeedback", width: 200, sorter: "string", align: "left", editor: "select", editorParams: {
+                            "ifadLabelConversion": "ifadLabelConversion",
+                            "priceTag": "priceTag",
+                            "wikipediaConversion": "wikipediaConversion",
+                            "labelToGo": "labelToGo",
+                            "none": "none",
+                        }
+                    }],
+                cellEdited: function (cell) {
+                    var data = cell.getRow().getData();
+                    var myJSON = JSON.stringify(data);
+                    var xhr = new XMLHttpRequest();
+                    var url = "printerupdate";
+                    xhr.open("POST", url, true);
+                    xhr.setRequestHeader("Content-type", "application/json");
+                    xhr.send(myJSON);
 
-        document.getElementById("PROGRAM").style.display = "inline-block";
-        $("#fw-table").tabulator({
-            selectable: 1,
-            height: 200,
-            layout: "fitColumns",
-            columns: [ //Define Table Columns
-                { title: "Fw File", field: "fwFileName", sorter: "string", width: 160, align: "left", },
-            ],
-        });
-        $("#fw-table").tabulator("setData", "fwlist.json");
-        document.getElementById("PROGRAM").style.display = "none";
-
-        $("#refresh-button").click(function () {
+                },
+                rowAdded: function (row) {
+                },
+            });
             $("#printers-table").tabulator("setData", "printerslist.json");
-        });
 
-        $("#logclear-button").click(function () {
-            $("#live-log-table").tabulator("clearData");
-        });
 
-        $("#newrow-button").click(function () {
-            $("#price-lookup-table").tabulator("addData", [{ sku: $('#code').val(), description: $('#description').val(), eanCode: $('#ean').val(), unitPrice: $('#price').val() }], true);
-            document.getElementById("newrowform").reset();
-        });
+            document.getElementById("Price label").style.display = "inline-block";
+            $("#price-lookup-table").tabulator({
+                selectable: true,
+                height: 200,
+                layout: "fitColumns",
+                columns: [ //Define Table Columns
+                    { title: "SKU", field: "sku", sorter: "number", width: 120, align: "right", },
+                    { title: "Description", field: "description", sorter: "string", align: "left", width: 160 },
+                    { title: "Unit Price", field: "unitPrice", width: 105, sorter: "number", editor: "input", validator: ["float", "required"], align: "right", sortable: false },
+                    { title: "EAN 13 code", field: "eanCode", width: 150, sorter: "number", align: "right" },
+                ],
+                //index:"sku",
+                cellEdited: function (cell) {
+                    var data = cell.getRow().getData();
+                    var myJSON = JSON.stringify(data);
+                    var xhr = new XMLHttpRequest();
+                    var url = "productupdate";
+                    xhr.open("POST", url, true);
+                    xhr.setRequestHeader("Content-type", "application/json");
+                    xhr.send(myJSON);
+                },
+                rowAdded: function (row) {
+                    var data = row.getData();
+                    var myJSON = JSON.stringify(data);
+                    var xhr = new XMLHttpRequest();
+                    var url = "productupdate";
+                    xhr.open("POST", url, true);
+                    xhr.setRequestHeader("Content-type", "application/json");
+                    xhr.send(myJSON);
+                },
+                rowDeleted: function (row) {
+                    var data = row.getData();
+                    var myJSON = JSON.stringify(data);
+                    var xhr = new XMLHttpRequest();
+                    var url = "productremove";
+                    xhr.open("POST", url, true);
+                    xhr.setRequestHeader("Content-type", "application/json");
+                    xhr.send(myJSON);
+                },
+            });
+            $("#price-lookup-table").tabulator("setData", "storepricelist.json");
+            document.getElementById("Price label").style.display = "none";
 
-        $("#deleterow-button").click(function () {
-            var selectedRows = $("#price-lookup-table").tabulator("getSelectedRows");
-            selectedRows[0].delete();
-        });
+            document.getElementById("PROGRAM").style.display = "inline-block";
+            $("#fw-table").tabulator({
+                selectable: 1,
+                height: 200,
+                layout: "fitColumns",
+                columns: [ //Define Table Columns
+                    { title: "Fw File", field: "fwFileName", sorter: "string", width: 160, align: "left", },
+                ],
+            });
+            $("#fw-table").tabulator("setData", "fwlist.json");
+            document.getElementById("PROGRAM").style.display = "none";
 
-        var es = new EventSource("sseLog");
-        var listener = function (event) {
-            var type = event.type;
+            $("#refresh-button").click(function () {
+                $("#printers-table").tabulator("setData", "printerslist.json");
+            });
 
-            console.log(event.type + event.data);
+            $("#logclear-button").click(function () {
+                $("#live-log-table").tabulator("clearData");
+            });
 
-            if (type == "message") {
-                $("#live-log-table").tabulator("addRow", { liveLog: event.data }, true);
+            $("#newrow-button").click(function () {
+                $("#price-lookup-table").tabulator("addData", [{ sku: $('#code').val(), description: $('#description').val(), eanCode: $('#ean').val(), unitPrice: $('#price').val() }], true);
+                document.getElementById("newrowform").reset();
+            });
+
+            $("#deleterow-button").click(function () {
+                var selectedRows = $("#price-lookup-table").tabulator("getSelectedRows");
+                selectedRows[0].delete();
+            });
+
+            var es = new EventSource("sseLog");
+            var listener = function (event) {
+                var type = event.type;
+
+                console.log(event.type + event.data);
+
+                if (type == "message") {
+                    $("#live-log-table").tabulator("addRow", { liveLog: event.data }, true);
+                }
+            };
+            es.addEventListener("open", listener);
+            es.addEventListener("message", listener);
+            es.addEventListener("error", listener);
+
+            // https://stackoverflow.com/questions/9267899/arraybuffer-to-base64-encoded-string
+            function _arrayBufferToBase64(buffer) {
+                var binary = '';
+                var bytes = new Uint8Array(buffer);
+                var len = bytes.byteLength;
+                for (var i = 0; i < len; i++) {
+                    binary += String.fromCharCode(bytes[i]);
+                }
+                return window.btoa(binary);
             }
-        };
-        es.addEventListener("open", listener);
-        es.addEventListener("message", listener);
-        es.addEventListener("error", listener);
 
-        // https://stackoverflow.com/questions/9267899/arraybuffer-to-base64-encoded-string
-        function _arrayBufferToBase64(buffer) {
-            var binary = '';
-            var bytes = new Uint8Array(buffer);
-            var len = bytes.byteLength;
-            for (var i = 0; i < len; i++) {
-                binary += String.fromCharCode(bytes[i]);
-            }
-            return window.btoa(binary);
-        }
+            function openTab(evt, tabName) {
+                // Declare all variables
+                var i, tabcontent, tablinks;
 
-        function openTab(evt, tabName) {
-            // Declare all variables
-            var i, tabcontent, tablinks;
+                // Get all elements with class="tabcontent" and hide them
+                tabcontent = document.getElementsByClassName("tabcontent");
+                for (i = 0; i < tabcontent.length; i++) {
+                    tabcontent[i].style.display = "none";
+                }
 
-            // Get all elements with class="tabcontent" and hide them
-            tabcontent = document.getElementsByClassName("tabcontent");
-            for (i = 0; i < tabcontent.length; i++) {
-                tabcontent[i].style.display = "none";
-            }
+                // Get all elements with class="tablinks" and remove the class "active"
+                tablinks = document.getElementsByClassName("tablinks");
+                for (i = 0; i < tablinks.length; i++) {
+                    tablinks[i].className = tablinks[i].className.replace(" active", "");
+                }
 
-            // Get all elements with class="tablinks" and remove the class "active"
-            tablinks = document.getElementsByClassName("tablinks");
-            for (i = 0; i < tablinks.length; i++) {
-                tablinks[i].className = tablinks[i].className.replace(" active", "");
-            }
+                //          console.log(tabName);
 
-            //          console.log(tabName);
+                switch (tabName) {
+                    case "JSON cmd":
+                        $("#sendcmd-button").off('click').on('click', function () {
+                            var selectedPrinter = $("#printers-table").tabulator("getSelectedData");
 
-            switch (tabName) {
-                case "JSON cmd":
-                    $("#sendcmd-button").off('click').on('click', function () {
-                        var selectedPrinter = $("#printers-table").tabulator("getSelectedData");
-
-                        if (selectedPrinter.length == 0) {
-                            alert("No printer selected !")
-                        }
-                        else {
-                            var ProductJsonCmdObj = { printerID: selectedPrinter[0].uniqueID, msg: $('#jsoncmd').val() }
-                            var myJSON = JSON.stringify(ProductJsonCmdObj);
-                            var xhr = new XMLHttpRequest();
-                            var url = "json2printer";
-                            xhr.open("POST", url, true);
-                            xhr.setRequestHeader("Content-type", "application/json");
-                            xhr.send(myJSON);
-                        }
-                    });
-                    break;
-
-                case "Custom label":
-                    $("#sendcmd-button").off('click').on('click', function () {
-                        var selectedPrinter = $("#printers-table").tabulator("getSelectedData");
-
-                        if (selectedPrinter.length == 0) {
-                            alert("No printer selected !")
-                        }
-                        else {
-                            var PrinterLabelObj = { printerID: selectedPrinter[0].uniqueID, msg: document.getElementById(inputTextArea).value };
-                            var myJSON = JSON.stringify(PrinterLabelObj);
-                            var xhr = new XMLHttpRequest();
-                            var url = "utf82raw";
-                            xhr.open("POST", url, true);
-                            xhr.setRequestHeader("Content-type", "application/json");
-                            xhr.send(myJSON);
-                            console.log("JSON output: " + myJSON);
-                        }
-                    });
-
-                    break;
-                case "Price label":
-                    $("#sendcmd-button").off('click').on('click', function () {
-                        var selectedData = $("#price-lookup-table").tabulator("getSelectedData");
-                        var selectedPrinter = $("#printers-table").tabulator("getSelectedData");
-
-                        if (selectedData.length == 0) {
-                            alert("No products selected to print !")
-                        }
-                        else {
                             if (selectedPrinter.length == 0) {
                                 alert("No printer selected !")
                             }
                             else {
-                                var ProductPrinterObj = { id: selectedPrinter[0].uniqueID, ProductObj: selectedData[0] }
-                                var myJSON = JSON.stringify(ProductPrinterObj);
+                                var ProductJsonCmdObj = { printerID: selectedPrinter[0].uniqueID, msg: $('#jsoncmd').val() }
+                                var myJSON = JSON.stringify(ProductJsonCmdObj);
                                 var xhr = new XMLHttpRequest();
-                                var url = "printproduct";
+                                var url = "json2printer";
                                 xhr.open("POST", url, true);
                                 xhr.setRequestHeader("Content-type", "application/json");
                                 xhr.send(myJSON);
-                                // console.log("JSON output: " + myJSON);
                             }
-                        }
-                    });
+                        });
+                        break;
 
-                    break;
-                case "CISDFCRC16":
-                    $("#sendcmd-button").off('click').on('click', function () {
-                        var selectedPrinter = $("#printers-table").tabulator("getSelectedData");
+                    case "Custom label":
+                        $("#sendcmd-button").off('click').on('click', function () {
+                            var selectedPrinter = $("#printers-table").tabulator("getSelectedData");
 
-                        if (selectedPrinter.length == 0) {
-                            alert("No printer selected !")
-                        }
-                        else {
-                            for (var i = 0, f; f = window.files2store[i]; i++) {
-                                var reader = new FileReader();
-                                reader.onload = (function (thefile) {
-                                    return function (event) {
-                                        var rawdata = event.target.result;
-                                        var lunghezza = rawdata.byteLength.toString(16).padStart(8, '0');
-                                        var header = "! CISDFCRC16\n0000\n" + thefile.name + "\n" + lunghezza + "\n0000\n";
-                                        var PrinterLabelObj = { printerID: selectedPrinter[0].uniqueID, CISDFCRC16Hdr: header, base64Data: _arrayBufferToBase64(rawdata) };
-                                        var myJSON = JSON.stringify(PrinterLabelObj);
-                                        var xhr = new XMLHttpRequest();
-                                        var url = "CISDFCRC16";
-                                        xhr.open("POST", url, true);
-                                        xhr.setRequestHeader("Content-type", "application/json");
-                                        xhr.send(myJSON);
-                                    };
-                                })(f);
-                                reader.readAsArrayBuffer(f);
-                            }
-                        }
-                    });
-                    break;
-                case "PROGRAM":
-                    $("#sendcmd-button").off('click').on('click', function () {
-                        var selectedFw = $("#fw-table").tabulator("getSelectedData");
-                        var selectedPrinter = $("#printers-table").tabulator("getSelectedData");
-
-                        if (selectedFw.length == 0) {
-                            alert("No fw selected to upgrade !")
-                        }
-                        else {
                             if (selectedPrinter.length == 0) {
-                                alert("No printer selected to upgrade !")
+                                alert("No printer selected !")
                             }
                             else {
-                                var PrinterFwObj = { fwFile: selectedFw[0].fwFileName, id: selectedPrinter[0].uniqueID }
-                                var myJSON = JSON.stringify(PrinterFwObj);
+                                var PrinterLabelObj = { printerID: selectedPrinter[0].uniqueID, msg: document.getElementById(inputTextArea).value };
+                                var myJSON = JSON.stringify(PrinterLabelObj);
                                 var xhr = new XMLHttpRequest();
-                                var url = "upgradeprinter";
-                                console.log("JSON output: " + myJSON);
+                                var url = "utf82raw";
                                 xhr.open("POST", url, true);
                                 xhr.setRequestHeader("Content-type", "application/json");
                                 xhr.send(myJSON);
+                                console.log("JSON output: " + myJSON);
                             }
-                        }
-                    });
-                    break;
-                default:
-                    $("#sendcmd-button").click(function () {
-                    });
-            };
-            if (tabName == "Info" || tabName == "Settings") {
-                document.getElementById("mainblock").style.display = "none";
-                document.getElementById("bottom-pane").style.display = "none";
-            } else {
-                document.getElementById("mainblock").style.display = "inline-block";
-                document.getElementById("bottom-pane").style.display = "inline-block";
-            };
-            // Show the current tab, and add an "active" class to the button that opened the tab
-            document.getElementById(tabName).style.display = "inline-block";
-            evt.currentTarget.className += " active";
-        };
+                        });
 
-        function handleFileSelect(evt) {
-            evt.stopPropagation();
-            evt.preventDefault();
+                        break;
+                    case "Price label":
+                        $("#sendcmd-button").off('click').on('click', function () {
+                            var selectedData = $("#price-lookup-table").tabulator("getSelectedData");
+                            var selectedPrinter = $("#printers-table").tabulator("getSelectedData");
 
-            window.files2store = evt.dataTransfer.files;
-            // files is a FileList of File objects. List some properties.
-            var output = [];
-            for (var i = 0, f; f = window.files2store[i]; i++) {
-                output.push('<li><strong>', escape(f.name), '</strong> - ',
-                    //              output.push('<li><strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ',
-                    f.size, '(', f.size.toString(16).padStart(8, '0'), ') bytes, last modified: ',
-                    f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a',
-                    '</li>');
+                            if (selectedData.length == 0) {
+                                alert("No products selected to print !")
+                            }
+                            else {
+                                if (selectedPrinter.length == 0) {
+                                    alert("No printer selected !")
+                                }
+                                else {
+                                    var ProductPrinterObj = { id: selectedPrinter[0].uniqueID, ProductObj: selectedData[0] }
+                                    var myJSON = JSON.stringify(ProductPrinterObj);
+                                    var xhr = new XMLHttpRequest();
+                                    var url = "printproduct";
+                                    xhr.open("POST", url, true);
+                                    xhr.setRequestHeader("Content-type", "application/json");
+                                    xhr.send(myJSON);
+                                    // console.log("JSON output: " + myJSON);
+                                }
+                            }
+                        });
+
+                        break;
+                    case "CISDFCRC16":
+                        $("#sendcmd-button").off('click').on('click', function () {
+                            var selectedPrinter = $("#printers-table").tabulator("getSelectedData");
+
+                            if (selectedPrinter.length == 0) {
+                                alert("No printer selected !")
+                            }
+                            else {
+                                for (var i = 0, f; f = window.files2store[i]; i++) {
+                                    var reader = new FileReader();
+                                    reader.onload = (function (thefile) {
+                                        return function (event) {
+                                            var rawdata = event.target.result;
+                                            var lunghezza = rawdata.byteLength.toString(16).padStart(8, '0');
+                                            var header = "! CISDFCRC16\n0000\n" + thefile.name + "\n" + lunghezza + "\n0000\n";
+                                            var PrinterLabelObj = { printerID: selectedPrinter[0].uniqueID, CISDFCRC16Hdr: header, base64Data: _arrayBufferToBase64(rawdata) };
+                                            var myJSON = JSON.stringify(PrinterLabelObj);
+                                            var xhr = new XMLHttpRequest();
+                                            var url = "CISDFCRC16";
+                                            xhr.open("POST", url, true);
+                                            xhr.setRequestHeader("Content-type", "application/json");
+                                            xhr.send(myJSON);
+                                        };
+                                    })(f);
+                                    reader.readAsArrayBuffer(f);
+                                }
+                            }
+                        });
+                        break;
+                    case "PROGRAM":
+                        $("#sendcmd-button").off('click').on('click', function () {
+                            var selectedFw = $("#fw-table").tabulator("getSelectedData");
+                            var selectedPrinter = $("#printers-table").tabulator("getSelectedData");
+
+                            if (selectedFw.length == 0) {
+                                alert("No fw selected to upgrade !")
+                            }
+                            else {
+                                if (selectedPrinter.length == 0) {
+                                    alert("No printer selected to upgrade !")
+                                }
+                                else {
+                                    var PrinterFwObj = { fwFile: selectedFw[0].fwFileName, id: selectedPrinter[0].uniqueID }
+                                    var myJSON = JSON.stringify(PrinterFwObj);
+                                    var xhr = new XMLHttpRequest();
+                                    var url = "upgradeprinter";
+                                    console.log("JSON output: " + myJSON);
+                                    xhr.open("POST", url, true);
+                                    xhr.setRequestHeader("Content-type", "application/json");
+                                    xhr.send(myJSON);
+                                }
+                            }
+                        });
+                        break;
+                    default:
+                        $("#sendcmd-button").click(function () {
+                        });
+                };
+                if (tabName == "Info" || tabName == "Settings") {
+                    document.getElementById("mainblock").style.display = "none";
+                    document.getElementById("bottom-pane").style.display = "none";
+                } else {
+                    document.getElementById("mainblock").style.display = "inline-block";
+                    document.getElementById("bottom-pane").style.display = "inline-block";
+                };
+                // Show the current tab, and add an "active" class to the button that opened the tab
+                document.getElementById(tabName).style.display = "inline-block";
+                evt.currentTarget.className += " active";
+            };
+
+            function handleFileSelect(evt) {
+                evt.stopPropagation();
+                evt.preventDefault();
+
+                window.files2store = evt.dataTransfer.files;
+                // files is a FileList of File objects. List some properties.
+                var output = [];
+                for (var i = 0, f; f = window.files2store[i]; i++) {
+                    output.push('<li><strong>', escape(f.name), '</strong> - ',
+                        //              output.push('<li><strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ',
+                        f.size, '(', f.size.toString(16).padStart(8, '0'), ') bytes, last modified: ',
+                        f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a',
+                        '</li>');
+                }
+                document.getElementById('files2send').innerHTML = '<ul>' + output.join('') + '</ul>';
             }
-            document.getElementById('files2send').innerHTML = '<ul>' + output.join('') + '</ul>';
-        }
 
-        function handleDragOver(evt) {
-            evt.stopPropagation();
-            evt.preventDefault();
-            evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
-        }
+            function handleDragOver(evt) {
+                evt.stopPropagation();
+                evt.preventDefault();
+                evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+            }
 
-        // Setup the dnd listeners.
-        var dropZone = document.getElementById('drop_zone');
-        dropZone.addEventListener('dragover', handleDragOver, false);
-        dropZone.addEventListener('drop', handleFileSelect, false);
+            // Setup the dnd listeners.
+            var dropZone = document.getElementById('drop_zone');
+            dropZone.addEventListener('dragover', handleDragOver, false);
+            dropZone.addEventListener('drop', handleFileSelect, false);
 
-        document.getElementById("defaultOpen").click();
+            document.getElementById("defaultOpen").click();
 
-        function allowDrop(ev) {
-            ev.preventDefault();
-        }
+            function allowDrop(ev) {
+                ev.preventDefault();
+            }
 
-        function drag(ev) {
-            ev.dataTransfer.setData("text", ev.target.value);
-        }
+            function drag(ev) {
+                ev.dataTransfer.setData("text", ev.target.value);
+            }
 
-        function drop(ev) {
-            ev.preventDefault();
-            var data = ev.dataTransfer.getData("text");
-            ev.target.value = data;
-        }
+            function drop(ev) {
+                ev.preventDefault();
+                var data = ev.dataTransfer.getData("text");
+                ev.target.value = data;
+            }
 
-        function myFunction(x) {
-            labelformat1.style.borderColor = "transparent";
-            labelformat2.style.borderColor = "transparent";
-            lblcollapsible1.style.background = "#FAE042";
-            lblcollapsible2.style.background = "#FAE042";
+            function myFunction(x) {
+                labelformat1.style.borderColor = "transparent";
+                labelformat2.style.borderColor = "transparent";
+                lblcollapsible1.style.background = "#FAE042";
+                lblcollapsible2.style.background = "#FAE042";
 
-            document.getElementById(x).style.borderColor = "#4CAF50";
-            inputTextArea = x;
+                document.getElementById(x).style.borderColor = "#4CAF50";
+                inputTextArea = x;
 
-            if (x == "labelformat1") {
-                lblcollapsible1.style.background = "#4CAF50";
-            };
-            if (x == "labelformat2") {
-                lblcollapsible2.style.background = "#4CAF50";
-            };
-        }
+                if (x == "labelformat1") {
+                    lblcollapsible1.style.background = "#4CAF50";
+                };
+                if (x == "labelformat2") {
+                    lblcollapsible2.style.background = "#4CAF50";
+                };
+            }
 
-    </script>
+        </script>
 </body>
 </html>
