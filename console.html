@@ -218,8 +218,7 @@
 
     <div class="tab">
         <button class="tablinks" onclick="openTab(event, 'JSON cmd')">CONFIG channel console</button>
-        <button class="tablinks" onclick="openTab(event, 'Custom label')">RAW channel console</button>
-        <button class="tablinks" onclick="openTab(event, 'Monaco')" id="defaultOpen">MONACO editor</button>
+        <button class="tablinks" onclick="openTab(event, 'Custom label')" id="defaultOpen">RAW channel console</button>
         <button class="tablinks" onclick="openTab(event, 'CISDFCRC16')">! CISDFCRC16</button>
         <button class="tablinks" onclick="openTab(event, 'PROGRAM')">! PROGRAM</button>
         <button class="tablinks" onclick="openTab(event, 'Price label')" id="priceTab">ZPL price label</button>
@@ -370,11 +369,6 @@
             <span class="glyphicon glyphicon-refresh"></span>
         </button>
 
-    </div>
-
-    <div id="Monaco" class="tabcontent" style="margin-left: 4px;">
-        <h2>Monaco Editor Sync Loading Sample</h2>
-        <div id="monacocontainer" style="width:800px;height:600px;border:1px solid grey"></div>
     </div>
 
     <div id="Info" class="tabcontent" style="margin-left: 4px;">
@@ -584,29 +578,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.5/require.min.js" integrity="sha256-0SGl1PJNDyJwcV5T+weg2zpEMrh7xvlwO4oXgvZCeZk=" crossorigin="anonymous"></script>
     <script type="text/javascript">
 
-            require.config({ paths: { 'vs': 'monaco-editor/min/vs' } });
-
-            require(['vs/editor/editor.main'], function () {
-                monaco.languages.register({ id: 'zpl' });
-
-                monaco.languages.registerHoverProvider('zpl', {
-                    provideHover: function (model, position) {
-                        return {
-                            // range: new monaco.Range(1, 1, model.getLineCount(), model.getLineMaxColumn(model.getLineCount())),
-                            range: new monaco.Range(position.lineNumber, 1, position.lineNumber, model.getLineMaxColumn(position.lineNumber)),
-                            contents: [
-                                { value: '**ZPL REFERENCE GUIDE**' },
-                                { value: model.getLineContent(position.lineNumber) }
-                            ]
-                        }
-                    }
-                });
-
-                var editor = monaco.editor.create(document.getElementById("monacocontainer"), {
-                    value: '^XA\n^CF0,190\n^FO485,965\n^FDCA^FS\n^XZ',
-                    language: 'zpl'
-                });
-            });
+        // Put the monaco.html code here starting with require.
 
         // Get the modal
         var modal = document.getElementById('myModal');
@@ -939,7 +911,7 @@
                     $("#sendcmd-button").click(function () {
                     });
             };
-            if ((tabName == "Info" || tabName == "Settings") || tabName == "Monaco") {
+            if (tabName == "Info" || tabName == "Settings") {
                 document.getElementById("mainblock").style.display = "none";
                 document.getElementById("bottom-pane").style.display = "none";
             } else {
