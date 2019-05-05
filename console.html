@@ -589,9 +589,7 @@
 
                 // Loop through the artists
                 for (var i in json) {
-                    outputStatic += "<h2>" + json[i].printerSN + "</h2>";
-                    outputStatic += "<h2>" + json[i].appCode + "</h2>";
-                    outputStatic += "<ul>";
+                    outputStatic += "<ul>" + json[i].printerSN + " -> " + json[i].appCode;
                 }
 
                 document.getElementById("Static").innerHTML = outputStatic;
