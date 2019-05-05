@@ -24,6 +24,49 @@
 
             monaco.languages.register({ id: 'zpl' });
 
+            // Register a tokens provider for the language
+            monaco.languages.setMonarchTokensProvider('zpl', {
+                tokenizer: {
+                    root: [
+                        [/\^(A@?|[B-Z][A-Z0-9])/, "zplcmd"],
+                        [/~[A-Z][A-Z0-9]/, "zpltilde"],
+                    ]
+                }
+            });
+
+            // Define a new theme that contains only rules that match this language
+            monaco.editor.defineTheme('myCoolTheme', {
+                base: 'vs',
+                inherit: false,
+                rules: [
+                    { token: 'zplcmd', foreground: 'ff0000', fontStyle: 'bold' },
+                    { token: 'zpltilde', foreground: 'FFA500' },
+                ]
+            });
+
+            // Register a completion item provider for the new language
+            monaco.languages.registerCompletionItemProvider('zpl', {
+                provideCompletionItems: () => {
+                    var suggestions = [{
+                        label: 'field',
+                        kind: monaco.languages.CompletionItemKind.Keyword,
+                        insertText: '^FD${1:condition}^FS',
+                        insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
+                    }, {
+                        label: 'newlabel',
+                        kind: monaco.languages.CompletionItemKind.Snippet,
+                        insertText: [
+                            '^XA',
+                            '$0',
+                            '^XZ'
+                        ].join('\n'),
+                        insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+                        documentation: 'New ZPL label'
+                    }];
+                    return { suggestions: suggestions };
+                }
+            });
+
             monaco.languages.registerHoverProvider('zpl', {
                 provideHover: function (model, position) {
                     return xhr('https://kotlin-rain.appspot.com/zpl', model.getLineContent(position.lineNumber)).then(function (res) {
@@ -41,11 +84,23 @@
             });
 
             monaco.editor.create(document.getElementById("monacocontainer"), {
-                value: '^XA\n^CF0,190\n^FO485,965\n^FDCA^FS\n^XZ',
+                theme: 'myCoolTheme',
+                value: getCode(),
                 language: 'zpl'
             });
         });
 
+        function getCode() {
+            return [
+                '~JC',
+                '^XA',
+                '^CF0,190',
+                '^A0,20^FO485,965',
+                '^FDCA^FS',
+                '^XZ'
+            ].join('\n');;
+        }
+    
         function xhr(url, key) {
             var req = null;
             return new Promise(function (c, e) {
