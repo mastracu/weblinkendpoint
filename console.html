@@ -584,6 +584,7 @@
         <script type="text/javascript">
 
             $.getJSON("./printerdefaultapp.json", function (json) {
+                console.log(json);
                 document.getElementById("Static").innerHTML = json;
             });
 
