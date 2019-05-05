@@ -585,6 +585,15 @@
 
             $.getJSON("./printerdefaultapp.json", function (json) {
                 console.log(json);
+                var outputStatic = "<h1>Printer Application assignments</h1>";
+
+                // Loop through the artists
+                for (var i in json) {
+                    output += "<h2>" + json[i].printerSN + "</h2>";
+                    output += "<h2>" + json[i].appCode + "</h2>";
+                    output += "<ul>";
+                }
+
                 document.getElementById("Static").innerHTML = json;
             });
 
