@@ -48,20 +48,24 @@
             monaco.languages.registerCompletionItemProvider('zpl', {
                 provideCompletionItems: () => {
                     var suggestions = [{
-                        label: 'field',
-                        kind: monaco.languages.CompletionItemKind.Keyword,
-                        insertText: '^FD${1:condition}^FS',
-                        insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
-                    }, {
-                        label: 'newlabel',
-                        kind: monaco.languages.CompletionItemKind.Snippet,
-                        insertText: [
-                            '^XA',
-                            '$0',
-                            '^XZ'
-                        ].join('\n'),
-                        insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-                        documentation: 'New ZPL label'
+                        label: 'simpleText',
+                        kind: monaco.languages.CompletionItemKind.Text,
+                        insertText: 'simpleText'
+                    //},
+                    //    label: 'field',
+                    //    kind: monaco.languages.CompletionItemKind.Keyword,
+                    //    insertText: '^FD${1:condition}^FS',
+                    //    insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
+                    //}, {
+                    //    label: 'newlabel',
+                    //    kind: monaco.languages.CompletionItemKind.Snippet,
+                    //    insertText: [
+                    //        '^XA',
+                    //        '$0',
+                    //        '^XZ'
+                    //    ].join('\n'),
+                    //    insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+                    //    documentation: 'New ZPL label'
                     }];
                     return { suggestions: suggestions };
                 }
