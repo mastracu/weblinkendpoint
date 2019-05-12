@@ -38,7 +38,7 @@
 <body>
 
     <h2>Monaco Editor for ZPL</h2>
-    <div id="monacocontainer" style="width:1200px;height:600px;border:1px solid grey"></div>
+    <div id="monacocontainer" style="width:1800px;height:600px;border:1px solid grey"></div>
 
     <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
@@ -58,8 +58,12 @@
             monaco.languages.setMonarchTokensProvider('zpl', {
                 tokenizer: {
                     root: [
-                        [/\^(A@?|[B-Z][A-Z0-9])/, "zplcmd"],
-                        [/~[A-Z][A-Z0-9]/, "zpltilde"],
+                        [/\^(A@?|[B-Z][A-Z0-9])/, "zplcmd", "insidecmd"],
+                        [/~[A-Z][A-Z0-9]/, "zpltilde", "insidecmd"],
+                    ],
+                    insidecmd: [
+                        [/.*(?=[\\^~])/, "parms", "root"],
+                        [/.*(?=$)/, "parms", "root"],
                     ]
                 }
             });
@@ -71,22 +75,50 @@
                 rules: [
                     { token: 'zplcmd', foreground: 'ff0000', fontStyle: 'bold' },
                     { token: 'zpltilde', foreground: 'FFA500' },
+                    { token: 'parms', foreground: '087c4c' },
                 ]
             });
 
             monaco.languages.registerHoverProvider('zpl', {
                 provideHover: function (model, position) {
-                    return xhr('https://kotlin-rain.appspot.com/zpl', model.getLineContent(position.lineNumber)).then(function (res) {
+                    var currentLine = model.getLineContent(position.lineNumber);
+                    var textTokens = monaco.editor.tokenize(currentLine, "zpl");
+                    var lineTokensCount = textTokens[0].length;
+                    var selToken = null;
+                    var selTokenEnd = null;
+                    for (var i = 0; i < lineTokensCount; i++) {
+                        if (textTokens[0][i].type == "zplcmd.zpl" || textTokens[0][i].type == "zpltilde.zpl") {
+                            if (textTokens[0][i].offset < position.column) {
+                                selToken = textTokens[0][i];
 
-                        return {
-                            // range: new monaco.Range(1, 1, model.getLineCount(), model.getLineMaxColumn(model.getLineCount())),
-                            range: new monaco.Range(position.lineNumber, 1, position.lineNumber, model.getLineMaxColumn(position.lineNumber)),
-                            contents: [
-                                { value: '**' + model.getLineContent(position.lineNumber) + '**' },
-                                { value: '```html\n' + res.responseText + '\n```' }
-                            ]
+                            } else {
+                                if (selTokenEnd === null && selToken) {
+                                    selTokenEnd = textTokens[0][i].offset;
+                                };
+                            };
+                        };
+                    };
+
+
+                    if (selToken) {
+                        if (selTokenEnd === null) {
+                            selTokenEnd = model.getLineMaxColumn(position.lineNumber);
                         }
-                    });
+                        var selText = currentLine.substr(selToken.offset, selTokenEnd - selToken.offset);
+                        console.log ("selText:" + selText);
+
+                        return xhr('https://kotlin-rain.appspot.com/zpl', selText).then(function (res) {
+                            return {
+                                // range: new monaco.Range(1, 1, model.getLineCount(), model.getLineMaxColumn(model.getLineCount())),
+                                range: new monaco.Range(position.lineNumber, selToken.offset, position.lineNumber, selTokenEnd),
+                                contents: [
+                                    { value: '**' + selText + '**' },
+                                    { value: '```html\n' + res.responseText + '\n```' }
+                                ]
+                            }
+                        });
+                    }
+
                 }
             });
 

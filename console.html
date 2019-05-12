@@ -586,7 +586,7 @@
             $.getJSON("./printerdefaultapp.json", function (json) {
                 var outputStatic = "<h1>Printer Application assignments</h1>";
 
-                // Loop through the artists
+                // Loop through
                 for (var i in json) {
                     outputStatic += "<ul>" + json[i].printerSN + " -> " + json[i].appCode;
                 }
