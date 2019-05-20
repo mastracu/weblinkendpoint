@@ -51,7 +51,7 @@
         }
 
         #printers-table {
-            width: 760px;
+            width: 960px;
             display: inline-block;
             vertical-align: top;
         }
@@ -677,7 +677,7 @@
                     var data = cell.getRow().getData();
                     var myJSON = JSON.stringify(data);
                     var xhr = new XMLHttpRequest();
-                    var url = "printerupdate";
+                    var url = "printerupdate";pr
                     xhr.open("POST", url, true);
                     xhr.setRequestHeader("Content-type", "application/json");
                     xhr.send(myJSON);
