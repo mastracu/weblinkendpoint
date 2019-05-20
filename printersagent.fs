@@ -2,7 +2,6 @@
 
 open System
 open System.IO
-open System.Runtime.Serialization.Json
 open System.Runtime.Serialization
 
 open JsonHelper
@@ -35,6 +34,8 @@ type Printer =
       friendlyName : string;
       [<field: DataMember(Name = "sgdSetAlertFeedback")>]
       sgdSetAlertProcessor : string;      // "none" | "priceTag" | "ifadLabelConversion" | "wikipediaConversion" | "labelToGo"
+      [<field: DataMember(Name = "connectedSince")>]
+      connectedSince : DateTime;
       mainChannelAgent : ChannelAgent;
       rawChannelAgent : ChannelAgent option;
       configChannelAgent : ChannelAgent option;
@@ -57,6 +58,7 @@ let rec addPrinter id agent list appList =
                mainChannelAgent = agent; 
                productName = ""; 
                appVersion = ""; 
+               connectedSince = DateTime.Now;
                friendlyName = ""; 
                sgdSetAlertProcessor = defApp;
                rawChannelAgent = None;
