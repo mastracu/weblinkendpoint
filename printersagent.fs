@@ -35,7 +35,7 @@ type Printer =
       [<field: DataMember(Name = "sgdSetAlertFeedback")>]
       sgdSetAlertProcessor : string;      // "none" | "priceTag" | "ifadLabelConversion" | "wikipediaConversion" | "labelToGo"
       [<field: DataMember(Name = "connectedSince")>]
-      connectedSince : DateTime;
+      connectedSince : string;
       mainChannelAgent : ChannelAgent;
       rawChannelAgent : ChannelAgent option;
       configChannelAgent : ChannelAgent option;
@@ -58,7 +58,7 @@ let rec addPrinter id agent list appList =
                mainChannelAgent = agent; 
                productName = ""; 
                appVersion = ""; 
-               connectedSince = DateTime.Now;
+               connectedSince = DateTime.Now.ToString();
                friendlyName = ""; 
                sgdSetAlertProcessor = defApp;
                rawChannelAgent = None;
