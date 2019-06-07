@@ -81,7 +81,7 @@ let ws allAgents (webSocket : WebSocket) (context: HttpContext) =
   let pongTimer = new System.Timers.Timer(float 20000)
   do pongTimer.AutoReset <- true
 
-  let inbox = MailboxProcessor.Start (fun inbox -> async {
+  let inbox:ChannelAgent = MailboxProcessor.Start (fun inbox -> async {
         let close = ref false
         while not !close do
             let! (op, pld, fi), isLogged = inbox.Receive()
