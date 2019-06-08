@@ -585,11 +585,13 @@
 
             $.getJSON("./printerdefaultapp.json", function (json) {
                 var outputStatic = "<h1>Printer Application assignments</h1>";
+                outputStatic += "<ul>"; 
 
                 // Loop through
                 for (var i in json) {
-                    outputStatic += "<ul>" + json[i].printerSN + " -> " + json[i].appCode;
+                    outputStatic += "<li>" + json[i].printerSN + " -> " + json[i].appCode + "</li>" ;
                 }
+                outputStatic += "</ul>"; 
 
                 document.getElementById("Static").innerHTML = outputStatic;
             });
