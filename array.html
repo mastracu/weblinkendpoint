@@ -21,13 +21,14 @@
 
         http.onreadystatechange = function () {//Call a function when the state changes.
             if (http.readyState == 4 && http.status == 200) {
+                console.log("onready");
                 console.log(http.responsetext);
-                document.getElementById("spanInModal").innerHTML = "<PRE>" + selection + "\n\n" + http.responseText + "</PRE>";
             }
         }
         http.send();
 
         $.get("./printerdefaultapp.json", function (data) {
+            console.log("get");
             console.log(data);
             var jsonData = JSON.parse(data);
             var outputStatic = "<h1>Printer Application assignments</h1>";
