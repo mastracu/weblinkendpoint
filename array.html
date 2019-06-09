@@ -30,10 +30,10 @@
         $.get("./printerdefaultapp.json", function (data) {
             console.log("get");
             console.log(data);
-            var jsonData = JSON.parse(data);
+            // var jsonData = JSON.parse(data);
             var outputStatic = "<h1>Printer Application assignments</h1>";
-            for (var i = 0; i < jsonData.length; i++) {
-                var counter = jsonData[i];
+            for (var i = 0; i < data.length; i++) {
+                var counter = data[i];
                 outputStatic += "<li>" + counter.printerSN + " - " + counter.appCode + "</li>";
 
             }
