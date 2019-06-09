@@ -25,7 +25,7 @@
                 document.getElementById("spanInModal").innerHTML = "<PRE>" + selection + "\n\n" + http.responseText + "</PRE>";
             }
         }
-        http.send(selection);
+        http.send();
 
         $.get("./printerdefaultapp.json", function (data) {
             console.log(data);
