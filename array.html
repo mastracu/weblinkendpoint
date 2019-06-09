@@ -1,0 +1,29 @@
+﻿<!DOCTYPE html>
+<html>
+<body>
+    <div id="Static">
+    </div>
+
+    <script>
+
+        var txt = '[' +
+            '{"printerSN": "XXZKJ181100170","appCode": "priceTag" },' +
+            '{"printerSN": "18J174008780","appCode": "ifadLabelConversion" }]';
+
+        const pippo = require("./printerdefaultapp.json");
+        console.log("require:" + pippo);
+
+        //var jsonData = eval ("(" + txt + ")");
+        var jsonData = JSON.parse(txt);
+        var outputStatic = "<h1>Printer Application assignments</h1>";
+        for (var i = 0; i < jsonData.length; i++) {
+            var counter = jsonData[i];
+            outputStatic += "<li>" + counter.printerSN + " - " + counter.appCode + "</li>";
+
+        }
+        outputStatic += "</ul>";
+        document.getElementById("Static").innerHTML = outputStatic;
+
+    </script>
+</body>
+</html>
