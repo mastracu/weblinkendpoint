@@ -8,26 +8,9 @@
 
     <script>
 
-        var txt = '[' +
-            '{"printerSN": "XXZKJ181100170","appCode": "priceTag" },' +
-            '{"printerSN": "18J174008780","appCode": "ifadLabelConversion" }]';
-
-        var http = new XMLHttpRequest();
         var url = './printerdefaultapp.json';
-        http.open('GET', url, true);
 
-        //Send the proper header information along with the request
-        http.setRequestHeader("Content-Type", "text/plain;charset=UTF-8");
-
-        http.onreadystatechange = function () {//Call a function when the state changes.
-            if (http.readyState == 4 && http.status == 200) {
-                console.log("onready");
-                console.log(http.responsetext);
-            }
-        }
-        http.send();
-
-        $.get("./printerdefaultapp.json", function (data) {
+        $.get(url, function (data) {
             console.log("get");
             console.log(data);
             // var jsonData = JSON.parse(data);
