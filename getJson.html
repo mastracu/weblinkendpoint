@@ -1,0 +1,35 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+
+    <div id="Static">
+        CIPOLLA
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
+
+    <script type="text/javascript">
+
+        $.getJSON("./test.json", function (json) {
+            var outputStatic = "<h1>Printer Application assignments</h1>";
+            console.log(json);
+            outputStatic += "<ul>";
+            // Loop through
+            for (var i in json) {
+                outputStatic += "<li> " + json[i].printerSN + " - " + json[i].appCode + "</li > " ;
+            }
+            outputStatic += "</ul> ";
+
+            document.getElementById("Static").innerHTML = outputStatic;
+        });
+
+    </script>
+
+</body >
+</html >

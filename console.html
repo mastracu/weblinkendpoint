@@ -585,9 +585,8 @@
 
             $.getJSON("./printerdefaultapp.json", function (json) {
                 var outputStatic = "<h1>Printer Application assignments</h1>";
-                outputStatic += "<ul>"; 
-                console.log("cipolla");
                 console.log(json);
+                outputStatic += "<ul>"; 
                 // Loop through
                 for (var i in json) {
                     outputStatic += "<li>" + json[i].printerSN + " - " + json[i].appCode + "</li>" ;
