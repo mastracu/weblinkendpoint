@@ -1,10 +1,10 @@
 [
   {
-    "printerSN": "18J174008780",
-    "appCode": "ifadLabelConversion"
-  },
-  {
     "printerSN": "XXZKJ181100170",
     "appCode": "priceTag"
+  },
+  {
+    "printerSN": "18J174008780",
+    "appCode": "ifadLabelConversion"
   }
 ]
