@@ -13,7 +13,7 @@
             '{"printerSN": "18J174008780","appCode": "ifadLabelConversion" }]';
 
         $.get("./printerdefaultapp.json", function (data) {
-            //var jsonData = eval ("(" + txt + ")");
+            console.log(data);
             var jsonData = JSON.parse(data);
             var outputStatic = "<h1>Printer Application assignments</h1>";
             for (var i = 0; i < jsonData.length; i++) {
