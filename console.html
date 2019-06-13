@@ -386,8 +386,8 @@
             <p>Code <a target="_blank" href="https://github.com/mastracu/weblinkendpoint">here</a></p>
             <p>Weblink Workbench and printer "application" demo tool. "application" here has a very specific meaning:</p>
             <ul>
-                <li>a set of SGD configuration commands that redirect to cloud a specific input channel (USB, BT, SERIAL) - technically a list of JSON-SGD commands </li>
-                <li>the server-side processing of the data with possible generation of data to send to the printer - technically an async computation expression to run on a string and returns a string</li>
+                <li>a set of SGD configuration commands that redirect to cloud a specific input channel (USB, BT, SERIAL) - technically a list of JSON-SGD commands (capture port and SGD-variable-change-alert setup</li>
+                <li>some logic in the server that processes the alert and does something with it - technically an async computation expression that takes a string to a new string</li>
             </ul>
 
             <p>The 4 "applications" built into the server stem from 4 real-life use-cases where printer-redirected data is augmented / formatted appropriately before printing</p>
