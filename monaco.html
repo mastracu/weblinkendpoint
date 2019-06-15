@@ -3,7 +3,7 @@
 <head>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-    <link rel="stylesheet" data-name="vs/editor/editor.main" href="monaco-editor/min/vs/editor/editor.main.css">
+    <link rel="stylesheet" data-name="vs/editor/editor.main" href="./node_modules/monaco-editor/min/vs/editor/editor.main.css">
     <style>
         /* suggest-widget size */
         .monaco-editor .suggest-widget.docs-side {
@@ -48,7 +48,7 @@
 
     <script>
 
-        require.config({ paths: { 'vs': 'monaco-editor/min/vs' } });
+        require.config({ paths: { 'vs': './node_modules/monaco-editor/min/vs' } });
 
         require(['vs/editor/editor.main'], function () {
 
