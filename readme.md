@@ -11,7 +11,11 @@ The 4 "applications" built into the server stem from 4 real-life use-cases where
 * self-service label printing in parcel shops for return of goods purchased online 
 * convertion of SVG label (dpi independent) into ZPL (TO BE IMPLEMENTED)
 
-## Consists of
+## User Guide
+
+See "Guide to Applications Demonstration" tab in https://weblink.mastracu.it/console.html
+
+## Components
 
 * One wss / sse / https server written in F#/Suave
 * One HTML5 SPA to monitor websocket channels and send commands onto the printer channels (HTML / JAVASCRIPT)
@@ -22,13 +26,15 @@ Deployed to AWS EC2 - Docker running on a Linux AMI instance- . Amazon ALB termi
 
 https://weblink.mastracu.it/console.html
 
-## User Guide
+## Reference doc
 
-See "Guide to Applications Demonstration" tab in https://weblink.mastracu.it/console.html
+* Weblink endpoint configuration guide http://techdocs.zebra.com/link-os/2-14/webservices/content/Weblink%20WebSocket%20Endpoint%20Configuration.pdf
+* "Using Weblink" section in "ZPL Reference guide“ https://www.zebra.com/content/dam/zebra/manuals/printers/common/programming/zpl-zbi2-pm-en.pdf
+* Devtalk Webinar on F#/Suave https://www.youtube.com/watch?v=ANLkHOxSjL8
 
 ## Versioning
 
-0.1 Dec 2018
+0.2 Jun 2019
 
 ## Authors
 
