@@ -98,10 +98,7 @@
     <Compile Include="Program.fs" />
     <None Include="App.config" />
     <None Include="index.html" />
-    <None Include="paket.references" />
     <Content Include="packages.config" />
-    <None Include="Scripts\load-references-debug.fsx" />
-    <None Include="Scripts\load-project-debug.fsx" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FSharp.Core">
