@@ -405,8 +405,10 @@
 
             <p>
                 You will need to hook up your printer to the Internet
+            </p>
+            <p>
                 In order to do that, you may use "Configure Printer Connectivity" in Zebra Setup Utility.
-                I typically use Wifi printers and connect to ZGuest wireless network in Zebra office.
+                I generally use Wifi printers and connect to ZGuest wireless network in Zebra office.
             </p>
 
             <p>You then specify the address of the weblink endpoint by issuing </p>
@@ -420,16 +422,14 @@
             </code></pre>
 
             <p>
-                Check the printer is now connected.
-                If it is, it will be listed in http://weblinkendpoint.mastracyu.it/appselector.html
+                Once the printer is connected, it will be listed in http://weblinkendpoint.mastracu.it/console.html. You may need to click refresh button beside printer table.
             </p>
-            <p>The printers will also spit out a welcome label once it’s connected.</p>
-            <p>You may also need to calibrate the printer and/or reset the sensor settings depending on the media being used.</p>
+            <p>After printer is connected, calibrate the printer as needed by dragging "Media Sensor Calibration" into the Input1 window in "RAW Channel console" tab.</p>
 
             <h3 id="notesformobileprinters">Notes for some mobile printers</h3>
 
             <p>
-                On mobile printers like ZQ320 and ZQ310, I have seen a behaviour where the printer will not stay in sleep mode (https://www.zebra.com/content/dam/zebra/software/en/application-notes/AppNote-SleepMode-v5.pdf) if weblink is enabled.
+                On mobile printers like ZQ320 and ZQ310 (not on ZQ620), I have seen a behaviour where the printer will not stay in sleep mode (https://www.zebra.com/content/dam/zebra/software/en/application-notes/AppNote-SleepMode-v5.pdf) if weblink is enabled.
                 The printer will awake seconds after entering sleep mode.
                 Because of this, I turn sleep mode off by issuing
             </p>
@@ -438,7 +438,7 @@
             </code></pre>
 
             <p>
-                Also testing with ZQ310, I have noted mobile printer will shut down weblink connection after issuing battery low alert.
+                Also while testing with ZQ310, I have noted mobile printer will shut down weblink connection after issuing battery low alert.
                 In my test battery low alert was issued at about 10% battery level (6.5 Volts) and printer did shut down at about 6% battery level (6.28 Volts)
             </p>
 
@@ -467,45 +467,33 @@
             <p>Follow the following steps to set it up</p>
 
             <ol>
-                <li>Ensure the BT scanner is configured to CR-LF terminate the barcode. </li>
-            </ol>
-
-            <p><img src="img/enter.png" alt="Barcode" />        </p>
-
-            <ol>
+                <li>Ensure the BT scanner is configured to CR-LF terminate the barcode (use 123 scan to generate the configuration barcode for your scanner). </li>
                 <li>Verify the printer is listed as connected in the the WebLinkEndPoint. Send the following json command to get the btaddress of the printer: </li>
-            </ol>
-
             <pre><code>{}{"bluetooth.short_address":null} 
             </code></pre>
-
             <p></p>
-            <ol>
                 <li>From 123scan generate the Bluetooth Pairing barcode (Serial Port Profile - Master) by keying in the address retrieved in previous point.</li>
                 <li>Scan the barcode with CS4070 and the scanner should establish the BT connection with the printer (solid blue LED on the printer) </li>
             </ol>
 
-            <p>On http://weblinkendpoint.mastracu.it/pricetag.html you add a new item that you have handy in the meeting room.</p>
+            <p>From "ZPL price label" tab a add a new item in the table that you have handy in the meeting room.</p>
 
             <p><strong>Please ensure barcode is 13-digits long as only EAN-13 barcodes are currently supported.</strong></p>
 
-            <p>Please note that scanning the BT addr barcode on the back of the printer will not work.</p>
-
             <p>
-                I can then go ahead and scan the barcodes of the item above.
+                I can then go ahead and scan the barcode from the packaging.
                 A pricetag will be automatically printed if the barcode is found.
-                I can then change the price of the item in the table on http://weblinkendpoint.mastracu.it/pricetag.html . I then scan the same product again and the label is printed with a different price. By selecting a product and a printer from http://weblinkendpoint.mastracu.it/pricetag.html I can also show how to print a label “remotely”.
+                I can then change the price of the item in the table . I then scan the same product again and the label is printed with a different price.
+            </p>
+            <p>
+                By selecting a product and a printer I can also show how to print a label “remotely”.
             </p>
 
-            <p><strong>Please note - data are not persistent and application is restarted every 24 hours so price changes / new products will be lost the following day.</strong></p>
-
-            <p>See https://devcenter.heroku.com/articles/dynos#restarting and https://devcenter.heroku.com/articles/dynos#ephemeral-filesystem</p>
 
             <h3 id="labelconversionifadlabelconvertion">Label conversion - <code>ifadLabelConvertion</code></h3>
 
             <p>
-                For the label conversion demo, from http://ifad.mastracu.it/appselector.html
-                I change the application associated with a 200dpi printer to ifadlabelconvertion.
+                For the label conversion demo, I change the application associated with a 200dpi printer to ifadlabelconvertion.
                 Now everything I send to the printer via USB gets forwarded onto the cloud.
             </p>
 
@@ -532,13 +520,13 @@
 
             <ol>
                 <li>Configure and pair BT scanner (see 1-3 in Repricing app)</li>
-                <li>Generate return barcode from http://weblink.mastracu.it/mobiletest.html</li>
+                <li>Generate return barcode from https://weblink.mastracu.it/mobiletest.html</li>
                 <li>Scan with BT scanner; label gets printed.</li>
             </ol>
 
             <h2 id="versioning">Versioning</h2>
 
-            <p>0.2 Jun 2019</p>
+            <p>0.3 Jun 2019</p>
 
 
         </div>
