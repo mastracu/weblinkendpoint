@@ -11,7 +11,7 @@ The 4 "applications" built into the server stem from 4 real-life use-cases where
 * self-service label printing in parcel shops for return of goods purchased online 
 * convertion of SVG label (dpi independent) into ZPL (TO BE IMPLEMENTED)
 
-## User Guide
+## Usage
 
 See "Guide to Applications Demonstration" tab in https://weblink.mastracu.it/console.html
 
@@ -20,11 +20,21 @@ See "Guide to Applications Demonstration" tab in https://weblink.mastracu.it/con
 * One wss / sse / https server written in F#/Suave
 * One HTML5 SPA to monitor websocket channels and send commands onto the printer channels (HTML / JAVASCRIPT)
 
-Requires F# tooling, npm, nuget to build.
 
 Deployed to AWS EC2 - Docker running on a Linux AMI instance- . Amazon ALB terminates the HTTPS channel.
 
 https://weblink.mastracu.it/console.html
+
+## How to install
+
+Requires `git`, `.NETcore` and `npm`.
+
+```
+git clone https://github.com/mastracu/weblinkendpoint.git
+dotnet restore
+dotnet build
+npm install
+```
 
 ## Reference doc
 
