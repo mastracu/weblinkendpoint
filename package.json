@@ -9,6 +9,7 @@
   "author": "um",
   "license": "MIT",
   "dependencies": {
+    "jquery.tabulator": "^3.5.3",
     "moment": "^2.24.0",
     "monaco-editor": "0.17.0",
     "tabulator-tables": "^4.2.7"
