@@ -7,7 +7,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>WebSocket</RootNamespace>
     <AssemblyName>WebSocket</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <ResolveNuGetPackages>false</ResolveNuGetPackages>
     <Name>WebLinkEndpoint</Name>
     <TargetFrameworkProfile />
@@ -91,7 +91,7 @@
     <Compile Include="jsonhelper.fs" />
     <Compile Include="storeagent.fs" />
     <Compile Include="messageLogAgent.fs" />
-    <Compile Include="websocketum.fs" />
+    <Compile Include="ZebraWebSocket.fs" />
     <Compile Include="printersagent.fs" />
     <Compile Include="fw.fs" />
     <Compile Include="labelbuilder.fs" />
@@ -102,14 +102,14 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FSharp.Core">
-      <HintPath>packages\FSharp.Core.4.3.1\lib\net45\FSharp.Core.dll</HintPath>
+      <HintPath>packages\FSharp.Core.4.6.2\lib\net45\FSharp.Core.dll</HintPath>
     </Reference>
     <Reference Include="FSharp.Data">
-      <HintPath>packages\FSharp.Data.3.0.0\lib\net45\FSharp.Data.dll</HintPath>
+      <HintPath>packages\FSharp.Data.3.1.1\lib\net45\FSharp.Data.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib" />
     <Reference Include="Suave">
-      <HintPath>packages\Suave.2.2.1\lib\net40\Suave.dll</HintPath>
+      <HintPath>packages\Suave.2.5.5\lib\net461\Suave.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

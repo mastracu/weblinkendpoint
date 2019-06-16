@@ -19,7 +19,8 @@ open System.Runtime.Serialization
 
 open Suave.Sockets
 open Suave.Sockets.Control
-open Suave.WebSocketUM
+open Suave.ZebraWebSocket
+// Websocket handshake function modified for Zebra printers
 
 open System.IO
 open System.Xml
@@ -387,7 +388,7 @@ let app  : WebPart =
   //let releaseVersion = System.Environment.GetEnvironmentVariable("HEROKU_RELEASE_VERSION")
 
   choose [
-    path "/websocketWithSubprotocol" >=> WebSocketUM.handShakeWithSubprotocol (chooseSubprotocol "v1.weblink.zebra.com") (ws allAgents)
+    path "/websocketWithSubprotocol" >=> ZebraWebSocket.handShakeWithSubprotocol (chooseSubprotocol "v1.weblink.zebra.com") (ws allAgents)
     path "/sseLog" >=> request (fun _ -> EventSource.handShake (sseContinuation logEvent.Publish mLogAgent ))
 
     GET >=> choose 

@@ -7,7 +7,7 @@ open System.IO
 open JsonHelper
 open Suave
 
-open WebSocketUM
+open ZebraWebSocket
 open MessageLogAgent
 open PrintersAgent
 open System.Diagnostics

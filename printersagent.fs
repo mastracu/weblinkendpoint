@@ -6,7 +6,7 @@ open System.Runtime.Serialization
 
 open JsonHelper
 open MessageLogAgent
-open Suave.WebSocketUM
+open Suave.ZebraWebSocket
 
 
 type ChannelFrame = Opcode*byte[]*bool

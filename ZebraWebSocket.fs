@@ -1,6 +1,8 @@
 namespace Suave
 
-module WebSocketUM =
+module ZebraWebSocket =
+
+// Content-Length 0 in handShakeResponse
 
   open Suave.Sockets
   open Suave.Sockets.Control
@@ -220,7 +222,7 @@ module WebSocketUM =
       runAsyncWithSemaphore writeSemaphore (writeFrame connection frame)
 
     let readFrame () = socket {
-      assert (List.length connection.segments = 0)
+      assert (Seq.length connection.segments = 0)
       let! arr = readBytes connection.transport 2
       let header = exctractHeader arr
       let! extendedLength = readExtendedLength header
@@ -243,7 +245,7 @@ module WebSocketUM =
       }
 
     let readFrameIntoSegment (byteSegmentForLengthFunc: int -> ByteSegment) = socket {
-      assert (List.length connection.segments = 0)
+      assert (Seq.length connection.segments = 0)
       let! arr = readBytes connection.transport 2
       let header = exctractHeader arr
       let! extendedLength = readExtendedLength header
@@ -293,8 +295,8 @@ module WebSocketUM =
       let handShakeToken = Convert.ToBase64String webSocketHash
       let! something =
         match webSocketProtocol with
-        | Some subprotocol -> HttpOutput.run (handShakeWithSubprotocolResponse subprotocol handShakeToken) ctx
-        | None -> HttpOutput.run (handShakeResponse handShakeToken) ctx
+        | Some subprotocol -> SocketOp.ofAsync(HttpOutput.run (handShakeWithSubprotocolResponse subprotocol handShakeToken) ctx)
+        | None -> SocketOp.ofAsync(HttpOutput.run (handShakeResponse handShakeToken) ctx)
       let webSocket = new WebSocket(ctx.connection, webSocketProtocol)
       do! continuation webSocket ctx
     }
@@ -306,6 +308,16 @@ module WebSocketUM =
       return None
   }
 
+  let validateConnectionHeader (header:Choice<string,string>) =
+    match header with
+    | Choice1Of2 s -> 
+      let parts = 
+        s.ToLower().Split([|','|],StringSplitOptions.RemoveEmptyEntries)
+        |> Array.map (fun (s:string) -> s.Trim())
+      Array.contains "upgrade" parts
+    | _ ->
+      false
+
   let validateHandShake (ctx : HttpContext) =
     let r = ctx.request
     if r.``method`` <> HttpMethod.GET then
@@ -313,7 +325,7 @@ module WebSocketUM =
     elif r.header "upgrade" |> Choice.map (fun s -> s.ToLower()) <> Choice1Of2 "websocket" then
       Choice2Of2 (RequestErrors.BAD_REQUEST "Bad Request" ctx)
     else
-      if r.header "connection" |> Choice.map (fun s -> s.ToLower()) = Choice1Of2 "upgrade" then
+      if validateConnectionHeader (r.header "connection") then
         match r.header "sec-websocket-key" with
         | Choice1Of2 webSocketKey -> Choice1Of2 webSocketKey
         | _ -> Choice2Of2 (RequestErrors.BAD_REQUEST "Missing 'sec-websocket-key' header" ctx)
@@ -335,7 +347,7 @@ module WebSocketUM =
         do ()
       | Choice2Of2 err ->
         ctx.runtime.logger.info (
-          eventX "WebSocket disconnected"
+          eventX "WebSocket disconnected {error}"
           >> setSingleName "Suave.Websocket.handShakeWithSubprotocol"
           >> setFieldValue "error" err)
 
@@ -353,7 +365,7 @@ module WebSocketUM =
         do ()
       | Choice2Of2 err ->
         ctx.runtime.logger.info (
-          eventX "WebSocket disconnected"
+          eventX "WebSocket disconnected {error}"
           >> setSingleName "Suave.Websocket.handShake"
           >> setFieldValue "error" err)
 
